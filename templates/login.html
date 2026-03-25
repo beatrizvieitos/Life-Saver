@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-PT"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Task Boss</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logomini.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+<div class="logo-topo">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Task Boss Logo" style="margin-top: -60px; width: 300px; height: auto; border-radius: 10%;">
+</div>
+
+<div class="caixa-auth">
+    <div id="seccao-login">
+        <h2>Acede às Tuas Tarefas 📝</h2>
+        <div id="msg_login"></div>
+        <form id="formLogin">
+            <input type="text" id="login_username" placeholder="Nome de Utilizador" required>
+            <div style="position: relative; width: 100%; margin-bottom: 15px;">
+                <input type="password" id="login_password" placeholder="Palavra-passe" required 
+                       style="width: 100%; padding-right: 40px; margin-bottom: 0;">
+                <span onclick="togglePass('login_password', this)" 
+                      style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; user-select: none;">
+                    👁️
+                </span>
+            </div>
+            <button type="submit" class="btn-add btn-largo">ENTRAR</button>
+        </form>
+        <span class="link-alternar" onclick="alternarVistas('registo')">Regista-te e começa a gerir as tuas tarefas!</span>
+    </div>
+
+    <div id="seccao-registo">
+        <h2>Criar Conta</h2>
+        <div id="msg_registo" style="text-align: center; margin-bottom: 15px; font-weight: bold;"></div>
+        <form id="formRegisto">
+            <input type="text" id="reg_nome" placeholder="Nome" required>
+            <input type="text" id="reg_apelido" placeholder="Apelido" required>
+            <input type="text" id="reg_username" placeholder="Nome de Utilizador" required>
+            <input type="email" id="reg_email" placeholder="E-mail" required>
+            <input type="text" id="reg_localidade" placeholder="Localidade" required>
+            <div style="position: relative; width: 100%;">
+                <input type="password" id="reg_password" placeholder="Palavra-passe" required style="padding-right: 40px;">
+                <span onclick="togglePass('reg_password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">👁️</span>
+            </div>
+            <button type="submit" class="btn-add btn-largo">REGISTAR</button>
+        </form>
+        <span class="link-alternar" onclick="alternarVistas('login')">Já tens conta? Faz Login.</span>
+    </div>
+</div>
+
+<script>
+    function togglePass(id, el) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            el.innerText = "🙈";
+        } else {
+            input.type = "password";
+            el.innerText = "👁️";
+        }
+    }
+
+    function alternarVistas(vista) {
+        const login = document.getElementById('seccao-login');
+        const registo = document.getElementById('seccao-registo');
+        document.getElementById('msg_login').innerText = '';
+        document.getElementById('msg_registo').innerText = '';
+
+        if (vista === 'registo') {
+            login.style.display = 'none';
+            registo.style.display = 'block';
+        } else {
+            registo.style.display = 'none';
+            login.style.display = 'block';
+        }
+    }
+
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msgDiv = document.getElementById('msg_login');
+        const dados = {
+            username: document.getElementById('login_username').value,
+            password: document.getElementById('login_password').value
+        };
+        try {
+            const resposta = await fetch('/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dados)
+            });
+            if (resposta.ok) {
+                window.location.href = "/";
+            } else {
+                const resultado = await resposta.json();
+                msgDiv.innerText = resultado.erro || "Utilizador ou palavra-passe incorretos!";
+                msgDiv.style.color = "#ff4444";
+                document.getElementById('login_password').value = "";
+            }
+        } catch (erro) {
+            msgDiv.innerText = "Erro ao ligar ao servidor.";
+            msgDiv.style.color = "#ffbb33";
+        }
+    });
+
+    document.getElementById('formRegisto').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msgDiv = document.getElementById('msg_registo');
+        const dados = {
+            nome: document.getElementById('reg_nome').value,
+            apelido: document.getElementById('reg_apelido').value,
+            username: document.getElementById('reg_username').value,
+            email: document.getElementById('reg_email').value,
+            password: document.getElementById('reg_password').value,
+            localidade: document.getElementById('reg_localidade').value
+        };
+        try {
+            const resposta = await fetch('/api/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(dados)
+            });
+            if (resposta.ok) {
+                alert("Conta criada com sucesso! Já podes entrar.");
+                alternarVistas('login');
+            } else {
+                const erro = await resposta.json();
+                msgDiv.style.color = "#ff4444";
+                msgDiv.innerText = erro.erro || "Erro ao criar conta.";
+            }
+        } catch (erro) {
+            msgDiv.innerText = "Erro ao ligar ao servidor.";
+        }
+    });
+</script>
+</body>
+</html>

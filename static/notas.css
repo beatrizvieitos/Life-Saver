@@ -1,0 +1,9 @@
+/* =========================================
+   ESTILOS ESPECÍFICOS PARA A PÁGINA DE NOTAS
+   (já integrados no index.css, mantido apenas por compatibilidade)
+   ========================================= */
+
+/* Garante que a grid de notas se comporte bem com o novo container */
+.container {
+    max-width: 1100px;
+}

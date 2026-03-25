@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lista de Compras - Task Boss</title>
+    <link rel="icon" href="{{ url_for('static', filename='logomini.ico') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='listas.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+<div class="logo-topo-container">
+    <a href="/" class="logo-link">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Task Boss Logo">
+    </a>
+</div>
+
+<div class="cabecalho">
+    <div class="esquerda">
+        <div class="menu-hamburger" id="menuHamburger">
+            <div class="hamburger-icon">☰</div>
+            <div class="menu-dropdown" id="menuDropdown">
+                <a href="/" class="menu-item">Lista de Tarefas 📋</a>
+                <a href="/notas" class="menu-item">As Minhas Notas ✍️</a>
+                <a href="/medicamentos" class="menu-item">Lista de Medicamentos 💊</a>
+                <a href="/estatisticas" class="menu-item">Estatísticas 📊</a>
+                <a href="#" id="openFriendsModal" class="menu-item">Amigos 👥</a>
+            </div>
+        </div>
+    </div>
+    <div class="centro">
+        <h2>🛒 Lista de Compras</h2>
+    </div>
+    <div class="direita">
+        <button id="btnModoCompras" class="btn-modo-compras">
+            <span class="material-icons" style="font-size: 1.2rem;"></span> 
+            ☑️ Modo Compras
+        </button>
+        <button class="btn-sair" onclick="fazerLogout()" title="Sair">
+            <span class="material-icons">logout</span>
+        </button>
+    </div>
+</div>
+
+<div class="caixa-supermercado">
+    <div class="form-lateral">
+        <h3><span class="material-icons"></span> Adicionar Item</h3>
+        <form id="formCompras">
+            <div class="form-group">
+                <label><span class="material-icons">shopping_basket</span> Produto</label>
+                <select id="produto" required>
+                    <option value="" disabled selected>🛍️ Escolha o produto...</option>
+                    <option value="Abacate">Abacate</option>
+                        <option value="Achocolatado">Achocolatado</option>
+                        <option value="Açúcar Branco">Açúcar Branco</option>
+                        <option value="Água com Gás">Água com Gás</option>
+                        <option value="Água Mineral (Garrafão)">Água Mineral (Garrafão)</option>
+                        <option value="Alface">Alface</option>
+                        <option value="Amaciador Cabelo">Amaciador Cabelo</option>
+                        <option value="Amaciador Roupa">Amaciador Roupa</option>
+                        <option value="Areia Gato">Areia Gato</option>
+                        <option value="Arroz Agulha">Arroz Agulha</option>
+                        <option value="Arroz Carolino">Arroz Carolino</option>
+                        <option value="Atum em Lata">Atum em Lata</option>
+                        <option value="Azeite Virgem Extra">Azeite Virgem Extra</option>
+                        <option value="Azeitonas">Azeitonas</option>
+                        <option value="Bacalhau Desfiado">Bacalhau Desfiado</option>
+                        <option value="Banana">Banana</option>
+                        <option value="Batata Frita Palha">Batata Frita Palha</option>
+                        <option value="Batatas">Batatas</option>
+                        <option value="Batatas Pré-Fritas">Batatas Pré-Fritas</option>
+                        <option value="Berinjela">Berinjela</option>
+                        <option value="Bolachas Água e Sal">Bolachas Água e Sal</option>
+                        <option value="Bolachas Maria">Bolachas Maria</option>
+                        <option value="Brócolos">Brócolos</option>
+                        <option value="Café em Cápsulas">Café em Cápsulas</option>
+                        <option value="Café Moído">Café Moído</option>
+                        <option value="Cebolas">Cebolas</option>
+                        <option value="Cenoura">Cenoura</option>
+                        <option value="Cereais">Cereais</option>
+                        <option value="Cereais Pequeno Almoço">Cereais Pequeno Almoço</option>
+                        <option value="Champô">Champô</option>
+                        <option value="Chá Preto">Chá Preto</option>
+                        <option value="Chocolate Tablet">Chocolate Tablet</option>
+                        <option value="Cogumelos">Cogumelos</option>
+                        <option value="Cogumelos Congelados">Cogumelos Congelados</option>
+                        <option value="Curgete">Curgete</option>
+                        <option value="Desinfetante">Desinfetante</option>
+                        <option value="Desodorizante">Desodorizante</option>
+                        <option value="Detergente Loiça">Detergente Loiça</option>
+                        <option value="Detergente Máquina Roupa">Detergente Máquina Roupa</option>
+                        <option value="Ervilhas Congeladas">Ervilhas Congeladas</option>
+                        <option value="Escova Dentes">Escova Dentes</option>
+                        <option value="Espinafres">Espinafres</option>
+                        <option value="Esponja Lavar Loiça">Esponja Lavar Loiça</option>
+                        <option value="Farinha Trigo">Farinha Trigo</option>
+                        <option value="Fiambre de Frango">Fiambre de Frango</option>
+                        <option value="Fiambre Peru">Fiambre Peru</option>
+                        <option value="Fio Dental">Fio Dental</option>
+                        <option value="Gel Cabelo">Gel Cabelo</option>
+                        <option value="Gel de Banho">Gel de Banho</option>
+                        <option value="Gelado">Gelado</option>
+                        <option value="Hambúrguer Frango">Hambúrguer Frango</option>
+                        <option value="Hambúrguer Vaca">Hambúrguer Vaca</option>
+                        <option value="Iogurte de Fruta">Iogurte Fruta</option>
+                        <option value="Iogurte Grego">Iogurte Grego</option>
+                        <option value="Iogurte Líquido">Iogurte Líquido</option>
+                        <option value="Iogurte Natural">Iogurte Natural</option>
+                        <option value="Ketchup">Ketchup</option>
+                        <option value="Kiwi">Kiwi</option>
+                        <option value="Lâmpada LED">Lâmpada LED</option>
+                        <option value="Laranja">Laranja</option>
+                        <option value="Lasanha Congelada">Lasanha Congelada</option>
+                        <option value="Leite Condensado">Leite Condensado</option>
+                        <option value="Leite Magro">Leite Magro</option>
+                        <option value="Leite Meio Gordo">Leite Meio Gordo</option>
+                        <option value="Limpa Vidros">Limpa Vidros</option>
+                        <option value="Lixívia">Lixívia</option>
+                        <option value="Maçãs">Maçãs</option>
+                        <option value="Maionese">Maionese</option>
+                        <option value="Manga">Manga</option>
+                        <option value="Manteiga">Manteiga</option>
+                        <option value="Manteiga com Sal">Manteiga com Sal</option>
+                        <option value="Margarina">Margarina</option>
+                        <option value="Massa Esparguete">Massa Esparguete</option>
+                        <option value="Massa Fusilli">Massa Fusilli</option>
+                        <option value="Massa Penne">Massa Penne</option>
+                        <option value="Melancia">Melancia</option>
+                        <option value="Melão">Melão</option>
+                        <option value="Milho Congelado">Milho Congelado</option>
+                        <option value="Molho Tomate">Molho Tomate</option>
+                        <option value="Mostarda">Mostarda</option>
+                        <option value="Natas">Natas</option>
+                        <option value="Ovos M (Meia Dúzia)">Ovos M (Meia Dúzia)</option>
+                        <option value="Palitos Gelado">Palitos Gelado</option>
+                        <option value="Pão Alho">Pão Alho</option>
+                        <option value="Pão Centeio">Pão Centeio</option>
+                        <option value="Pão de Forma">Pão de Forma</option>
+                        <option value="Papel Alumínio">Papel Alumínio</option>
+                        <option value="Papel Higiénico">Papel Higiénico</option>
+                        <option value="Pasta Dentes">Pasta Dentes</option>
+                        <option value="Pastilhas Máq Loiça">Pastilhas Máq Loiça</option>
+                        <option value="Peito de Frango">Peito de Frango</option>
+                        <option value="Película Adherente">Película Adherente</option>
+                        <option value="Pepino">Pepino</option>
+                        <option value="Pera">Pera</option>
+                        <option value="Pilhas AA">Pilhas AA</option>
+                        <option value="Pimentão">Pimentão</option>
+                        <option value="Pizza Congelada">Pizza Congelada</option>
+                        <option value="Presunto Fatiado">Presunto Fatiado</option>
+                        <option value="Queijo Flamengo Fatias">Queijo Flamengo Fatias</option>
+                        <option value="Queijo Fresco">Queijo Fresco</option>
+                        <option value="Queijo Fresco Cabra">Queijo Fresco Cabra</option>
+                        <option value="Queijo Ralado">Queijo Ralado</option>
+                        <option value="Ração Cão">Ração Cão</option>
+                        <option value="Ração Gato">Ração Gato</option>
+                        <option value="Requeijão">Requeijão</option>
+                        <option value="Sabonete Líquido">Sabonete Líquido</option>
+                        <option value="Sacos Lixo">Sacos Lixo</option>
+                        <option value="Sal Fino">Sal Fino</option>
+                        <option value="Salchichas">Salchichas</option>
+                        <option value="Salmão Fresco">Salmão Fresco</option>
+                        <option value="Sumo Laranja">Sumo Laranja</option>
+                        <option value="Toalhetes Húmidos">Toalhetes Húmidos</option>
+                        <option value="Tomate">Tomate</option>
+                </select>
+                <div id="dica-preco" class="dica-preco" style="display: none;"></div>
+            </div>
+            <div class="form-group">
+                <label><span class="material-icons">store</span> Supermercado</label>
+                <select id="supermercado" required>
+                    <option value="" disabled selected>🛒 Escolha o supermercado...</option>
+                    <option value="Continente">Continente</option>
+                    <option value="Pingo Doce">Pingo Doce</option>
+                    <option value="Lidl">Lidl</option>
+                    <option value="Auchan">Auchan</option>
+                    <option value="Mercadona">Mercadona</option>
+                    <option value="Aldi">Aldi</option>
+                    <option value="Minipreço">Minipreço</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="material-icons">numbers</span> Quantidade</label>
+                    <div class="quantidade-wrapper">
+                        <button type="button" class="btn-qty" id="qty-minus">–</button>
+                        <input type="number" id="quantidade" value="1" min="1" step="1">
+                        <button type="button" class="btn-qty" id="qty-plus">+</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><span class="material-icons">euro_symbol</span> Preço Estimado (€)</label>
+                    <input type="number" id="preco" placeholder="0.00" step="0.01" min="0" required>
+                </div>
+            </div>
+            <button type="submit" class="btn-adicionar">
+                <span class="material-icons">add</span> Adicionar
+            </button>
+        </form>
+    </div>
+
+    <div class="area-lista">
+        <div class="filtro-supermercado" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <label><span class="material-icons">filter_alt</span> Filtrar por supermercado:</label>
+        <select id="filtroSupermercadoPrincipal">
+            <option value="">Todos os supermercados</option>
+        </select>
+        <button id="limparFiltro" class="btn-limpar-filtro" title="Limpar filtro">
+            <span class="material-icons">clear</span>
+        </button>
+    </div>
+    <button id="btnShareShoppingList" class="btn-share" title="Partilhar lista de compras" >
+        <span class="material-icons">share</span>
+    </button>
+</div>
+
+        <div class="cabecalho-recibo">
+            <span class="material-icons">receipt</span> LISTA DE COMPRAS
+            
+        </div>
+
+        <div id="lista-itens" class="lista-itens-container"></div>
+
+        <div class="total-caixa">
+            <span>TOTAL:</span>
+            <span id="valor-total">0.00</span>
+            <span class="moeda">€</span>
+        </div>
+    </div>
+</div>
+
+<!-- Modal do Modo Compras (pop-up) -->
+<div id="modalModoCompras" class="modal">
+    <div class="modal-content modo-compras-content">
+        <div class="modo-compras-header">
+            <span class="close-modal" id="closeModoCompras">&times;</span>
+            <h2 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                <span class="material-icons">shopping_cart_checkout</span> Em Compras
+            </h2>
+            <div class="filtros-compras">
+                <select id="filtroModoCompras">
+                    <option value="Todos">🏬 Todos os Supermercados</option>
+                </select>
+            </div>
+        </div>
+        <div id="listaModoCompras" class="lista-modo-compras"></div>
+    </div>
+</div>
+
+<!-- Modal para gestão de amigos -->
+<div id="modalAmigos" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3>Amigos</h3>
+            <span class="close-modal" id="closeAmigosModal">&times;</span>
+        </div>
+        <div id="amigosContent"></div>
+    </div>
+</div>
+
+<!-- Modal para partilhar lista de compras (com permissão de edição) -->
+<div id="modalShareShopping" class="modal">
+    <div class="modal-content" style="max-width: 550px;">
+        <div class="modal-header">
+            <h3>Partilhar Lista de Compras</h3>
+            <span class="close-modal" id="closeShareShoppingModal">&times;</span>
+        </div>
+        <div id="shareShoppingContent"></div>
+        <button id="btnConfirmShareShopping" class="btn-add" style="margin-top: 15px;">Guardar Partilhas</button>
+    </div>
+</div>
+
+<script>
+    // =========================================================================
+    // 1. VARIÁVEIS GLOBAIS
+    // =========================================================================
+    let todasAsComprasGlobais = [];     // Armazena todos os itens para o Modo Compras
+    let filtroAtivo = '';              // Filtro ativo na página principal
+
+    const selectProduto = document.getElementById('produto');
+    const selectSupermercado = document.getElementById('supermercado');
+    const inputPreco = document.getElementById('preco');
+    const avisoPreco = document.getElementById('dica-preco');
+
+    // =========================================================================
+    // 2. FUNÇÕES AUXILIARES (escapeHtml, getDisplayName)
+    // =========================================================================
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function getDisplayName(user) {
+        if (user.nome && user.apelido) {
+            return escapeHtml(user.nome) + ' ' + escapeHtml(user.apelido);
+        } else if (user.username) {
+            return escapeHtml(user.username);
+        }
+        return '';
+    }
+
+    // =========================================================================
+    // 3. FUNÇÕES DE PREÇOS (estimado e mais barato)
+    // =========================================================================
+    async function procurarPreco() {
+        const produto = selectProduto.value;
+        const supermercado = selectSupermercado.value;
+        if (produto && supermercado) {
+            try {
+                const resposta = await fetch(`/api/preco_estimado?produto=${encodeURIComponent(produto)}&supermercado=${encodeURIComponent(supermercado)}`);
+                const dados = await resposta.json();
+                if (dados.preco !== null) {
+                    inputPreco.value = dados.preco;
+                    avisoPreco.style.display = 'none';
+                } else {
+                    inputPreco.value = '';
+                    avisoPreco.style.display = 'flex';
+                }
+            } catch (erro) {
+                console.error("Erro ao procurar preço:", erro);
+            }
+        }
+    }
+
+    selectProduto.addEventListener('change', procurarPreco);
+    selectSupermercado.addEventListener('change', procurarPreco);
+
+    if (selectProduto) {
+        selectProduto.addEventListener('change', async function() {
+            const produto = this.value;
+            if (!produto) {
+                avisoPreco.style.display = 'none';
+                return;
+            }
+            try {
+                const resposta = await fetch(`/api/produto_mais_barato?produto=${encodeURIComponent(produto)}`);
+                if (resposta.ok) {
+                    const dados = await resposta.json();
+                    avisoPreco.innerHTML = `💡 Mais barato no <strong>${dados.supermercado}</strong> por ${dados.preco.toFixed(2)}€.`;
+                    avisoPreco.style.display = 'block';
+                } else {
+                    avisoPreco.style.display = 'none';
+                }
+            } catch (erro) {
+                console.error("Erro ao buscar preço mais barato:", erro);
+                avisoPreco.style.display = 'none';
+            }
+        });
+    }
+
+    // =========================================================================
+    // 4. CARREGAR E EXIBIR A LISTA DE COMPRAS (com suporte a partilha e permissões)
+    // =========================================================================
+    async function carregarCompras() {
+        try {
+            const resposta = await fetch('/api/compras');
+            if (!resposta.ok) {
+                const erroDB = await resposta.json();
+                alert("ERRO AO CARREGAR LISTA: " + erroDB.erro);
+                return;
+            }
+            const itens = await resposta.json();
+            todasAsComprasGlobais = itens;
+
+            const divLista = document.getElementById('lista-itens');
+            divLista.innerHTML = '';
+            let total = 0;
+
+            // Aviso se a lista for partilhada (algum item com is_owner=0)
+            document.querySelectorAll('.shared-list-warning').forEach(el => el.remove());
+            const sharedItems = itens.filter(item => item.is_owner === 0);
+            if (sharedItems.length > 0) {
+                const ownerName = sharedItems[0]?.owner_name || 'um amigo';
+                const canEdit = sharedItems.some(item => item.can_edit == 1);
+                const warningText = canEdit 
+                    ? `📌 Contém itens partilhados por ${escapeHtml(ownerName)} (podes editar)`
+                    : `📌 Contém itens partilhados por ${escapeHtml(ownerName)} (apenas visualização)`;
+                const warning = document.createElement('div');
+                warning.className = 'shared-list-warning';
+                warning.innerHTML = warningText;
+                divLista.parentNode.insertBefore(warning, divLista);
+            }
+
+            if (itens.length === 0) {
+                divLista.innerHTML = '<div class="vazio"><span class="material-icons">shopping_cart</span><p>Carrinho vazio</p></div>';
+                document.getElementById('valor-total').innerText = '0.00';
+                atualizarFiltroSupermercadosPrincipal([]);
+                aplicarFiltroPrincipal();
+                return;
+            }
+
+            itens.forEach(item => {
+                if (!item.comprado) total += (item.quantidade * item.preco_unidade);
+                const subtotal = (item.quantidade * item.preco_unidade).toFixed(2);
+                const precoUnidade = (item.preco_unidade).toFixed(2);
+
+                const div = document.createElement('div');
+                div.className = `item-compra ${item.comprado ? 'item-comprado' : ''}`;
+                div.setAttribute('data-supermercado', item.supermercado || '');
+
+                const isOwner = item.is_owner === 1;
+                const canEdit = item.can_edit == 1;
+                const buttonsDisabled = (!isOwner && !canEdit);
+
+                const toggleDisabled = buttonsDisabled ? 'disabled' : '';
+                const removeDisabled = buttonsDisabled ? 'disabled' : '';
+
+                div.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-nome">${item.quantidade}x <strong>${escapeHtml(item.produto)}</strong></span>
+                        <small class="item-detalhe">${item.supermercado || 'Qualquer'} | ${precoUnidade}€/un</small>
+                    </div>
+                    <div class="item-preco-zona">
+                        <span class="preco-individual">${subtotal}€</span>
+                        <div class="acoes-item">
+                            <button class="btn-toggle" onclick="alternarCompra(${item.id})" title="${item.comprado ? 'Marcar como não comprado' : 'Marcar como comprado'}" ${toggleDisabled}>
+                                <span class="material-icons">${item.comprado ? 'undo' : 'check_circle'}</span>
+                            </button>
+                            <button class="btn-remove" onclick="removerCompra(${item.id})" title="Remover" ${removeDisabled}>
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                div.style.animation = 'fadeInUp 0.3s ease';
+                divLista.appendChild(div);
+            });
+
+            document.getElementById('valor-total').innerText = total.toFixed(2);
+            atualizarFiltroSupermercadosPrincipal(itens);
+            aplicarFiltroPrincipal();
+            atualizarFiltrosModoCompras();
+            if (document.getElementById('modalModoCompras').style.display === 'block') {
+                renderizarModoCompras();
+            }
+        } catch (erro) {
+            console.error("Erro fatal ao carregar compras:", erro);
+        }
+    }
+
+    // =========================================================================
+    // 5. ADICIONAR, ALTERNAR E REMOVER ITENS (APIs)
+    // =========================================================================
+    document.getElementById('formCompras').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const dados = {
+            produto: selectProduto.value,
+            supermercado: selectSupermercado.value,
+            quantidade: parseInt(document.getElementById('quantidade').value),
+            preco_unidade: parseFloat(inputPreco.value)
+        };
+        try {
+            const resposta = await fetch('/api/compras', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            if (resposta.ok) {
+                selectProduto.value = "";
+                document.getElementById('quantidade').value = 1;
+                inputPreco.value = '';
+                if (avisoPreco) avisoPreco.style.display = 'none';
+                carregarCompras();
+            } else {
+                const erroDB = await resposta.json();
+                alert("Erro na BD: " + (erroDB.erro || "Erro desconhecido."));
+            }
+        } catch (erro) {
+            console.error("Erro no JavaScript:", erro);
+            alert("Erro ao processar a resposta. Verifique a consola (F12).");
+        }
+    });
+
+    /**
+     * Alterna o estado de comprado/não comprado de um item.
+     * Se o modal estiver aberto, atualiza a UI imediatamente e depois chama a API.
+     * Se o modal estiver fechado, recarrega a lista toda.
+     * @param {number} id - ID do item a alternar
+     * @param {HTMLElement} [checkboxElement] - Opcional: o elemento checkbox do modal para atualização direta (usado internamente)
+     */
+    async function alternarCompra(id, checkboxElement) {
+        const item = todasAsComprasGlobais.find(i => i.id === id);
+        if (!item) return;
+
+        // Verifica permissões
+        if (item.is_owner != 1 && item.can_edit != 1) {
+            alert('Não tens permissão para editar este item.');
+            if (checkboxElement) {
+                checkboxElement.checked = !checkboxElement.checked; // reverter
+            }
+            return;
+        }
+
+        // Inverte estado localmente (otimista)
+        const novoEstado = !item.comprado;
+        item.comprado = novoEstado;
+
+        // Se o modal está aberto, atualiza a UI sem recarregar
+        const modal = document.getElementById('modalModoCompras');
+        if (modal && modal.style.display === 'block') {
+            // Procura a div do item no modal
+            const divItem = document.querySelector(`.item-modo-compras[data-id="${id}"]`);
+            if (divItem) {
+                const checkbox = divItem.querySelector('.checkbox-gigante');
+                if (checkbox) checkbox.checked = novoEstado;
+                if (novoEstado) divItem.classList.add('comprado');
+                else divItem.classList.remove('comprado');
+            }
+        }
+
+        // Envia a atualização ao servidor
+        try {
+            const resposta = await fetch(`/api/compras/${id}/alternar`, { method: 'PUT' });
+            if (!resposta.ok) {
+                // Em caso de erro, reverter localmente
+                item.comprado = !novoEstado;
+                if (modal && modal.style.display === 'block') {
+                    const divItem = document.querySelector(`.item-modo-compras[data-id="${id}"]`);
+                    if (divItem) {
+                        const checkbox = divItem.querySelector('.checkbox-gigante');
+                        if (checkbox) checkbox.checked = !novoEstado;
+                        if (!novoEstado) divItem.classList.add('comprado');
+                        else divItem.classList.remove('comprado');
+                    }
+                }
+                const erro = await resposta.json();
+                alert(`Erro do servidor: ${erro.erro || 'Permissão negada'}`);
+            }
+        } catch (erro) {
+            console.error('Erro na chamada API:', erro);
+            // Reverter localmente também em caso de falha de rede
+            item.comprado = !novoEstado;
+            if (modal && modal.style.display === 'block') {
+                const divItem = document.querySelector(`.item-modo-compras[data-id="${id}"]`);
+                if (divItem) {
+                    const checkbox = divItem.querySelector('.checkbox-gigante');
+                    if (checkbox) checkbox.checked = !novoEstado;
+                    if (!novoEstado) divItem.classList.add('comprado');
+                    else divItem.classList.remove('comprado');
+                }
+            }
+            alert('Erro de rede. Tente novamente.');
+        }
+
+        // Se o modal estiver fechado, recarrega a lista principal
+        if (!modal || modal.style.display !== 'block') {
+            carregarCompras();
+        }
+    }
+
+    async function removerCompra(id) {
+        const item = todasAsComprasGlobais.find(i => i.id === id);
+        
+        if (item && item.is_owner != 1 && item.can_edit != 1) {
+            alert('Não tens permissão para remover este item.');
+            return;
+        }
+        if (confirm("Remover do carrinho?")) {
+            await fetch(`/api/compras/${id}`, { method: 'DELETE' });
+            carregarCompras();
+        }
+    }
+
+    // =========================================================================
+    // 6. CONTROLE DE QUANTIDADE (botões +/-)
+    // =========================================================================
+    const qtyInput = document.getElementById('quantidade');
+    const minusBtn = document.getElementById('qty-minus');
+    const plusBtn = document.getElementById('qty-plus');
+    if (minusBtn && plusBtn && qtyInput) {
+        minusBtn.addEventListener('click', () => {
+            let val = parseInt(qtyInput.value) || 1;
+            if (val > 1) qtyInput.value = val - 1;
+        });
+        plusBtn.addEventListener('click', () => {
+            let val = parseInt(qtyInput.value) || 1;
+            qtyInput.value = val + 1;
+        });
+    }
+
+    // =========================================================================
+    // 7. FILTRO POR SUPERMERCADO NA PÁGINA PRINCIPAL
+    // =========================================================================
+    function atualizarFiltroSupermercadosPrincipal(itens) {
+        const select = document.getElementById('filtroSupermercadoPrincipal');
+        if (!select) return;
+        const supermercados = new Set();
+        itens.forEach(item => {
+            if (item.supermercado && item.supermercado.trim() !== '') {
+                supermercados.add(item.supermercado);
+            }
+        });
+        const valorAtual = select.value;
+        while (select.options.length > 1) select.remove(1);
+        Array.from(supermercados).sort().forEach(supermercado => {
+            const option = document.createElement('option');
+            option.value = supermercado;
+            option.textContent = supermercado;
+            select.appendChild(option);
+        });
+        if (valorAtual && supermercados.has(valorAtual)) {
+            select.value = valorAtual;
+        } else {
+            select.value = '';
+            filtroAtivo = '';
+        }
+    }
+
+    function aplicarFiltroPrincipal() {
+        const select = document.getElementById('filtroSupermercadoPrincipal');
+        filtroAtivo = select ? select.value : '';
+        const itens = document.querySelectorAll('.item-compra');
+        let totalFiltrado = 0;
+        itens.forEach(item => {
+            const supermercadoItem = item.getAttribute('data-supermercado') || '';
+            const deveMostrar = (filtroAtivo === '' || supermercadoItem === filtroAtivo);
+            item.style.display = deveMostrar ? 'flex' : 'none';
+            if (deveMostrar && !item.classList.contains('item-comprado')) {
+                const precoSpan = item.querySelector('.preco-individual');
+                if (precoSpan) {
+                    const precoTexto = precoSpan.innerText.replace('€', '').trim();
+                    const preco = parseFloat(precoTexto);
+                    if (!isNaN(preco)) totalFiltrado += preco;
+                }
+            }
+        });
+        const totalElement = document.getElementById('valor-total');
+        if (totalElement) totalElement.innerText = totalFiltrado.toFixed(2);
+    }
+
+    const filtroSelectPrincipal = document.getElementById('filtroSupermercadoPrincipal');
+    const limparBtn = document.getElementById('limparFiltro');
+    if (filtroSelectPrincipal) filtroSelectPrincipal.addEventListener('change', aplicarFiltroPrincipal);
+    if (limparBtn) limparBtn.addEventListener('click', () => {
+        if (filtroSelectPrincipal) filtroSelectPrincipal.value = '';
+        aplicarFiltroPrincipal();
+    });
+
+    // =========================================================================
+    // 8. MODO COMPRAS (pop‑up) – com checkboxes funcionais
+    // =========================================================================
+    const modalModoCompras = document.getElementById('modalModoCompras');
+    const btnModoCompras = document.getElementById('btnModoCompras');
+    const closeModoCompras = document.getElementById('closeModoCompras');
+    const filtroModoCompras = document.getElementById('filtroModoCompras');
+    const listaModoCompras = document.getElementById('listaModoCompras');
+
+    if (btnModoCompras && modalModoCompras) {
+        btnModoCompras.addEventListener('click', () => {
+            modalModoCompras.style.display = 'block';
+            atualizarFiltrosModoCompras();
+            renderizarModoCompras();
+        });
+    } else {
+        console.error('Elementos do modo compras não encontrados!');
+    }
+
+    if (closeModoCompras) {
+        closeModoCompras.addEventListener('click', () => {
+            modalModoCompras.style.display = 'none';
+            carregarCompras(); // Atualiza a lista principal ao fechar
+        });
+    }
+    window.addEventListener('click', (event) => {
+        if (event.target == modalModoCompras) {
+            modalModoCompras.style.display = 'none';
+            carregarCompras(); // Atualiza a lista principal ao fechar
+        }
+    });
+
+    function atualizarFiltrosModoCompras() {
+        const supermercadosDisponiveis = new Set();
+        todasAsComprasGlobais.forEach(compra => supermercadosDisponiveis.add(compra.supermercado));
+        const valorAtual = filtroModoCompras.value || 'Todos';
+        filtroModoCompras.innerHTML = '<option value="Todos">Todos os Supermercados</option>';
+        supermercadosDisponiveis.forEach(sup => {
+            if (sup) {
+                const option = document.createElement('option');
+                option.value = sup;
+                option.textContent = `Apenas ${sup}`;
+                filtroModoCompras.appendChild(option);
+            }
+        });
+        if (Array.from(filtroModoCompras.options).some(opt => opt.value === valorAtual)) {
+            filtroModoCompras.value = valorAtual;
+        } else {
+            filtroModoCompras.value = 'Todos';
+        }
+    }
+
+    filtroModoCompras.addEventListener('change', renderizarModoCompras);
+
+    /**
+     * Renderiza os itens no modo compras.
+     * Cada item é uma div com uma checkbox funcional.
+     * A checkbox tem um evento onchange que chama alternarCompra com o ID e a própria checkbox.
+     */
+    function renderizarModoCompras() {
+    listaModoCompras.innerHTML = '';
+    const filtro = filtroModoCompras.value;
+    const comprasFiltradas = todasAsComprasGlobais.filter(c => filtro === 'Todos' || c.supermercado === filtro);
+    
+    if (comprasFiltradas.length === 0) {
+        listaModoCompras.innerHTML = `
+            <div style="text-align:center; color:#aaa; margin-top:40px;">
+                <span class="material-icons" style="font-size: 3rem; opacity: 0.5;">remove_shopping_cart</span>
+                <p style="font-size: 1.1rem; margin-top: 10px;">Não tens produtos registados<br>para este supermercado.</p>
+            </div>`;
+        return;
+    }
+
+    comprasFiltradas.forEach(compra => {
+        // Verifica permissões
+        const isOwner = compra.is_owner == 1 || compra.is_owner === true;
+        const canEdit = compra.can_edit == 1 || compra.can_edit === true;
+        const hasEditPermission = isOwner || canEdit;
+        
+        const div = document.createElement('div');
+        div.className = `item-modo-compras ${compra.comprado ? 'comprado' : ''}`;
+        div.setAttribute('data-id', compra.id);
+        
+        const precoExibicao = (compra.preco_unidade || 0).toFixed(2);
+        const iconeLoja = compra.supermercado ? 'storefront' : 'help_outline';
+        
+        // Cria a checkbox (apenas visual, sem evento próprio)
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checkbox-gigante';
+        checkbox.checked = compra.comprado;
+        checkbox.disabled = !hasEditPermission;
+        // Remove qualquer pointer-events que possa estar no CSS
+        checkbox.style.pointerEvents = 'none';
+        
+        // Conteúdo do item
+        div.innerHTML = `
+            <div class="modo-info">
+                <span class="nome">${compra.quantidade}x ${escapeHtml(compra.produto)}</span>
+                <span class="supermercado">
+                    <span class="material-icons" style="font-size: 16px;">${iconeLoja}</span>
+                    ${compra.supermercado || 'Qualquer Supermercado'}
+                </span>
+                <span class="preco">${precoExibicao}€ /un</span>
+            </div>
+        `;
+        
+        div.appendChild(checkbox);
+        
+        // Se tiver permissão, adiciona o evento de clique na div
+        if (hasEditPermission) {
+            div.style.cursor = 'pointer';
+            div.onclick = async (e) => {
+                // Impede que o clique na checkbox dispare duas vezes
+                if (e.target === checkbox) return;
+                // Chama a função que alterna o estado
+                await alternarCompra(compra.id);
+            };
+        } else {
+            div.style.opacity = '0.6';
+            div.style.cursor = 'not-allowed';
+        }
+        
+        listaModoCompras.appendChild(div);
+    });
+}
+
+    // =========================================================================
+    // 9. GESTÃO DE AMIGOS (modal e funções)
+    // =========================================================================
+    async function abrirModalAmigos() {
+        const modalAmigos = document.getElementById('modalAmigos');
+        const content = document.getElementById('amigosContent');
+        modalAmigos.style.display = 'flex';
+        try {
+            const resp = await fetch('/api/friends');
+            const data = await resp.json();
+
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h4>Adicionar amigo por username ou e-mail</h4>
+                    <input type="text" id="emailAmigo" placeholder="Username ou e-mail" style="width: 100%; margin-bottom: 10px;">
+                    <button id="btnAddAmigo" class="btn-add">Enviar pedido</button>
+                </div>
+                <hr>
+                <h4>Pedidos pendentes recebidos</h4>
+                <div id="pedidosRecebidos">
+            `;
+            if (data.pending && data.pending.length) {
+                data.pending.forEach(p => {
+                    const displayName = getDisplayName(p);
+                    const info = `${displayName} (${escapeHtml(p.username)}${p.email ? ' - ' + escapeHtml(p.email) : ''})`;
+                    html += `<div class="amigo-item">
+                                <span>${info}</span>
+                                <div class="btn-group">
+                                    <button onclick="aceitarPedido(${p.request_id})">✔ Aceitar</button>
+                                    <button onclick="recusarPedido(${p.request_id})">✖ Recusar</button>
+                                </div>
+                            </div>`;
+                });
+            } else html += '<p>Nenhum pedido pendente</p>';
+            html += `</div><hr><h4>Os teus amigos</h4><div id="listaAmigos">`;
+            if (data.friends && data.friends.length) {
+                data.friends.forEach(f => {
+                    const displayName = getDisplayName(f);
+                    const info = `${displayName} (${escapeHtml(f.username)}${f.email ? ' - ' + escapeHtml(f.email) : ''})`;
+                    html += `<div class="amigo-item">
+                                <span>${info}</span>
+                                <div class="btn-group">
+                                    <button onclick="removerAmigo(${f.id})">🗑 Remover</button>
+                                </div>
+                            </div>`;
+                });
+            } else html += '<p>Nenhum amigo adicionado</p>';
+            html += `</div>`;
+            content.innerHTML = html;
+            document.getElementById('btnAddAmigo').addEventListener('click', enviarPedidoAmigo);
+        } catch (e) {
+            console.error(e);
+            content.innerHTML = '<p>Erro ao carregar dados de amigos.</p>';
+        }
+    }
+
+    async function enviarPedidoAmigo() {
+        const identifier = document.getElementById('emailAmigo').value.trim();
+        if (!identifier) return alert('Insira um username ou e-mail');
+        try {
+            const resp = await fetch('/api/friends/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: identifier })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                alert('Pedido enviado!');
+                document.getElementById('emailAmigo').value = '';
+                abrirModalAmigos();
+            } else alert('Erro: ' + (data.erro || 'Desconhecido'));
+        } catch (e) { console.error(e); }
+    }
+
+    async function aceitarPedido(requestId) {
+        const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
+        if (resp.ok) abrirModalAmigos();
+        else alert('Erro ao aceitar pedido');
+    }
+
+    async function recusarPedido(requestId) {
+        const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
+        if (resp.ok) abrirModalAmigos();
+        else alert('Erro ao recusar pedido');
+    }
+
+    async function removerAmigo(friendId) {
+        if (confirm('Remover este amigo?')) {
+            const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
+            if (resp.ok) abrirModalAmigos();
+            else alert('Erro ao remover amigo');
+        }
+    }
+
+    document.getElementById('openFriendsModal').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirModalAmigos();
+    });
+    document.getElementById('closeAmigosModal').addEventListener('click', () => {
+        document.getElementById('modalAmigos').style.display = 'none';
+    });
+
+    // =========================================================================
+    // 10. PARTILHA DA LISTA DE COMPRAS (com permissão de edição)
+    // =========================================================================
+    const shareShoppingModal = document.getElementById('modalShareShopping');
+    const btnShareShopping = document.getElementById('btnShareShoppingList');
+    const closeShareShopping = document.getElementById('closeShareShoppingModal');
+    const btnConfirmShareShopping = document.getElementById('btnConfirmShareShopping');
+
+    async function abrirModalPartilhaShopping() {
+        shareShoppingModal.style.display = 'flex';
+        try {
+            const [amigosResp, sharesResp] = await Promise.all([
+                fetch('/api/friends/list'),
+                fetch('/api/shopping/shares')
+            ]);
+            const amigos = await amigosResp.json();
+            const shares = sharesResp.ok ? await sharesResp.json() : [];
+            const shareMap = {};
+            shares.forEach(s => { shareMap[s.id] = s.can_edit; });
+
+            let html = `<div style="max-height: 400px; overflow-y: auto;">`;
+            if (amigos.length === 0) html += '<p>Não tens amigos adicionados.</p>';
+            else {
+                amigos.forEach(amigo => {
+                    const isShared = shareMap.hasOwnProperty(amigo.id);
+                    const canEdit = shareMap[amigo.id] || false;
+                    html += `
+                        <div class="share-friend-item">
+                            <div class="share-friend-info">${getDisplayName(amigo)}</div>
+                            <div class="share-friend-options">
+                                <label>
+                                    <input type="checkbox" class="share-checkbox" data-friend-id="${amigo.id}" ${isShared ? 'checked' : ''}>
+                                    Partilhar
+                                </label>
+                                <label class="edit-permission-label" style="${!isShared ? 'opacity:0.5;' : ''}">
+                                    <input type="checkbox" class="edit-checkbox" data-friend-id="${amigo.id}" ${canEdit ? 'checked' : ''} ${!isShared ? 'disabled' : ''}>
+                                    Editar
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            html += `</div>`;
+            document.getElementById('shareShoppingContent').innerHTML = html;
+
+            document.querySelectorAll('.share-checkbox').forEach(cb => {
+                cb.addEventListener('change', (e) => {
+                    const friendId = cb.dataset.friendId;
+                    const editCheckbox = document.querySelector(`.edit-checkbox[data-friend-id="${friendId}"]`);
+                    if (editCheckbox) {
+                        editCheckbox.disabled = !cb.checked;
+                        const label = editCheckbox.closest('.edit-permission-label');
+                        if (label) label.style.opacity = cb.checked ? '1' : '0.5';
+                    }
+                });
+            });
+        } catch (e) {
+            console.error(e);
+            document.getElementById('shareShoppingContent').innerHTML = '<p>Erro ao carregar amigos.</p>';
+        }
+    }
+
+    btnShareShopping.onclick = abrirModalPartilhaShopping;
+    closeShareShopping.onclick = () => shareShoppingModal.style.display = 'none';
+
+    btnConfirmShareShopping.onclick = async () => {
+        const shareCheckboxes = document.querySelectorAll('#shareShoppingContent .share-checkbox');
+        const toShare = [];
+        const toUnshare = [];
+        shareCheckboxes.forEach(cb => {
+            const friendId = parseInt(cb.dataset.friendId);
+            const isChecked = cb.checked;
+            const editCheckbox = document.querySelector(`.edit-checkbox[data-friend-id="${friendId}"]`);
+            const canEdit = editCheckbox ? editCheckbox.checked : false;
+            if (isChecked) toShare.push({ friendId, canEdit });
+            else toUnshare.push(friendId);
+        });
+        try {
+            for (let { friendId, canEdit } of toShare) {
+                await fetch('/api/shopping/share', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ friend_id: friendId, can_edit: canEdit })
+                });
+            }
+            for (let friendId of toUnshare) {
+                await fetch(`/api/shopping/unshare/${friendId}`, { method: 'DELETE' });
+            }
+            shareShoppingModal.style.display = 'none';
+            carregarCompras();
+        } catch (e) {
+            console.error(e);
+            alert('Erro ao atualizar partilhas.');
+        }
+    };
+
+    // =========================================================================
+    // 11. MENU HAMBÚRGUER E LOGOUT
+    // =========================================================================
+    const hamburgerIcon = document.querySelector('.hamburger-icon');
+    const dropdown = document.querySelector('.menu-dropdown');
+    if (hamburgerIcon && dropdown) {
+        hamburgerIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && !hamburgerIcon.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    }
+
+    async function fazerLogout() {
+        try {
+            await fetch('/api/logout');
+            window.location.href = "/login";
+        } catch (erro) {
+            console.error("Erro ao fazer logout:", erro);
+            window.location.href = "/login";
+        }
+    }
+
+    // =========================================================================
+    // 12. INICIALIZAÇÃO
+    // =========================================================================
+    document.addEventListener("DOMContentLoaded", carregarCompras);
+</script>
+</body>
+</html>

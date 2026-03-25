@@ -1,0 +1,67 @@
+/* =========================================
+   ESTILOS DA PÁGINA DE ESTATÍSTICAS
+   ========================================= */
+
+.charts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.chart-card {
+    flex: 1;
+    min-width: 300px;
+    background: var(--receipt-bg);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-light);
+    transition: transform 0.2s;
+}
+
+.chart-card:hover {
+    transform: translateY(-3px);
+}
+
+.chart-card h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--accent);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.chart-card img {
+    max-height: 350px;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+}
+
+.legenda {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-top: 15px;
+    border-top: 1px solid var(--border-light);
+    padding-top: 12px;
+}
+
+.vazio {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .chart-card {
+        min-width: 280px;
+    }
+}

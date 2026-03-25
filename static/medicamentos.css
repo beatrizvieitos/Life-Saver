@@ -1,0 +1,429 @@
+ /* =========================================
+           ESTILOS ESPECÍFICOS – MEDICAMENTOS
+           ========================================= */
+
+        /* Layout principal */
+        .medicamentos-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .med-section {
+            flex: 1;
+            min-width: 320px;
+            background: var(--receipt-bg);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .med-section:hover {
+            transform: translateY(-2px);
+        }
+
+        .med-section h3 {
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--accent-primary);
+            padding-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .med-section h3 .material-icons {
+            font-size: 1.6rem;
+            color: var(--accent-primary);
+        }
+
+        /* Lista de medicamentos */
+        .med-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 8px;
+            scrollbar-width: thin;
+        }
+
+        .med-group {
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 12px;
+        }
+
+        .membro-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed var(--accent-primary);
+        }
+
+        .membro-icon {
+            font-size: 1.2rem;
+            color: var(--accent-primary);
+        }
+
+        .membro-nome {
+            font-weight: 600;
+            color: #ddd;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .med-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 8px;
+            margin: 4px 0;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .med-item:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateX(4px);
+        }
+
+        .med-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Checkbox personalizada grande */
+        .med-check {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .med-check input {
+            width: 28px;
+            height: 28px;
+            transform: scale(1.5);
+            margin: 0 8px;
+            cursor: pointer;
+            accent-color: var(--success);
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 28px;
+            height: 28px;
+            background-color: #0f5b27;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .med-check input {
+            width: 28px;
+            height: 28px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .med-check:hover .checkmark {
+            background-color: #05052b;
+            border-color: var(--accent-primary);
+        }
+
+        .med-check input:checked ~ .checkmark {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .med-check input:checked ~ .checkmark:after {
+            display: block;
+            left: 9px;
+            top: 4px;
+            width: 6px;
+            height: 12px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .med-nome {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #eee;
+            transition: all 0.2s;
+        }
+
+        .med-comprado .med-nome {
+            text-decoration: line-through;
+            color: #672222;
+        }
+
+        .med-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .med-item:hover .med-actions {
+            opacity: 1;
+        }
+
+        .med-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            color: #511717;
+        }
+
+        .med-actions button:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-edit-med:hover {
+            color: var(--accent-primary);
+            background: rgba(2, 60, 147, 0.2);
+        }
+
+        .btn-remove-med:hover {
+            color: var(--danger);
+            background: rgba(124, 11, 11, 0.547);
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ffffff;
+            font-style: italic;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vazio .material-icons {
+            font-size: 3rem;
+            color: #ffffff;
+        }
+
+        /* Formulários de adição */
+        .add-med-form {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .add-med-form h4 {
+            margin: 0 0 12px 0;
+            font-size: 0.9rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 65px;
+            flex-wrap: wrap;
+        }
+
+        .form-row input, .form-row select {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 40px;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            color: rgb(23, 23, 23);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .form-row input:focus, .form-row select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(64,96,145,0.3);
+        }
+
+        .btn-add-med {
+            background: linear-gradient(135deg, var(--accent-primary), #1f3a5f);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add-med:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .btn-add-med:active {
+            transform: translateY(0);
+        }
+
+        /* Estilo do membro badge (pequeno) */
+        .membro-badge {
+            background: var(--accent-primary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        /* Modal de edição mantido com estilo moderno */
+        .modal-content {
+            max-width: 450px;
+        }
+
+
+ /* =====================================================================
+   BLINDAGEM MOBILE PARA MEDICAMENTOS (Ultra-Compacto e Sem Cortes)
+   ===================================================================== */
+@media (max-width: 768px) {
+    
+    /* Forçar as secções (Pendentes/Tomados) a ocupar apenas a largura do ecrã */
+    .medicamentos-container {
+        flex-direction: column !important;
+        gap: 15px !important;
+        width: 100% !important;
+    }
+
+    .med-section {
+        min-width: 0 !important; /* Remove os 320px que estavam a esticar o ecrã */
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 15px !important;
+        margin: 0 0 10px 0 !important;
+    }
+
+    .title-text {
+        color: #d9d9d9;
+        align-items: center !important;
+        justify-content: center;
+        margin-right: 34px;
+        font-size: 1.0rem !important;
+        max-width: 100%;
+        white-space: nowrap;
+    }
+
+    .title-text2 {
+        color: #d9d9d9;
+        align-items: center !important;
+        justify-content: center;
+        margin-right: 53px;
+        white-space: nowrap;
+    }
+
+    /* CAIXAS DOS MEDICAMENTOS: Muito mais pequenas */
+    .item-modo-compras, .item-compra, .tarefa-card {
+        padding: 6px 10px !important; /* Redução drástica de altura */
+        gap: 8px !important;
+        margin-bottom: 6px !important;
+        border-radius: 8px !important;
+        min-height: 0 !important;
+        display: grid !important;
+        grid-template-columns: 1fr 24px !important; /* Espaço justo para a checkbox */
+        align-items: center !important;
+    }
+
+    /* CHECKBOX: Pequena e centrada */
+    .checkbox-gigante {
+        width: 22px !important;
+        height: 22px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* TEXTO: Ajustado para não ocupar espaço vertical */
+    .modo-info .nome {
+        font-size: 0.9rem !important;
+        line-height: 1.1 !important;
+        margin: 0 !important;
+    }
+
+    .modo-info .supermercado, .med-detalhe {
+        font-size: 0.75rem !important;
+        margin: 0 !important;
+    }
+
+    /* Ajustar o formulário de adicionar para não ficar cortado */
+    .form-row {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .form-row input, .form-row select {
+        width: 100% !important;
+        font-size: 16px !important; /* Evita zoom no iPhone */
+    }
+    
+    /* =========================================
+       MEDICAMENTOS MAIS COMPACTOS NO TELEMÓVEL
+       ========================================= */
+    .med-item {
+        padding: 8px 6px !important;
+        margin: 2px 0 !important;
+    }
+
+    .med-nome {
+        font-size: 0.85rem !important;
+    }
+
+    .med-check input {
+        width: 20px !important;
+        height: 20px !important;
+        transform: scale(1) !important;
+        margin: 0 !important;
+    }
+
+    .med-check {
+        padding: 8px !important;
+        
+    }
+
+    /* Ajuste no espaçamento dos botões de editar/apagar */
+    .med-actions button .material-icons {
+        font-size: 1.2rem !important;
+    }
+
+    /* Reduzir o tamanho dos cabeçalhos de cada membro */
+    .membro-header {
+        margin-bottom: 6px !important;
+        padding-bottom: 4px !important;
+    }
+
+    .membro-nome {
+        font-size: 0.9rem !important;
+    }
+}

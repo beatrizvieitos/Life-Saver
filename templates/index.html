@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>As Minhas Tarefas</title>
+    <link rel="icon" href="{{ url_for('static', filename='logomini.ico') }}?v=3" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<body>
+    <div class="logo-topo-container">
+        <a href="/" class="logo-link">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Task Boss Logo">
+        </a>
+    </div>
+
+    <!-- Cabeçalho com menu hambúrguer e botão Sair -->
+    <div class="cabecalho">
+        <div class="esquerda">
+            <div class="menu-hamburger" id="menuHamburger">
+                <div class="hamburger-icon">☰</div>
+                <div class="menu-dropdown" id="menuDropdown">
+                    <a href="/notas" class="menu-item">As Minhas Notas ✍️</a>
+                    <a href="/listas" class="menu-item">Lista de Compras 🛒</a>
+                    <a href="/medicamentos" class="menu-item">Lista de Medicamentos 💊</a>
+                    <a href="/estatisticas" class="menu-item">Estatísticas 📊</a>
+                    <!-- ADICIONADO: Link para abrir o modal de amigos -->
+                    <a href="#" id="openFriendsModal" class="menu-item">Amigos 👥</a>
+                </div>
+            </div>
+        </div>
+        <div class="centro">
+            <h2>As Minhas Tarefas</h2>
+        </div>
+        <div class="direita">
+            <button id="btnAbrirModal" class="btn-abrir-modal">+ Adicionar Tarefa</button>
+            <button class="btn-sair" onclick="fazerLogout()" title="Sair">
+                <span class="material-icons">logout</span>
+            </button>
+        </div>   
+    </div>
+
+    <!-- Filtros de Tarefas -->
+    <div style="background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <span style="color: var(--accent); font-size: small; font-weight: bold;">Filtrar por Categoria:</span>
+            <select id="filtroCategoria" onchange="filtrarTarefas()" style="width: 100%; max-width: 900px;">
+                <option value="todas">Todas as Tarefas</option>
+                <option value="Doméstico">Doméstico 🏠</option>
+                <option value="Financeiro">Financeiro 💵</option>
+                <option value="Trabalho">Trabalho 💼</option>
+                <option value="Lazer">Lazer 🛋</option>
+                <option value="Saúde">Saúde 💊</option>
+            </select>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="color: var(--accent); font-size: small; font-weight:  bold;">Filtrar por Prioridade:</span>
+            <select id="filtroPrioridade" onchange="filtrarTarefas()" style="width: 100%; max-width: 900px;">
+                <option value="todas">Todas as Tarefas</option>
+                <option value="urgente">Urgente 🚨</option>
+                <option value="não urgente">Não urgente 🟢</option>
+            </select>
+        </div>
+        <div style="text-align: right; margin-top: 30px;">
+            <button onclick="limparFiltros()" class="btn-limpar">
+                Limpar Filtros
+            </button>
+        </div>
+    </div>
+
+    <div id="lista-tarefas"></div>
+</div>
+
+<!-- Modal (pop-up) para adicionar tarefa -->
+<div id="modalAdicionar" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Adicionar Nova Tarefa</h3>
+            <span class="close-modal">&times;</span>
+        </div>
+        <form id="formAdicionar">
+            <div class="campo">
+                <label for="nome_tarefa">Nome da tarefa</label>
+                <input type="text" id="nome_tarefa" name="nome_tarefa" required>
+            </div>
+            <div class="campo">
+                <label for="categoria_tarefa">Categoria</label>
+                <select id="categoria_tarefa" name="categoria_tarefa" required>
+                    <option value="">Selecione uma categoria...</option>
+                    <option value="Doméstico">Doméstico</option>
+                    <option value="Financeiro">Financeiro</option>
+                    <option value="Trabalho">Trabalho</option>
+                    <option value="Lazer">Lazer</option>
+                    <option value="Saúde">Saúde</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label for="prioridade_tarefa">Prioridade</label>
+                <select id="prioridade_tarefa" name="prioridade_tarefa" required>
+                    <option value="">Selecione a prioridade...</option>
+                    <option value="urgente">Urgente</option>
+                    <option value="não urgente">Não urgente</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-add">+ Adicionar Tarefa</button>
+        </form>
+    </div>
+</div>
+
+<!-- ADICIONADO: Modal para gerir amigos -->
+<div id="modalAmigos" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3>Amigos</h3>
+            <span class="close-modal" id="closeAmigosModal">&times;</span>
+        </div>
+        <div id="amigosContent">
+            <!-- Conteúdo dinâmico carregado via JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- ADICIONADO: Modal para partilhar tarefa -->
+<div id="modalPartilha" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3>Partilhar Tarefa</h3>
+            <span class="close-modal" id="closePartilhaModal">&times;</span>
+        </div>
+        <div id="partilhaContent">
+            <!-- Lista de amigos com checkboxes -->
+        </div>
+        <button id="btnConfirmarPartilha" class="btn-add" style="margin-top: 15px;">Partilhar</button>
+    </div>
+</div>
+
+<script>
+    // === Modal handling (existente) ===
+    const modal = document.getElementById('modalAdicionar');
+    const btnAbrir = document.getElementById('btnAbrirModal');
+    const closeSpan = document.querySelector('.close-modal');
+
+    btnAbrir.onclick = function() {
+        modal.style.display = 'flex';
+        document.getElementById('nome_tarefa').value = '';
+        document.getElementById('categoria_tarefa').value = '';
+        document.getElementById('prioridade_tarefa').value = '';
+    }
+    closeSpan.onclick = function() { modal.style.display = 'none'; }
+    window.onclick = function(event) { if (event.target == modal) modal.style.display = 'none'; }
+
+    // === Funções de tarefas (mantidas) ===
+    async function carregarTarefas() {
+        try {
+            const resposta = await fetch('/api/tarefas');
+            const tarefas = await resposta.json();
+            const divLista = document.getElementById('lista-tarefas');
+            if (!divLista) return;
+            divLista.innerHTML = '';
+            if (tarefas.length === 0) {
+                divLista.innerHTML = '<p style="color: white; text-align: center;">Ainda não tens tarefas.</p>';
+                return;
+            }
+
+            const configCategorias = {
+                'doméstico':  { emoji: '🏠', classe: 'cat-domestico' },
+                'financeiro': { emoji: '💵', classe: 'cat-financeiro' },
+                'trabalho':   { emoji: '💼', classe: 'cat-trabalho' },
+                'lazer':      { emoji: '🛋', classe: 'cat-lazer' },
+                'saúde':      { emoji: '💊', classe: 'cat-saude' }
+            };
+
+            tarefas.forEach(t => {
+                const estadoAtual = (t.estado || 'pendente').toLowerCase();
+                const isFeito = estadoAtual === 'feito';
+                const classeTexto = isFeito ? 'estado-feito' : '';
+                const textoBotao = isFeito ? '↩ Desfazer' : '✔ Feito';
+                const classeBotao = isFeito ? 'btn-pendente' : 'btn-concluir';
+                const catKey = (t.categoria || 'Outros').toLowerCase();
+                const configCat = configCategorias[catKey] || { emoji: '📂', classe: 'cat-outros' };
+                const isUrgente = (t.prioridade || '').toLowerCase() === 'urgente';
+                const prioEmoji = isUrgente ? '🚨' : '🟢';
+                const prioClasse = isUrgente ? 'prio-urgente' : 'prio-normal';
+
+                // ADICIONADO: Verifica se o utilizador é dono da tarefa (campo is_owner retornado pelo backend)
+                const isOwner = t.is_owner === 1;
+                // Ícone de partilha apenas para o dono
+                const shareButtonHtml = isOwner ? `
+                    <button class="btn-share" onclick="abrirModalPartilha(${t.id})" title="Partilhar tarefa">
+                        <span class="material-icons">share</span>
+                    </button>
+                ` : '';
+                // Indicador de tarefa partilhada (para quem não é dono)
+                const ownerFullName = (!isOwner && t.owner_nome && t.owner_apelido) 
+                    ? `${escapeHtml(t.owner_nome)} ${escapeHtml(t.owner_apelido)}`
+                    : (t.owner_username ? escapeHtml(t.owner_username) : '');
+
+                const sharedIndicator = (!isOwner && ownerFullName) ? 
+                    `<div class="shared-indicator">👥 Partilhada por ${ownerFullName}</div>` : '';
+
+                const card = `
+                    <div class="tarefa-card ${classeTexto}" 
+                            data-categoria="${catKey}" 
+                            data-prioridade="${(t.prioridade || '').toLowerCase()}"
+                            style="${isUrgente ? 'border-left: 5px solid #ff6b6b;' : ''}">
+                        <div class="tarefa-info">
+                            <strong>📌 ${escapeHtml(t.tarefa || "Tarefa sem nome")}</strong><br>
+                            <small>
+                                <span class="${configCat.classe}">${configCat.emoji} ${escapeHtml(t.categoria || 'Geral')}</span> 
+                                | <span class="${prioClasse}">${prioEmoji} ${escapeHtml(t.prioridade || 'Normal')}</span> 
+                                | 🗓 Tarefa adicionada em ${t.data || ''}
+                            </small>
+                            ${sharedIndicator}
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;"> 
+                            <button class="${classeBotao}" onclick="alternarEstado(${t.id})">
+                                ${textoBotao}
+                            </button>
+                            ${shareButtonHtml}
+                            <button class="btn-apagar" onclick="removerTarefa(${t.id})">
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                divLista.innerHTML += card;
+            });
+            if (typeof filtrarTarefas === "function") filtrarTarefas();
+        } catch (erro) {
+            console.error("Erro ao carregar lista:", erro);
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function filtrarTarefas() {
+        const catFiltro = document.getElementById('filtroCategoria').value.toLowerCase().trim();
+        const prioFiltro = document.getElementById('filtroPrioridade').value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.tarefa-card');
+        cards.forEach(card => {
+            const categoriaTarefa = card.getAttribute('data-categoria');
+            const prioridadeTarefa = card.getAttribute('data-prioridade');
+            const bateCategoria = (catFiltro === 'todas' || categoriaTarefa === catFiltro);
+            const batePrioridade = (prioFiltro === 'todas' || prioridadeTarefa === prioFiltro);
+            card.style.display = (bateCategoria && batePrioridade) ? 'flex' : 'none';
+        });
+    }
+
+    function limparFiltros() {
+        document.getElementById('filtroCategoria').value = 'todas';
+        document.getElementById('filtroPrioridade').value = 'todas';
+        filtrarTarefas();
+    }
+
+    document.getElementById('formAdicionar').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const dados = {
+            nome: document.getElementById('nome_tarefa').value,
+            categoria: document.getElementById('categoria_tarefa').value,
+            prioridade: document.getElementById('prioridade_tarefa').value
+        };
+        try {
+            const resposta = await fetch('/api/tarefas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            if (resposta.ok) {
+                document.getElementById('formAdicionar').reset();
+                modal.style.display = 'none';
+                carregarTarefas();
+            } else {
+                const resultado = await resposta.json();
+                alert("Erro: " + (resultado.erro || "Desconhecido"));
+            }
+        } catch (erro) {
+            alert("Erro de ligação ao servidor.");
+        }
+    });
+
+    async function alternarEstado(id) {
+        try {
+            const resposta = await fetch(`/api/tarefas/${id}/alternar`, { method: 'PUT' });
+            if (resposta.ok) carregarTarefas();
+        } catch (erro) {
+            console.error("Erro ao alternar estado:", erro);
+        }
+    }
+
+    async function removerTarefa(id) {
+        if(confirm("Desejas apagar esta tarefa?")) {
+            try {
+                const resposta = await fetch(`/api/tarefas/${id}`, { method: 'DELETE' });
+                if (resposta.ok) carregarTarefas();
+            } catch (erro) {
+                alert("Erro ao apagar a tarefa.", erro);
+            }
+        }
+    }
+
+    async function fazerLogout() {
+        try {
+            await fetch('/api/logout');
+            window.location.href = "/login";
+        } catch (erro) {
+            console.error("Erro ao fazer logout:", erro);
+            window.location.href = "/login";
+        }
+    }
+    
+
+    // Menu hambúrguer
+    const hamburgerIcon = document.querySelector('.hamburger-icon');
+    const dropdown = document.querySelector('.menu-dropdown');
+    if (hamburgerIcon && dropdown) {
+        hamburgerIcon.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        });
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && !hamburgerIcon.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    }
+
+    // ========== ADICIONADO: Funções para Amigos e Partilha ==========
+    let tarefaAtualPartilha = null;
+
+    function getDisplayName(user) {
+    // Se tiver nome e apelido, mostra ambos
+    if (user.nome && user.apelido) {
+        return escapeHtml(user.nome) + ' ' + escapeHtml(user.apelido);
+    } else if (user.username) {
+        // Caso contrário, mostra o username
+        return escapeHtml(user.username);
+    }
+    return '';
+}
+
+async function abrirModalAmigos() {
+    const modalAmigos = document.getElementById('modalAmigos');
+    const content = document.getElementById('amigosContent');
+    modalAmigos.style.display = 'flex';
+
+    try {
+        const resp = await fetch('/api/friends');
+        const data = await resp.json();
+
+        let html = `
+            <div style="margin-bottom: 20px;">
+                <h4>Adicionar amigo por username ou e-mail</h4>
+                <input type="text" id="emailAmigo" placeholder="Username ou e-mail" style="width: 100%; margin-bottom: 10px;">
+                <button id="btnAddAmigo" class="btn-add">Enviar pedido</button>
+            </div>
+            <hr>
+            <h4>Pedidos pendentes recebidos</h4>
+            <div id="pedidosRecebidos">
+        `;
+        if (data.pending && data.pending.length) {
+            data.pending.forEach(p => {
+                const displayName = getDisplayName(p);
+                // Mostra: Nome Apelido (username - email)
+                const info = `${displayName} (${escapeHtml(p.username)}${p.email ? ' - ' + escapeHtml(p.email) : ''})`;
+                html += `<div class="amigo-item">
+                            <span>${info}</span>
+                            <div class="btn-group">
+                                <button onclick="aceitarPedido(${p.request_id})">✔ Aceitar</button>
+                                <button onclick="recusarPedido(${p.request_id})">✖ Recusar</button>
+                            </div>
+                        </div>`;
+            });
+        } else {
+            html += '<p>Nenhum pedido pendente</p>';
+        }
+
+        html += `</div><hr><h4>Os teus amigos</h4><div id="listaAmigos">`;
+        if (data.friends && data.friends.length) {
+            data.friends.forEach(f => {
+                const displayName = getDisplayName(f);
+                const info = `${displayName} (${escapeHtml(f.username)}${f.email ? ' - ' + escapeHtml(f.email) : ''})`;
+                html += `<div class="amigo-item">
+                            <span>${info}</span>
+                            <div class="btn-group">
+                                <button onclick="removerAmigo(${f.id})">🗑 Remover</button>
+                            </div>
+                        </div>`;
+            });
+        } else {
+            html += '<p>Nenhum amigo adicionado</p>';
+        }
+        html += `</div>`;
+        content.innerHTML = html;
+
+        // Adiciona o evento ao botão de adicionar amigo (já existe)
+        document.getElementById('btnAddAmigo').addEventListener('click', enviarPedidoAmigo);
+    } catch (e) {
+        console.error(e);
+        content.innerHTML = '<p>Erro ao carregar dados de amigos.</p>';
+    }
+}
+
+    async function enviarPedidoAmigo() {
+        const email = document.getElementById('emailAmigo').value.trim();
+        if (!email) return alert('Insira um email');
+        try {
+            const resp = await fetch('/api/friends/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                alert('Pedido enviado!');
+                document.getElementById('emailAmigo').value = '';
+                abrirModalAmigos(); // recarregar
+            } else {
+                alert('Erro: ' + (data.erro || 'Desconhecido'));
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function aceitarPedido(requestId) {
+        const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
+        if (resp.ok) abrirModalAmigos();
+        else alert('Erro ao aceitar pedido');
+    }
+
+    async function recusarPedido(requestId) {
+        const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
+        if (resp.ok) abrirModalAmigos();
+        else alert('Erro ao recusar pedido');
+    }
+
+    async function removerAmigo(friendId) {
+        if (confirm('Remover este amigo?')) {
+            const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
+            if (resp.ok) abrirModalAmigos();
+            else alert('Erro ao remover amigo');
+        }
+    }
+
+    async function abrirModalPartilha(taskId) {
+        tarefaAtualPartilha = taskId;
+        const modalPartilha = document.getElementById('modalPartilha');
+        const content = document.getElementById('partilhaContent');
+        modalPartilha.style.display = 'flex';
+
+        try {
+            // Carregar lista de amigos e partilhas atuais
+            const [amigosResp, sharesResp] = await Promise.all([
+                fetch('/api/friends/list'),
+                fetch(`/api/tarefas/${taskId}/shares`)
+            ]);
+            const amigos = await amigosResp.json();
+            let shares = [];
+            if (sharesResp.ok) shares = await sharesResp.json();
+            const sharedIds = shares.map(s => s.shared_with_id);
+
+            let html = `<ul style="list-style: none; padding: 0;">`;
+            if (amigos.length === 0) {
+                html += '<li>Não tens amigos adicionados. Adiciona amigos no menu "Amigos 👥".</li>';
+            } else {
+                amigos.forEach(amigo => {
+                    const checked = sharedIds.includes(amigo.id) ? 'checked' : '';
+                    // Constrói nome completo: nome + apelido, se existirem, senão username
+                    const nomeCompleto = amigo.nome && amigo.apelido 
+                        ? `${escapeHtml(amigo.nome)} ${escapeHtml(amigo.apelido)}`
+                        : escapeHtml(amigo.username);
+                    html += `<li style="margin-bottom: 12px;">
+                                <label style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: pointer;">
+                                    <span>${nomeCompleto}</span>
+                                    <input type="checkbox" class="amigo-checkbox" value="${amigo.id}" ${checked} style="width: 22px; height: 22px; margin-left: 12px;">
+                                </label>
+                            </li>`;
+                });
+            }
+            html += `</ul>`;
+                        content.innerHTML = html;
+        } catch (e) {
+            console.error(e);
+            content.innerHTML = '<p>Erro ao carregar lista de amigos.</p>';
+        }
+    }
+
+    // Evento do botão confirmar partilha
+    document.getElementById('btnConfirmarPartilha').addEventListener('click', async () => {
+        if (!tarefaAtualPartilha) return;
+        const checkboxes = document.querySelectorAll('#partilhaContent .amigo-checkbox');
+        const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => parseInt(cb.value));
+
+        try {
+            // Obter partilhas atuais
+            const sharesResp = await fetch(`/api/tarefas/${tarefaAtualPartilha}/shares`);
+            const currentShares = sharesResp.ok ? await sharesResp.json() : [];
+            const currentIds = currentShares.map(s => s.shared_with_id);
+
+            const toAdd = selected.filter(id => !currentIds.includes(id));
+            const toRemove = currentIds.filter(id => !selected.includes(id));
+
+            // Adicionar novas partilhas
+            for (let friendId of toAdd) {
+                await fetch(`/api/tarefas/${tarefaAtualPartilha}/share`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ friend_id: friendId })
+                });
+            }
+            // Remover partilhas desmarcadas
+            for (let friendId of toRemove) {
+                await fetch(`/api/tarefas/${tarefaAtualPartilha}/share/${friendId}`, { method: 'DELETE' });
+            }
+
+            document.getElementById('modalPartilha').style.display = 'none';
+            carregarTarefas(); // recarregar lista para atualizar indicadores
+        } catch (e) {
+            console.error(e);
+            alert('Erro ao atualizar partilhas.');
+        }
+    });
+
+    // Eventos para fechar os modais adicionados
+    document.getElementById('openFriendsModal').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirModalAmigos();
+    });
+    document.getElementById('closeAmigosModal').addEventListener('click', () => {
+        document.getElementById('modalAmigos').style.display = 'none';
+    });
+    document.getElementById('closePartilhaModal').addEventListener('click', () => {
+        document.getElementById('modalPartilha').style.display = 'none';
+    });
+
+    // Fechar modais ao clicar fora
+    window.onclick = function(event) {
+        const modalAmigos = document.getElementById('modalAmigos');
+        const modalPartilha = document.getElementById('modalPartilha');
+        if (event.target == modalAmigos) modalAmigos.style.display = 'none';
+        if (event.target == modalPartilha) modalPartilha.style.display = 'none';
+    };
+
+    window.onload = carregarTarefas;
+</script>
+</body>
+</html>

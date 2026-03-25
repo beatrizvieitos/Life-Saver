@@ -1,0 +1,722 @@
+/* =========================================
+   DESIGN MODERNO DA LISTA DE COMPRAS
+   ========================================= */
+
+:root {
+    --form-bg: #ca9607;
+    --receipt-bg: #27707b;
+    --accent-primary: #27707b;
+    --accent-hover: #27707b;
+    --danger: #922121;
+    --success: #0b4d0e;
+    --warning: #f39c12;
+    --border-light: #856c21;
+    --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+
+.caixa-supermercado {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+}
+
+/* Lado Esquerdo: Painel de Controlo Moderno */
+.form-lateral {
+    flex: 1;
+    min-width: 280px;
+    max-width: 400px;
+    background: var(--form-bg);
+    padding: 28px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(2px);
+    transition: transform 0.2s;
+}
+
+.form-lateral h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid var(--accent-primary);
+    padding-bottom: 12px;
+    color: #fff;
+}
+
+.form-lateral h3 .material-icons {
+    color: var(--accent-primary);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #ddd;
+    font-size: 0.9rem;
+}
+
+.form-group label .material-icons {
+    font-size: 1.2rem;
+    color: var(--accent-primary);
+}
+
+.form-lateral select,
+.form-lateral input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    background: #27707b;
+    color: rgb(255, 255, 255);
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+.form-lateral select:focus,
+.form-lateral input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(247, 247, 247, 0.3);
+    background: #27707b;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* ========== CONTROLE DE QUANTIDADE COM BOTÕES ========== */
+.quantidade-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    color: #000000;
+    background: rgba(200, 200, 200, 0.707);
+    border-radius: 40px;
+    padding: 4px;
+    border: 1px solid var(--border-light);
+}
+
+.quantidade-wrapper input {
+    width: 60px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.quantidade-wrapper input:focus {
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+/* Remover setas nativas do input number */
+.quantidade-wrapper input::-webkit-inner-spin-button,
+.quantidade-wrapper input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.quantidade-wrapper input {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+
+
+.btn-qty {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #27707b;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-qty:hover {
+    background: var(--accent-primary);
+    transform: scale(1.05);
+}
+
+.btn-qty:active {
+    transform: scale(0.95);
+}
+
+/* ========== FIM CONTROLE DE QUANTIDADE ========== */
+
+.dica-preco {
+    background: rgba(243, 157, 18, 0);
+    padding: 12px 15px;
+    color: #802a2a;
+    margin-top: 1px;
+    margin: 3px 0;
+    display: none;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.80rem;
+    font-weight: 500;
+}
+
+
+.btn-adicionar {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent-primary), #1f3a5f);
+    color: white;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 8px rgba(176, 18, 18, 0.2);
+}
+
+.btn-adicionar .material-icons {
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.btn-adicionar:hover {
+    background: linear-gradient(135deg, #2c446b, #15519b);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(144, 207, 29, 0.396);
+}
+
+.btn-adicionar:active {
+    transform: translateY(1px);
+}
+
+/* Lado Direito: Recibo Estilizado */
+.area-lista {
+    flex: 1;
+    min-width: 300px;
+    max-width: 480px;
+    background: var(--receipt-bg);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #222;
+    backdrop-filter: blur(2px);
+}
+
+/* Filtro de supermercado */
+.filtro-supermercado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    background: rgba(0,0,0,0.3);
+    flex-wrap: wrap;     /* Permite que os elementos saltem para a linha de baixo */
+    border-radius: 16px; /* Ajusta o contorno para o novo formato */
+    padding: 12px;
+}
+
+.filtro-supermercado label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #ccc;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.filtro-supermercado select {
+    flex: 1;
+    background: #609d98;
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 6px 12px;
+    color: rgba(255, 255, 255, 0.895);
+    font-size: 0.9rem;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.btn-limpar-filtro {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    transition: 0.2s;
+}
+
+.btn-limpar-filtro:hover {
+    color: var(--accent-primary);
+    transform: scale(1.1);
+}
+
+.cabecalho-recibo {
+    color: #e9e9e9;
+    width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1.2rem; /* Letra um bocadinho mais pequena para o telemóvel */
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0px; /* Tira o espaçamento largo para caber perfeitamente no meio */
+        margin-left: -15px;
+        margin-bottom: 30px;
+        margin-top: 20px;
+        padding-right: 0;
+}
+
+.cabecalho-recibo .material-icons {
+    color: var(--accent-primary);
+    font-size: 1.5rem;
+}
+
+.lista-itens-container {
+    max-height: 480px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-bottom: 15px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) #222;
+}
+
+.lista-itens-container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.lista-itens-container::-webkit-scrollbar-track {
+    background: #222;
+    border-radius: 10px;
+}
+
+.lista-itens-container::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 10px;
+}
+
+/* Item da lista */
+.item-compra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.item-compra:hover {
+    background: rgba(255,255,255,0.02);
+    padding-left: 8px;
+    margin-left: -8px;
+    border-radius: 12px;
+}
+
+.item-comprado {
+    opacity: 0.6;
+}
+
+.item-comprado .item-info {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.item-info {
+    flex: 1;
+}
+
+.item-nome {
+    font-size: 1rem;
+    font-weight: 500;
+    display: block;
+    color: #eee;
+}
+
+.item-detalhe {
+    font-size: 0.75rem;
+    color: #aaa;
+    font-family: monospace;
+}
+
+.preco-individual {
+    font-weight: bold;
+    color: #fff;
+    font-size: 1rem;
+    background: #1e1e1e;
+    padding: 4px 8px;
+    border-radius: 20px;
+    margin-right: 12px;
+}
+
+.acoes-item {
+    display: flex;
+    gap: 8px;
+}
+
+.acoes-item button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    padding: 4px;
+    border-radius: 30px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.acoes-item button .material-icons {
+    font-size: 1.7rem;
+    margin-top: 3px;
+}
+
+.btn-toggle {
+    color: var(--success);
+}
+
+.btn-toggle:hover {
+    background: rgba(46, 125, 50, 0.2);
+    transform: scale(1.1);
+}
+
+.btn-remove {
+    color: var(--danger);
+}
+
+.btn-remove:hover {
+    background: rgba(198, 40, 40, 0.2);
+    transform: scale(1.1);
+}
+
+/* Total */
+.total-caixa {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #dcd31c;
+    text-align: right;
+    padding: 16px 0 0 0;
+    margin-top: 12px;
+    border-top: 2px dashed #333;
+    font-family: monospace;
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.total-caixa .moeda {
+    font-size: 1rem;
+    color: #aaa;
+}
+
+#valor-total {
+    font-size: 2rem;
+    letter-spacing: 1px;
+}
+
+/* Mensagem de vazio */
+.vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #666;
+    padding: 40px 20px;
+    gap: 12px;
+}
+
+.vazio .material-icons {
+    font-size: 3rem;
+    color: #444;
+}
+
+/* Animação de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Botão Voltar */
+.btn-voltar {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid #333;
+    color: #ddd;
+    transition: all 0.2s;
+}
+
+.btn-voltar:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
+.cabecalho > div:last-child {
+    margin-left: auto;
+}
+
+/* =========================================
+   ESTILOS PREMIUM DO MODO COMPRAS
+   ========================================= */
+
+/* Fundo do pop-up ajustado para parecer uma App nativa */
+.modo-compras-content {
+    padding: 0;
+    max-width: 600px;
+    background: var(--bg-color);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+}
+
+/* Cabeçalho fixo no topo */
+.modo-compras-header {
+    background: var(--form-bg); /* Puxa a cor amarela/azul do teu tema */
+    padding: 20px 25px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.modo-compras-header h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 15px !important;
+}
+
+/* Filtro elegante */
+.filtros-compras select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+}
+
+.filtros-compras select option {
+    background: var(--bg-color);
+    color: #fff;
+}
+
+/* Área da lista (com scroll) */
+.lista-modo-compras {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;          /* essencial para o scroll em flex column */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ==============================================
+   CARTÃO DO PRODUTO (CSS GRID - À PROVA DE BALAS)
+   ============================================== */
+
+.item-modo-compras {
+    /* MUDANÇA PRINCIPAL: Usar GRID em vez de Flexbox */
+    display: grid;
+    grid-template-columns: 1fr 40px; 
+    gap: 15px;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    
+    background: #1e1e1e;
+    padding: 16px 20px; /* <--- O SEGREDO ESTÁ AQUI (antes estava 50px 60px) */
+    border-radius: 16px;
+    border-left: 6px solid var(--accent-primary);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: opacity 0.3s, background 0.3s; 
+    user-select: none; 
+}
+
+.modo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden; 
+    min-width: 0; /* <--- ADICIONA ESTA LINHA: Obriga a grelha a não esticar para a direita */
+}
+
+.modo-info .nome {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1.3;
+    
+    /* Permite que o texto passe para a linha de baixo sem estragar nada */
+    white-space: normal;
+    word-break: break-word;
+}
+
+.modo-info .supermercado {
+    font-size: 0.85rem;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.modo-info .preco {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #dcd31c; 
+}
+
+.checkbox-gigante {
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--success);
+    pointer-events: none;
+    justify-self: center; /* Centra a checkbox perfeitamente na sua coluna de 40px */
+}
+
+/* =====================================================================
+   BLINDAGEM MOBILE PARA A LISTA DE COMPRAS (Tem de ficar no fim!)
+   ===================================================================== */
+@media (max-width: 768px) {
+    /* Obriga a caixa principal a ficar numa só coluna */
+    .caixa-supermercado {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Obriga os painéis a encolherem exatamente para o tamanho do ecrã */
+    .form-lateral, .area-lista {
+        min-width: 100% !important;
+        max-width: 100% !important;
+        padding: 15px !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    /* O Botão de Quantidade era muito largo, vamos encolhê-lo */
+    .quantidade-wrapper {
+        gap: 10px;
+        justify-content: center;
+    }
+
+    /* Coloca os botões de "Quantidade" e "Preço" um por baixo do outro */
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .form-row .form-group {
+        width: 100%;
+    }
+
+    /* Impede que nomes de supermercados ou produtos gigantes estiquem o recibo */
+    .item-info {
+        min-width: 0;
+        overflow: hidden;
+    }
+    .item-nome {
+        white-space: normal;
+        word-break: break-word;
+        line-height: 1.2;
+    }
+
+    /* Garante que os botões (Certo e Caixote do Lixo) nunca fogem do ecrã */
+    .acoes-item {
+        flex-shrink: 0;
+    }
+}
+
+
+/* Para desktop mantém o layout original */
+.med-section h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  /* empurra o botão para a direita */
+    margin: 0 0 20px 0;
+    /* as restantes propriedades originais permanecem */
+}
+
+.btn-share {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;  /* alinha à direita dentro do flex */
+}
+
+.btn-share .material-icons {
+    font-size: 28px;
+    color: var(--accent-primary);
+}
+
+/* No telemóvel, mantemos o mesmo comportamento */
+@media (max-width: 768px) {
+    .med-section h3 {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    /* Remove qualquer posicionamento absoluto anterior */
+    #btnShareMedicationList {
+        position: static !important;
+        transform: none !important;
+        top: auto !important;
+        right: auto !important;
+    }
+}

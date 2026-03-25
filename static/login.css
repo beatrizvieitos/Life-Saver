@@ -1,0 +1,142 @@
+/* =========================================
+   CENTRALIZAÇÃO E ESTILOS DA PÁGINA DE LOGIN
+   ========================================= */
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #121212;
+    overflow-x: hidden; /* Impede deslizes laterais */
+}
+
+/* =========================================
+   LOGÓTIPO PADRONIZADO
+   ========================================= */
+.logo-topo {
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.logo-topo img {
+    width: 280px; /* Tamanho padrão PC */
+    height: auto;
+    border-radius: 10%;
+    transition: all 0.3s ease;
+}
+
+/* Caixa de autenticação */
+#msg_login, #msg_registo {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+.caixa-auth {
+    width: 100%;
+    max-width: 400px;
+    background: #27707b;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid #bea034;
+    box-sizing: border-box; /* Crucial para não cortar a caixa */
+}
+
+h2 {
+    text-align: center;
+    color: #c7c8c9;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+}
+
+input {
+    width: 100%;
+    margin-bottom: 15px;
+    display: block;
+    box-sizing: border-box;
+    background-color: #1d1c1c;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.btn-largo {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.link-alternar {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #95afd6;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+#seccao-registo {
+    display: none;
+}
+
+/* =====================================================================
+   VERSÃO TELEMÓVEL: TUDO MAIOR E FÁCIL DE TOCAR
+   ===================================================================== */
+@media (max-width: 768px) {
+    
+    .logo-topo img {
+        width: 180px !important; /* Logótipo ajustado */
+        margin-top: -10px !important; /* Remove o -60px se estiver no HTML */
+        margin-bottom: 10px;
+    }
+
+    .caixa-auth {
+        width: 95% !important; /* Caixa ocupa quase o ecrã todo lateralmente */
+        max-width: 95% !important;
+        padding: 30px 15px !important; /* Mais espaço interno */
+    }
+
+    h2 {
+        font-size: 1.3rem !important; /* Título maior */
+        margin-bottom: -15px;
+    }
+
+    /* CAMPOS DE TEXTO GIGANTES PARA O DEDO */
+    input {
+        padding: 18px !important;     /* Muito mais altos */
+        font-size: 1.2rem !important;  /* Letra bem visível */
+        margin-bottom: 10px !important;
+        margin-top: 20px;
+        border-radius: 12px !important;
+    }
+
+    /* BOTÃO DE LOGIN/REGISTO MAIOR */
+    .btn-largo {
+        padding: 18px !important;
+        font-size: 1.2rem !important;
+        border-radius: 40px !important;
+    }
+
+    .link-alternar {
+        font-size: 1.1rem !important;
+        padding: 10px 0;
+    }
+    
+    /* Ajuste para o ícone do olho da password */
+    span[onclick*="togglePass"] {
+        font-size: 1.5rem !important;
+        right: 15px !important;
+    }
+}
