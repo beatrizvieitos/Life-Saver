@@ -21,7 +21,8 @@ O grande diferencial deste projeto é a sua **vertente colaborativa**: os utiliz
 
 * **Autenticação Segura:** Registo e login de utilizadores com encriptação de passwords.
 * **Dashboard de Tarefas:** Criação de tarefas (CRUD) com estados (pendente/concluído) e prazos.
-* **Módulos Especializados:** * 🛒 *Listas de Compras* organizadas por supermercado/categoria.
+* **Módulos Especializados:** 
+  * *Listas de Compras* organizadas por supermercado/categoria.
   * *Gestão de Medicamentos* com registo de dosagens e horários.
   * *Bloco de Notas* pessoal para ideias rápidas.
 * **Sistema de Amizades e Partilha:** Envio/aceitação de pedidos de amizade e partilha de itens específicos com permissões de leitura ou edição.
