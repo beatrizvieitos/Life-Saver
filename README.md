@@ -1,6 +1,6 @@
-# 📋 Task Boss - Gestor Pessoal e Colaborativo
+# 📋 Life Saver - Gestor Pessoal e Colaborativo
 
-Bem-vindo(a) ao **Task Boss**! Uma aplicação web *full-stack* desenvolvida para centralizar a organização pessoal. Mais do que uma simples lista de tarefas (To-Do list), o Task Boss integra gestão de compras, controlo de medicamentos, notas pessoais e um sistema de estatísticas visuais.
+Bem-vindo(a) ao **Life Saver**! Uma aplicação web *full-stack* desenvolvida para centralizar a organização pessoal. Mais do que uma simples lista de tarefas (To-Do list), o Task Boss integra gestão de compras, controlo de medicamentos, notas pessoais e um sistema de estatísticas visuais.
 
 O grande diferencial deste projeto é a sua **vertente colaborativa**: os utilizadores podem adicionar amigos e partilhar tarefas ou listas específicas, controlando permissões de edição em tempo real.
 
