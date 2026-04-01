@@ -1,0 +1,193 @@
+/* =========================================
+   DESIGN DA PÁGINA DE RECEITAS
+   ========================================= */
+
+/* Aproveitamos a classe caixa-supermercado para manter o layout flexível */
+.caixa-receitas {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.painel-receita {
+    flex: 1;
+    min-width: 320px;
+    background: var(--form-bg);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    color: #fff;
+    box-sizing: border-box;
+}
+
+.painel-receita h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 1.4rem;
+    border-bottom: 2px solid var(--accent-primary);
+    padding-bottom: 12px;
+    color: #fff;
+}
+
+.painel-receita h3 .material-icons {
+    color: var(--accent-primary);
+}
+
+.painel-receita input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-light);
+    background: #27707b;
+    color: #fff;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+.painel-receita input[type="text"]::placeholder {
+    color: #ddd;
+}
+
+/* O botão de gerar IA com gradiente */
+#btnGerar {
+    background: linear-gradient(135deg, var(--accent-primary), #1f3a5f);
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 5px;
+}
+
+#btnGerar:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+}
+
+/* Cartões das receitas guardadas */
+.cartao-receita {
+    background: var(--receipt-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 20px;
+    background-color: #cfa941; /* Amarelo igual às tarefas */
+    color: rgb(32, 32, 32);
+    box-shadow: 0 2px 8px rgba(97, 91, 91, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cartao-receita:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    border-color: #444;
+}
+
+.cartao-receita h4 {
+    margin: 0;
+    color: rgb(30, 30, 30);
+    font-size: 1.1em;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Área de visualização de uma receita escolhida */
+#resultadoReceita {
+    background-color: rgba(0, 0, 0, 0.15);
+    padding: 25px;
+    border-radius: 20px;
+    margin-top: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#resultadoReceita h2, #resultadoReceita h4 {
+    color: var(--accent-primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+#resultadoReceita h4 {
+     margin-top: 20px;
+     font-size: 1.1em;
+}
+
+/* Botões do cartão de receita (lado direito) */
+.botoes-cartao {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+}
+
+.botoes-cartao button {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.85em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-ver-cartao {
+     background-color: #2a2a2e;
+     color: #fff;
+}
+
+.btn-comprar-cartao {
+     background-color: #2e7d32;
+     color: white;
+}
+
+/* Botões de salvar/comprar após gerar receita (lado esquerdo) */
+.botoes-acao-receita {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.botoes-acao-receita button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .caixa-receitas {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .painel-receita {
+        min-width: 100%;
+        padding: 20px;
+    }
+    .botoes-acao-receita {
+        flex-direction: column;
+    }
+}

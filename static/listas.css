@@ -704,6 +704,19 @@
     color: var(--accent-primary);
 }
 
+/* Clarear a caixa de seleção do filtro de supermercados */
+.filtro-metade select {
+    background-color: #ca9607 !important; /* Um cinza mais claro e elegante */
+    color: #ffffff !important;           /* Texto a branco para ler bem */
+    border: 1px solid var(--border) !important;
+}
+
+/* Opcional: Efeito hover para ficar ainda mais claro quando passas o rato */
+.filtro-metade select:hover,
+.filtro-metade select:focus {
+    background-color: #ca9607 !important;
+}
+
 /* No telemóvel, mantemos o mesmo comportamento */
 @media (max-width: 768px) {
     .med-section h3 {
@@ -720,3 +733,4 @@
         right: auto !important;
     }
 }
+

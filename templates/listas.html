@@ -23,6 +23,7 @@
             <div class="hamburger-icon">☰</div>
             <div class="menu-dropdown" id="menuDropdown">
                 <a href="/" class="menu-item">Lista de Tarefas 📋</a>
+                <a href="/receitas" class="menu-item">As Minhas Receitas 👩‍🍳</a>
                 <a href="/notas" class="menu-item">As Minhas Notas ✍️</a>
                 <a href="/medicamentos" class="menu-item">Lista de Medicamentos 💊</a>
                 <a href="/estatisticas" class="menu-item">Estatísticas 📊</a>
@@ -253,7 +254,7 @@
                 <label><span class="material-icons">store</span> Supermercado</label>
                 <input type="hidden" id="supermercado" value="Todos">
                 <div id="zona-botoes-supermercado" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
-                    <div style="color: #aaa; font-size: 0.9em; font-style: italic;">
+                    <div style="color: #303030; font-size: 0.9em; font-style: italic;">
                         Escolhe um produto para ver os preços...
                     </div>
                 </div>
@@ -279,16 +280,27 @@
     </div>
 
     <div class="area-lista">
-        <div class="filtro-supermercado" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <label><span class="material-icons">filter_alt</span> Filtrar por supermercado:</label>
+        <div class="zona-filtros-linha">
+            
+            <div class="filtro-metade">
+                <label><span class="material-icons" style="font-size: 16px;">filter_alt</span> Supermercado</label>
                 <select id="filtroSupermercadoPrincipal">
-                    <option value="">Todos os supermercados</option>
+                    <option value="">Todos</option>
                 </select>
-                <button id="limparFiltro" class="btn-limpar-filtro" title="Limpar filtro">
-                    <span class="material-icons">clear</span>
-                </button>
             </div>
+
+            <div class="filtro-metade">
+                <label><span class="material-icons" style="font-size: 16px;">restaurant_menu</span> Receitas</label>
+                <div style="display: flex; gap: 5px; width: 100%; height: 45px;">
+                    <button class="btn-supermercado" id="btnFiltroReceitas" onclick="filtrarPorReceitas()" style="margin: 0; flex: 1; height: 100%;">
+                        Receitas 🍳
+                    </button>
+                    <button id="limparFiltro" class="btn-limpar-filtro" title="Limpar filtro" style="display: flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 12px; border: none; background: #c62828; color: white; cursor: pointer; transition: 0.2s; height: 100%;">
+                        <span class="material-icons" style="font-size: 17px;">clear</span>
+                    </button>
+                </div>
+            </div>
+
         </div>
 
         <div class="cabecalho-recibo">
@@ -875,6 +887,27 @@
             listaModoCompras.appendChild(div);
         });
     }
+
+    function filtrarPorReceitas() {
+    // 1. Muda a cor dos botões (tira a seleção dos outros e mete neste)
+    document.querySelectorAll('.btn-supermercado').forEach(btn => btn.classList.remove('selecionado'));
+    document.getElementById('btnFiltroReceitas').classList.add('selecionado');
+
+    // 2. Percorre todos os itens da lista de compras
+    const nomesProdutos = document.querySelectorAll('.item-nome');
+    
+    nomesProdutos.forEach(nomeElement => {
+        // Encontra a caixa inteira do item para a podermos esconder
+        const itemCompleto = nomeElement.closest('.item-info').parentElement;
+        
+        // Se o nome do produto incluir o nosso carimbo "🍳", mostra. Se não, esconde!
+        if (nomeElement.innerText.includes('🍳')) {
+            itemCompleto.style.display = 'flex';
+        } else {
+            itemCompleto.style.display = 'none';
+        }
+    });
+}
 
     // =========================================================================
     // 9. GESTÃO DE AMIGOS (modal e funções)

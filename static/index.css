@@ -2,11 +2,11 @@
    VARIÁVEIS GLOBAIS (tema escuro)
    ========================================= */
 :root {
-    --bg-color: #1a1a1a;          /* fundo da página */
-    --card-bg: #1e1e1e;           /* fundo dos cards e containers (não usado no container principal) */
-    --text-main: #e0e0e0;         /* cor do texto principal */
+    --bg-color: #735f2b;          /* fundo da página */
+    --card-bg: #27707b;           /* fundo dos cards e containers (não usado no container principal) */
+    --text-main: #252525;         /* cor do texto principal */
     --text-dim: #aaa;             /* texto secundário */
-    --accent: #ffffff;            /* cor de destaque (títulos, bordas) */
+    --accent: #1c1c1c;            /* cor de destaque (títulos, bordas) */
     --accent-primary: #ca9607;    /* cor principal de destaque (botões, links) */
     --border: #e2b3345d;          /* cor das bordas */
     --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); /* sombra comum */
@@ -219,20 +219,7 @@ button:hover {
     color: white;
 }
 
-/* Forçar os botões de supermercado a ficarem em coluna */
-.supermercados-container,
-.supermercados-grid,
-#supermercadosContainer,
-div:has(> .btn-supermercado) {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
 
-.btn-supermercado {
-    width: 100%;
-    justify-content: center;
-}
 
 /* Botão de apagar (icone lixo) – icon‑only */
 .btn-apagar {
@@ -260,7 +247,7 @@ div:has(> .btn-supermercado) {
 .btn-sair {
     background: transparent;
     border: none;
-    color: #bc3029;
+    color: #571815;
     padding: 8px;
     border-radius: 50%;
     cursor: pointer;
@@ -286,15 +273,20 @@ div:has(> .btn-supermercado) {
 .btn-supermercado {
     background-color: var(--accent-primary); /* Laranja/dourado principal */
     color: #fff;
+    width: 90% !important;
+    max-width: 190px;
+    margin: 0 auto;
     border: 1px solid #e2b334;
     padding: 8px 12px;
+    justify-content: center;
     border-radius: 8px;
     cursor: pointer;
+    text-align: center;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.9rem;
+    font-size: 0.7rem;
 }
 
 .btn-supermercado:hover {
@@ -418,7 +410,7 @@ div[style*="background: #252525"] {
     box-shadow: var(--shadow) !important;
 }
 div[style*="background: #252525"] select {
-    background-color: #2a2a2e;
+    background-color: #a1a1a1;
     border-color: var(--border-light);
     min-width: auto !important;
     width: 100%;
@@ -1012,4 +1004,213 @@ button.btn-share:hover .material-icons {
     vertical-align: middle;
     margin-right: 8px;
     color: #fff;
+}
+
+/* =========================================
+   ESTILOS ESPECÍFICOS: PÁGINA DE RECEITAS
+   ========================================= */
+
+.painel-receita {
+    flex: 1;
+    min-width: 320px;
+    background-color: var(--form-bg);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: var(--shadow);
+    box-sizing: border-box;
+    color: #fff; /* Texto branco para contrastar com o fundo azul escuro */
+}
+
+.painel-receita h3 {
+    color: #fff; /* Títulos a branco nos painéis */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#btnGerar {
+    background: linear-gradient(135deg, var(--accent-primary), #1f3a5f);
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 15px;
+}
+
+#btnGerar:hover {
+    opacity: 0.85;
+    transform: translateY(-2px);
+}
+
+/* Cartões de Receitas Guardadas (Estilo igual às tarefas) */
+.cartao-receita {
+    background-color: #cfa941; /* Amarelo das tarefas */
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 20px;
+    color: rgb(32, 32, 32);
+    box-shadow: 0 2px 8px rgba(97, 91, 91, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cartao-receita:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    border-color: #444;
+}
+
+.cartao-receita h4 {
+    margin: 0;
+    color: rgb(30, 30, 30);
+    font-size: 1.1em;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+/* Área de visualização da receita selecionada */
+#resultadoReceita {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    border-radius: 20px;
+    margin-top: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#resultadoReceita h2, #resultadoReceita h4 {
+    color: var(--accent-primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+#resultadoReceita h4 {
+     margin-top: 20px;
+     font-size: 1.1em;
+}
+
+/* Botões nos cartões laterais */
+.botoes-cartao {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 10px;
+}
+
+.botoes-cartao button {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.85em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-ver-cartao {
+     background-color: #2a2a2e;
+     color: #fff;
+}
+
+.btn-comprar-cartao {
+     background-color: #2e7d32;
+     color: white;
+}
+
+.botoes-acao-receita {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.botoes-acao-receita button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.status-message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .painel-receita {
+        min-width: 100%;
+        padding: 20px;
+    }
+}
+
+/* =========================================
+   FILTROS LADO A LADO (COMPUTADOR E MOBILE)
+   ========================================= */
+
+.zona-filtros-linha {
+    display: flex;
+    flex-direction: row !important; /* Força a ficarem lado a lado */
+    justify-content: space-between;
+    align-items: flex-end; /* Alinha a base do botão com a base do select */
+    gap: 15px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.filtro-metade {
+    flex: 1; /* Divide o espaço 50/50 */
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.filtro-metade label {
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+    color: #ddd; 
+}
+
+/* Forçar o Select e o Botão a terem exatamente o mesmo tamanho e aspeto */
+.filtro-metade select,
+.filtro-metade button.btn-supermercado {
+    width: 100% !important;
+    max-width: 100% !important; /* Anula limites antigos para preencher a coluna */
+    height: 45px !important; /* Altura igual para os dois */
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* AJUSTES PARA CABER TUDO NO TELEMÓVEL */
+@media (max-width: 768px) {
+    .zona-filtros-linha {
+        gap: 8px; /* Reduz o espaço entre eles no telemóvel */
+    }
+    
+    .filtro-metade label {
+        font-size: 0.75rem; /* Texto mais pequeno para não quebrar */
+        white-space: nowrap;
+    }
+    
+    .filtro-metade select,
+    .filtro-metade button.btn-supermercado {
+        font-size: 0.75rem; /* Reduz a fonte do botão e do select */
+        padding: 0 5px;
+    }
 }

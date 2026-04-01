@@ -16,7 +16,7 @@ from google import genai
 load_dotenv()   # Carrega as variáveis do ficheiro .env
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')   # Chave para Gemini (gratuita)
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 app = Flask(__name__)
@@ -949,7 +949,7 @@ def api_share_shopping_list():
             ON DUPLICATE KEY UPDATE can_edit = %s
         """, (current_user.id, friend_id, can_edit, can_edit))
         conn.commit()
-        return jsonify({'mensagem': 'Lista de compras partilhada/atualizada!'})
+        return jsonify({'mensagem': 'Lista de compras partilhada e atualizada!'})
     except mysql.connector.Error as err:
         return jsonify({'erro': str(err)}), 500
     finally:
@@ -1019,7 +1019,7 @@ def api_share_medication_list():
             ON DUPLICATE KEY UPDATE can_edit = %s
         """, (current_user.id, friend_id, can_edit, can_edit))
         conn.commit()
-        return jsonify({'mensagem': 'Lista de medicamentos partilhada/atualizada!'})
+        return jsonify({'mensagem': 'Lista de medicamentos partilhada e atualizada!'})
     except mysql.connector.Error as err:
         if err.errno == 1062:
             return jsonify({'erro': 'Lista já partilhada com este amigo'}), 409
@@ -1131,7 +1131,9 @@ def api_tarefas_estado():
 def estatisticas_page():
     return render_template('estatisticas.html')
 
-
+# -------------------------------------------------------------------------------------------------------
+# Rotas para limpar a lista de compras (apaga apenas os itens do próprio utilizador, não os partilhados)
+# -------------------------------------------------------------------------------------------------------
 
 @app.route('/api/compras/limpar', methods=['DELETE'])
 @login_required
@@ -1149,7 +1151,9 @@ def api_limpar_compras():
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals() and conn.is_connected(): conn.close()
 
-
+# ----------------------------------------------------------------------------------
+# Rotas para obtenção de preços de produtos (com cache, Groq e Gemini como fallback)
+# ----------------------------------------------------------------------------------
 
 @app.route('/api/compras/preco-produto', methods=['POST'])
 def preco_produto_groq():
@@ -1159,7 +1163,7 @@ def preco_produto_groq():
     if not produto:
         return jsonify({"sucesso": False, "erro": "Produto não especificado"}), 400
 
-    # --- 1. Tentar Cache da Base de Dados PRIMEIRO ---
+    # Tentar Cache da Base de Dados
     def get_cached_precos(prod_nome):
         try:
             conn = mysql.connector.connect(**db_config)
@@ -1183,11 +1187,10 @@ def preco_produto_groq():
         print(f"[CACHE] Preços encontrados para {produto}")
         return jsonify({"sucesso": True, "precos": cached, "origem": "base_dados"})
 
-    # --- 2. Tentar Groq (Com modelo mais leve) ---
+    # Tentar Groq
     precos = None
     try:
         print(f"[IA] A pedir à Groq para: {produto}...")
-        # CORREÇÃO 1: As chavetas do JSON têm de ser duplicadas {{ e }} dentro de f-strings
         prompt = f"""
         Procura o preço atual, realista e médio em euros (€) do produto "{produto}" nos supermercados portugueses no ano de 2026.
         Considera a inflação recente. NÃO inventes preços absurdamente baixos nem uses valores de anos passados.
@@ -1221,10 +1224,9 @@ def preco_produto_groq():
     except Exception as e:
         print(f"Erro na Groq: {e}")
 
-    # --- 3. Tentar Gemini (Fallback Final) ---
+    # Tentar Gemini (Fallback Final)
     try:
         print(f"[IA] A pedir ao Gemini para: {produto}...")
-        # CORREÇÃO 2: Indentação alinhada, aspas triplas fechadas e chavetas JSON duplicadas {{ }}
         response = client.models.generate_content(
             model="models/gemini-2.0-flash",
             contents=f"""
@@ -1246,7 +1248,7 @@ def preco_produto_groq():
 
     return jsonify({"sucesso": False, "erro": "Limite de todas as APIs excedido. Tenta mais tarde."}), 429
 
-# --- Função auxiliar para guardar no cache ---
+# Função auxiliar para guardar no cache
 def save_to_cache(produto, precos):
     try:
         conn = mysql.connector.connect(**db_config)
@@ -1260,6 +1262,178 @@ def save_to_cache(produto, precos):
         conn.commit()
     except Exception as e:
         print(f"Erro ao salvar cache: {e}")
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+        # ==============================================================
+# NOVO MÓDULO: GESTÃO DE RECEITAS E INTEGRAÇÃO DE COMPRAS
+# ==============================================================
+
+@app.route('/receitas')
+@login_required
+def receitas_page():
+    return render_template('receitas.html')
+
+@app.route('/api/receitas/gerar', methods=['POST'])
+@login_required
+def api_gerar_receita():
+    """Pede à IA (Groq com fallback para Gemini) para criar uma receita e listar ingredientes."""
+    dados = request.json
+    prato = dados.get('prato')
+    
+    if not prato:
+        return jsonify({"erro": "Nome do prato não fornecido."}), 400
+
+    prompt = f"""
+    És um chef profissional português. Cria a melhor receita clássica para "{prato}".
+    Devolve APENAS um objeto JSON estrito com esta estrutura, sem qualquer texto adicional ou formatação markdown:
+    {{
+        "nome": "Nome completo do prato",
+        "instrucoes": "Passo 1: ... Passo 2: ... (tudo numa string com \\n para quebras de linha)",
+        "ingredientes": [
+            {{"produto": "Nome do Ingrediente", "quantidade": "Quantidade exata (ex: 500g, 2 unidades)"}}
+        ]
+    }}
+    Usa ingredientes comuns em supermercados portugueses.
+    """
+
+    receita_json = None
+
+    # 1. Tentar Groq
+    try:
+        response = requests.post(
+            GROQ_URL,
+            headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.3,
+                "response_format": {"type": "json_object"}
+            },
+            timeout=10
+        )
+        if response.status_code == 200:
+            conteudo = response.json()["choices"][0]["message"]["content"]
+            receita_json = json.loads(conteudo)
+    except Exception as e:
+        print(f"Erro ao gerar receita na Groq: {e}")
+
+    # 2. Tentar Gemini (Fallback)
+    if not receita_json:
+        try:
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt
+            )
+            text = response.text
+            json_match = re.search(r'\{.*\}', text, re.DOTALL)
+            if json_match:
+                receita_json = json.loads(json_match.group())
+        except Exception as e:
+            print(f"Erro ao gerar receita no Gemini: {e}")
+
+    if receita_json:
+        return jsonify({"sucesso": True, "receita": receita_json})
+    else:
+        return jsonify({"erro": "Não foi possível gerar a receita. Tenta novamente."}), 500
+
+@app.route('/api/receitas/guardar', methods=['POST'])
+@login_required
+def api_guardar_receita():
+    """Guarda a receita gerada na base de dados do utilizador."""
+    dados = request.json
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        
+        # Inserir Receita
+        cursor.execute(
+            "INSERT INTO receitas_guardadas (user_id, nome, instrucoes) VALUES (%s, %s, %s)",
+            (current_user.id, dados['nome'], dados['instrucoes'])
+        )
+        receita_id = cursor.lastrowid
+        
+        # Inserir Ingredientes
+        for ing in dados['ingredientes']:
+            cursor.execute(
+                "INSERT INTO ingredientes_receita (receita_id, produto, quantidade) VALUES (%s, %s, %s)",
+                (receita_id, ing['produto'], ing['quantidade'])
+            )
+        conn.commit()
+        return jsonify({'mensagem': 'Receita guardada com sucesso!'}), 201
+    except mysql.connector.Error as err:
+        return jsonify({'erro': str(err)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+@app.route('/api/receitas/listar', methods=['GET'])
+@login_required
+def api_listar_receitas():
+    """Devolve todas as receitas guardadas pelo utilizador."""
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, nome, instrucoes FROM receitas_guardadas WHERE user_id = %s ORDER BY data_criacao DESC", (current_user.id,))
+        receitas = cursor.fetchall()
+        
+        for receita in receitas:
+            cursor.execute("SELECT produto, quantidade FROM ingredientes_receita WHERE receita_id = %s", (receita['id'],))
+            receita['ingredientes'] = cursor.fetchall()
+            
+        return jsonify(receitas)
+    except mysql.connector.Error as err:
+        return jsonify({'erro': str(err)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+@app.route('/api/receitas/comprar', methods=['POST'])
+@login_required
+def api_adicionar_compras_receita():
+    """Adiciona a lista de ingredientes à lista principal de Compras do utilizador."""
+    ingredientes = request.json.get('ingredientes', [])
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        for ing in ingredientes:
+            # Assume quantidade como 1 para simplificar, com a descrição do ingrediente a conter o peso
+            produto_descritivo = f"{ing['produto']} ({ing['quantidade']})"
+            cursor.execute(
+                "INSERT INTO compras (utilizador_id, produto, supermercado, quantidade, preco_unidade) VALUES (%s, %s, %s, %s, %s)",
+                (current_user.id, produto_descritivo, 'Todos', 1, 0.0)
+            )
+        conn.commit()
+        return jsonify({'mensagem': 'Ingredientes adicionados à tua Lista de Compras!'})
+    except mysql.connector.Error as err:
+        return jsonify({'erro': str(err)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+@app.route('/api/receitas/<int:receita_id>', methods=['DELETE'])
+@login_required
+def api_apagar_receita(receita_id):
+    """Apaga uma receita guardada pelo utilizador atual."""
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        
+        # Garante que a receita pertence a este utilizador antes de apagar
+        cursor.execute(
+            "DELETE FROM receitas_guardadas WHERE id = %s AND user_id = %s",
+            (receita_id, current_user.id)
+        )
+        conn.commit()
+        
+        if cursor.rowcount > 0:
+            return jsonify({'mensagem': 'Receita apagada com sucesso!'}), 200
+        else:
+            return jsonify({'erro': 'Não foi possível apagar a receita.'}), 403
+            
+    except mysql.connector.Error as err:
+        return jsonify({'erro': str(err)}), 500
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals() and conn.is_connected(): conn.close()

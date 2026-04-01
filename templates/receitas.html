@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>As Minhas Receitas - Life Saver</title>
+    <link rel="icon" href="{{ url_for('static', filename='logomini.ico') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='receitas.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <div class="logo-topo-container">
+        <a href="/" class="logo-link">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Task Boss Logo">
+        </a>
+    </div>
+
+    <div class="cabecalho">
+        <div class="esquerda">
+            <div class="menu-hamburger" id="menuHamburger">
+                <div class="hamburger-icon">☰</div>
+                <div class="menu-dropdown" id="menuDropdown">
+                    <a href="/" class="menu-item">Lista de Tarefas 📋</a>
+                    <a href="/notas" class="menu-item">As Minhas Notas ✍️</a>
+                    <a href="/listas" class="menu-item">Lista de Compras 🛒</a>
+                    <a href="/receitas" class="menu-item">As Minhas Receitas 👩‍🍳</a>
+                    <a href="/medicamentos" class="menu-item">Lista de Medicamentos 💊</a>
+                    <a href="/estatisticas" class="menu-item">Estatísticas 📊</a>
+                    <a href="#" id="openFriendsModal" class="menu-item">Amigos 👥</a>
+                </div>
+            </div>
+        </div>
+        <div class="centro">
+            <h2>👩‍🍳 As Minhas Receitas</h2>
+        </div>
+        <div class="direita">
+            <button class="btn-sair" onclick="window.location.href='/api/logout'" title="Sair">
+                <span class="material-icons">logout</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="caixa-receitas">
+            
+            <div class="painel-receita">
+                <h3><span class="material-icons">restaurant</span> Descobrir Receita</h3>
+                
+                <div class="form-group">
+                    <label style="color: #ddd; margin-bottom: 8px; display: block; font-weight: 500; font-size: 0.9rem;">
+                        <span class="material-icons" style="font-size: 1.2rem; vertical-align: middle; color: var(--accent-primary);">search</span> O que te apetece cozinhar?
+                    </label>
+                    <input type="text" id="pratoInput" placeholder="Ex: Bacalhau com Natas...">
+                    
+                    <button onclick="gerarReceita()" id="btnGerar">
+                        <span class="material-icons">auto_awesome</span> Pedir a Receita
+                    </button>
+                </div>
+
+                <div id="loading" class="status-message" style="display: none; color: #fff;">
+                    <span class="material-icons spinner">autorenew</span> A cozinhar a receita...
+                </div>
+
+                <div id="loadingCompras" class="status-message" style="display: none; color: var(--accent-primary);">
+                    <span class="material-icons spinner">search</span> A estimar preços e a adicionar...
+                </div>
+
+                <div id="resultadoReceita" style="display: none;">
+                    <h2 id="recNome"></h2>
+                    
+                    <h4><span class="material-icons" style="font-size: 18px; vertical-align: text-bottom;">shopping_basket</span> Ingredientes:</h4>
+                    <ul id="recIngredientes" style="line-height: 1.6;"></ul>
+                    
+                    <h4><span class="material-icons" style="font-size: 18px; vertical-align: text-bottom;">menu_book</span> Instruções:</h4>
+                    <p id="recInstrucoes" style="line-height: 1.6; white-space: pre-line;"></p>
+
+                    <div class="botoes-acao-receita">
+                        <button class="btn-concluir" onclick="guardarReceitaAtual()">
+                            <span class="material-icons">favorite</span> Guardar Receita
+                        </button>
+                        <button class="btn-add" onclick="adicionarAComprasAtual()">
+                            <span class="material-icons">add_shopping_cart</span> Adicionar Ingredientes à<br>Lista de Compras
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="painel-receita">
+                <h3><span class="material-icons">library_books</span> O Meu Livro de Receitas</h3>
+                <p style="font-size: 0.9em; margin-bottom: 20px; color: #ddd;">Guarda as tuas receitas favoritas e envia os ingredientes para a tua lista de compras (preços serão estimados automaticamente).</p>
+                
+                <div id="listaReceitasGuardadas" style="display: flex; flex-direction: column; gap: 15px;">
+                    </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let receitaEmMemoria = null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Inicializar Menu Hambúrguer
+            const menuHamburger = document.getElementById("menuHamburger");
+            const menuDropdown = document.getElementById("menuDropdown");
+            if(menuHamburger && menuDropdown) {
+                menuHamburger.addEventListener("click", function(e) {
+                    e.stopPropagation();
+                    menuDropdown.classList.toggle("show");
+                });
+                document.addEventListener('click', function(event) {
+                    if (!menuHamburger.contains(event.target)) {
+                        menuDropdown.classList.remove('show');
+                    }
+                });
+            }
+
+            // Carregar receitas logo ao abrir a página
+            carregarReceitasGuardadas();
+        });
+
+        // =======================
+        // FUNÇÕES DA API RECEITAS
+        // =======================
+
+        async function carregarReceitasGuardadas() {
+            try {
+                const res = await fetch('/api/receitas/listar');
+                const receitas = await res.json();
+                const div = document.getElementById('listaReceitasGuardadas');
+                div.innerHTML = '';
+
+                if (!receitas || receitas.length === 0) {
+                    div.innerHTML = '<div style="text-align: center; padding: 20px; color: #ddd;">Ainda não tens receitas guardadas.</div>';
+                    return;
+                }
+
+                receitas.forEach(r => {
+                    const btnBox = document.createElement('div');
+                    btnBox.className = 'cartao-receita';
+                    
+                    btnBox.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                            <div class="tarefa-info">
+                                <strong>${r.nome}</strong>
+                                <div class="shared-indicator" style="color:#222;">${r.ingredientes.length} ingredientes necessários</div>
+                            </div>
+                            <button class="btn-apagar" onclick="apagarReceita(${r.id})" title="Apagar Receita">
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </div>
+                        <div class="botoes-cartao">
+                            <button class="btn-ver-cartao" onclick='reabrirReceita(${JSON.stringify(r).replace(/'/g, "&#39;")})'>
+                                <span class="material-icons" style="font-size: 18px;">visibility</span> Ver
+                            </button>
+                            <button class="btn-comprar-cartao" onclick='adicionarAComprasComPrecos(${JSON.stringify(r.ingredientes).replace(/'/g, "&#39;")})'>
+                                <span class="material-icons" style="font-size: 18px;">add_shopping_cart</span> Comprar
+                            </button>
+                        </div>
+                    `;
+                    div.appendChild(btnBox);
+                });
+            } catch(e) {
+                console.error("Erro ao carregar receitas", e);
+            }
+        }
+
+        async function apagarReceita(receita_id) {
+            if (!confirm("Tens a certeza que queres apagar esta receita?")) return;
+
+            try {
+                const res = await fetch(`/api/receitas/${receita_id}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    if (receitaEmMemoria && receitaEmMemoria.id === receita_id) {
+                        document.getElementById('resultadoReceita').style.display = 'none';
+                        receitaEmMemoria = null;
+                    }
+                    carregarReceitasGuardadas();
+                } else {
+                    alert("Erro: " + data.erro);
+                }
+            } catch (e) {
+                console.error("Erro ao apagar", e);
+                alert("Ocorreu um erro ao tentar apagar a receita.");
+            }
+        }
+        
+        async function gerarReceita() {
+            const prato = document.getElementById('pratoInput').value.trim();
+            if(!prato) return alert("Escreve o nome de um prato!");
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultadoReceita').style.display = 'none';
+            document.getElementById('btnGerar').disabled = true;
+
+            try {
+                const res = await fetch('/api/receitas/gerar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ prato: prato })
+                });
+                const data = await res.json();
+
+                if(data.sucesso) {
+                    mostrarReceitaNoEcra(data.receita);
+                } else {
+                    alert(data.erro);
+                }
+            } catch(e) {
+                alert("Erro ao contactar a IA. Tenta novamente.");
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('btnGerar').disabled = false;
+            }
+        }
+
+        function mostrarReceitaNoEcra(receita) {
+            receitaEmMemoria = receita;
+            document.getElementById('recNome').innerText = receita.nome;
+            document.getElementById('recInstrucoes').innerText = receita.instrucoes;
+            
+            const ul = document.getElementById('recIngredientes');
+            ul.innerHTML = '';
+            receita.ingredientes.forEach(ing => {
+                let li = document.createElement('li');
+                li.innerHTML = `<strong>${ing.quantidade}</strong> de ${ing.produto}`;
+                ul.appendChild(li);
+            });
+
+            document.getElementById('resultadoReceita').style.display = 'block';
+        }
+
+        async function guardarReceitaAtual() {
+            if(!receitaEmMemoria) return;
+            try {
+                const res = await fetch('/api/receitas/guardar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(receitaEmMemoria)
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    alert(data.mensagem);
+                    carregarReceitasGuardadas();
+                } else {
+                    alert("Erro: " + data.erro);
+                }
+            } catch (e) {
+                alert("Erro ao guardar a receita.");
+            }
+        }
+
+        function reabrirReceita(receita) {
+            mostrarReceitaNoEcra(receita);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // =======================
+        // FUNÇÕES DE COMPRAS E IA
+        // =======================
+
+        async function adicionarAComprasAtual() {
+            if(!receitaEmMemoria) return;
+            adicionarAComprasComPrecos(receitaEmMemoria.ingredientes);
+        }
+
+        async function adicionarAComprasComPrecos(listaIngredientes) {
+            const loadingIndicator = document.getElementById('loadingCompras');
+            loadingIndicator.style.display = 'block';
+
+            let sucessos = 0;
+            let falhas = 0;
+
+            for (const ing of listaIngredientes) {
+                const nomeBusca = ing.produto;
+                const nomeFinalNaLista = `🍳 ${ing.produto} (${ing.quantidade})`;
+                let precoEstimado = 0.0;
+                let supermercadoDefeito = "Todos"; 
+
+                try {
+                    const priceRes = await fetch('/api/compras/preco-produto', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ produto: nomeBusca })
+                    });
+                    
+                    if (priceRes.ok) {
+                        const priceData = await priceRes.json();
+                        if (priceData.sucesso && priceData.precos) {
+                            if (priceData.precos["Continente"]) {
+                                precoEstimado = priceData.precos["Continente"];
+                                supermercadoDefeito = "Continente";
+                            } else if (priceData.precos["Pingo Doce"]) {
+                                precoEstimado = priceData.precos["Pingo Doce"];
+                                supermercadoDefeito = "Pingo Doce";
+                            } else {
+                                const primeiroSup = Object.keys(priceData.precos)[0];
+                                if (primeiroSup) {
+                                    precoEstimado = priceData.precos[primeiroSup];
+                                    supermercadoDefeito = primeiroSup;
+                                }
+                            }
+                        }
+                    }
+
+                    const addRes = await fetch('/api/compras', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            produto: nomeFinalNaLista,
+                            supermercado: supermercadoDefeito,
+                            quantidade: 1, 
+                            preco_unidade: precoEstimado
+                        })
+                    });
+
+                    if (addRes.ok) sucessos++;
+                    else falhas++;
+
+                } catch (e) {
+                    console.error(`Erro ao processar ${nomeBusca}:`, e);
+                    falhas++;
+                }
+            }
+
+            loadingIndicator.style.display = 'none';
+
+            if (sucessos > 0) {
+                alert(`${sucessos} ingredientes adicionados à tua Lista de Compras com os preços estimados!`);
+            } else {
+                alert("Ocorreu um erro ao adicionar os ingredientes.");
+            }
+        }
+    </script>
+</body>
+</html>

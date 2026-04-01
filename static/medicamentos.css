@@ -338,10 +338,10 @@
     }
 
     .title-text2 {
-        color: #d9d9d9;
+        color: #d9d9d9 !important;
         align-items: center !important;
         justify-content: center;
-        margin-right: 53px;
+        margin-right: 53px !;
         white-space: nowrap;
     }
 
