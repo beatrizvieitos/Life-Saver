@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lista de Compras - Task Boss</title>
+    <title>Lista de Compras - Life Saver</title>
     <link rel="icon" href="{{ url_for('static', filename='logomini.ico') }}" type="image/png">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='listas.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
 </head>
 <body>
 <div class="logo-topo-container">
@@ -52,133 +53,210 @@
                 <select id="produto" required>
                     <option value="" disabled selected>🛍️ Escolha o produto...</option>
                     <option value="Abacate">Abacate</option>
-                        <option value="Achocolatado">Achocolatado</option>
-                        <option value="Açúcar Branco">Açúcar Branco</option>
-                        <option value="Água com Gás">Água com Gás</option>
-                        <option value="Água Mineral (Garrafão)">Água Mineral (Garrafão)</option>
-                        <option value="Alface">Alface</option>
-                        <option value="Amaciador Cabelo">Amaciador Cabelo</option>
-                        <option value="Amaciador Roupa">Amaciador Roupa</option>
-                        <option value="Areia Gato">Areia Gato</option>
-                        <option value="Arroz Agulha">Arroz Agulha</option>
-                        <option value="Arroz Carolino">Arroz Carolino</option>
-                        <option value="Atum em Lata">Atum em Lata</option>
-                        <option value="Azeite Virgem Extra">Azeite Virgem Extra</option>
-                        <option value="Azeitonas">Azeitonas</option>
-                        <option value="Bacalhau Desfiado">Bacalhau Desfiado</option>
-                        <option value="Banana">Banana</option>
-                        <option value="Batata Frita Palha">Batata Frita Palha</option>
-                        <option value="Batatas">Batatas</option>
-                        <option value="Batatas Pré-Fritas">Batatas Pré-Fritas</option>
-                        <option value="Berinjela">Berinjela</option>
-                        <option value="Bolachas Água e Sal">Bolachas Água e Sal</option>
-                        <option value="Bolachas Maria">Bolachas Maria</option>
-                        <option value="Brócolos">Brócolos</option>
-                        <option value="Café em Cápsulas">Café em Cápsulas</option>
-                        <option value="Café Moído">Café Moído</option>
-                        <option value="Cebolas">Cebolas</option>
-                        <option value="Cenoura">Cenoura</option>
-                        <option value="Cereais">Cereais</option>
-                        <option value="Cereais Pequeno Almoço">Cereais Pequeno Almoço</option>
-                        <option value="Champô">Champô</option>
-                        <option value="Chá Preto">Chá Preto</option>
-                        <option value="Chocolate Tablet">Chocolate Tablet</option>
-                        <option value="Cogumelos">Cogumelos</option>
-                        <option value="Cogumelos Congelados">Cogumelos Congelados</option>
-                        <option value="Curgete">Curgete</option>
-                        <option value="Desinfetante">Desinfetante</option>
-                        <option value="Desodorizante">Desodorizante</option>
-                        <option value="Detergente Loiça">Detergente Loiça</option>
-                        <option value="Detergente Máquina Roupa">Detergente Máquina Roupa</option>
-                        <option value="Ervilhas Congeladas">Ervilhas Congeladas</option>
-                        <option value="Escova Dentes">Escova Dentes</option>
-                        <option value="Espinafres">Espinafres</option>
-                        <option value="Esponja Lavar Loiça">Esponja Lavar Loiça</option>
-                        <option value="Farinha Trigo">Farinha Trigo</option>
-                        <option value="Fiambre de Frango">Fiambre de Frango</option>
-                        <option value="Fiambre Peru">Fiambre Peru</option>
-                        <option value="Fio Dental">Fio Dental</option>
-                        <option value="Gel Cabelo">Gel Cabelo</option>
-                        <option value="Gel de Banho">Gel de Banho</option>
-                        <option value="Gelado">Gelado</option>
-                        <option value="Hambúrguer Frango">Hambúrguer Frango</option>
-                        <option value="Hambúrguer Vaca">Hambúrguer Vaca</option>
-                        <option value="Iogurte de Fruta">Iogurte Fruta</option>
-                        <option value="Iogurte Grego">Iogurte Grego</option>
-                        <option value="Iogurte Líquido">Iogurte Líquido</option>
-                        <option value="Iogurte Natural">Iogurte Natural</option>
-                        <option value="Ketchup">Ketchup</option>
-                        <option value="Kiwi">Kiwi</option>
-                        <option value="Lâmpada LED">Lâmpada LED</option>
-                        <option value="Laranja">Laranja</option>
-                        <option value="Lasanha Congelada">Lasanha Congelada</option>
-                        <option value="Leite Condensado">Leite Condensado</option>
-                        <option value="Leite Magro">Leite Magro</option>
-                        <option value="Leite Meio Gordo">Leite Meio Gordo</option>
-                        <option value="Limpa Vidros">Limpa Vidros</option>
-                        <option value="Lixívia">Lixívia</option>
-                        <option value="Maçãs">Maçãs</option>
-                        <option value="Maionese">Maionese</option>
-                        <option value="Manga">Manga</option>
-                        <option value="Manteiga">Manteiga</option>
-                        <option value="Manteiga com Sal">Manteiga com Sal</option>
-                        <option value="Margarina">Margarina</option>
-                        <option value="Massa Esparguete">Massa Esparguete</option>
-                        <option value="Massa Fusilli">Massa Fusilli</option>
-                        <option value="Massa Penne">Massa Penne</option>
-                        <option value="Melancia">Melancia</option>
-                        <option value="Melão">Melão</option>
-                        <option value="Milho Congelado">Milho Congelado</option>
-                        <option value="Molho Tomate">Molho Tomate</option>
-                        <option value="Mostarda">Mostarda</option>
-                        <option value="Natas">Natas</option>
-                        <option value="Ovos M (Meia Dúzia)">Ovos M (Meia Dúzia)</option>
-                        <option value="Palitos Gelado">Palitos Gelado</option>
-                        <option value="Pão Alho">Pão Alho</option>
-                        <option value="Pão Centeio">Pão Centeio</option>
-                        <option value="Pão de Forma">Pão de Forma</option>
-                        <option value="Papel Alumínio">Papel Alumínio</option>
-                        <option value="Papel Higiénico">Papel Higiénico</option>
-                        <option value="Pasta Dentes">Pasta Dentes</option>
-                        <option value="Pastilhas Máq Loiça">Pastilhas Máq Loiça</option>
-                        <option value="Peito de Frango">Peito de Frango</option>
-                        <option value="Película Adherente">Película Adherente</option>
-                        <option value="Pepino">Pepino</option>
-                        <option value="Pera">Pera</option>
-                        <option value="Pilhas AA">Pilhas AA</option>
-                        <option value="Pimentão">Pimentão</option>
-                        <option value="Pizza Congelada">Pizza Congelada</option>
-                        <option value="Presunto Fatiado">Presunto Fatiado</option>
-                        <option value="Queijo Flamengo Fatias">Queijo Flamengo Fatias</option>
-                        <option value="Queijo Fresco">Queijo Fresco</option>
-                        <option value="Queijo Fresco Cabra">Queijo Fresco Cabra</option>
-                        <option value="Queijo Ralado">Queijo Ralado</option>
-                        <option value="Ração Cão">Ração Cão</option>
-                        <option value="Ração Gato">Ração Gato</option>
-                        <option value="Requeijão">Requeijão</option>
-                        <option value="Sabonete Líquido">Sabonete Líquido</option>
-                        <option value="Sacos Lixo">Sacos Lixo</option>
-                        <option value="Sal Fino">Sal Fino</option>
-                        <option value="Salchichas">Salchichas</option>
-                        <option value="Salmão Fresco">Salmão Fresco</option>
-                        <option value="Sumo Laranja">Sumo Laranja</option>
-                        <option value="Toalhetes Húmidos">Toalhetes Húmidos</option>
-                        <option value="Tomate">Tomate</option>
+                    <option value="Achocolatado em Pó">Achocolatado em Pó</option>
+                    <option value="Açúcar Branco">Açúcar Branco</option>
+                    <option value="Açúcar Mascavado">Açúcar Mascavado</option>
+                    <option value="Água com Gás">Água com Gás</option>
+                    <option value="Água Mineral (Garrafão)">Água Mineral (Garrafão)</option>
+                    <option value="Água sem Gás (1.5L)">Água sem Gás (1.5L)</option>
+                    <option value="Alecrim">Alecrim</option>
+                    <option value="Alface">Alface</option>
+                    <option value="Alho">Alho</option>
+                    <option value="Alho Francês">Alho Francês</option>
+                    <option value="Amaciador Cabelo">Amaciador Cabelo</option>
+                    <option value="Amaciador Roupa">Amaciador Roupa</option>
+                    <option value="Amêndoas">Amêndoas</option>
+                    <option value="Areia para Gato">Areia para Gato</option>
+                    <option value="Arroz Agulha">Arroz Agulha</option>
+                    <option value="Arroz Basmati">Arroz Basmati</option>
+                    <option value="Arroz Carolino">Arroz Carolino</option>
+                    <option value="Arroz Integral">Arroz Integral</option>
+                    <option value="Atum em Óleo (Lata)">Atum em Óleo (Lata)</option>
+                    <option value="Aveia em Flocos">Aveia em Flocos</option>
+                    <option value="Azeite Virgem Extra">Azeite Virgem Extra</option>
+                    <option value="Azeitonas">Azeitonas</option>
+                    <option value="Bacalhau Desfiado">Bacalhau Desfiado</option>
+                    <option value="Bacalhau Postas">Bacalhau Postas</option>
+                    <option value="Banana">Banana</option>
+                    <option value="Batata Doce">Batata Doce</option>
+                    <option value="Batata Frita Palha">Batata Frita Palha</option>
+                    <option value="Batatas">Batatas</option>
+                    <option value="Batatas Pré-Fritas">Batatas Pré-Fritas</option>
+                    <option value="Beringela">Beringela</option>
+                    <option value="Bifanas de Porco">Bifanas de Porco</option>
+                    <option value="Bolachas Água e Sal">Bolachas Água e Sal</option>
+                    <option value="Bolachas Maria">Bolachas Maria</option>
+                    <option value="Brócolos">Brócolos</option>
+                    <option value="Café em Cápsulas">Café em Cápsulas</option>
+                    <option value="Café Moído">Café Moído</option>
+                    <option value="Carapau Fresco">Carapau Fresco</option>
+                    <option value="Carne Picada de Vaca">Carne Picada de Vaca</option>
+                    <option value="Cebola Roxa">Cebola Roxa</option>
+                    <option value="Cebolas">Cebolas</option>
+                    <option value="Cenoura">Cenoura</option>
+                    <option value="Cereais Pequeno Almoço">Cereais Pequeno Almoço</option>
+                    <option value="Cerveja (Lata)">Cerveja (Lata)</option>
+                    <option value="Cerveja (Mini)">Cerveja (Mini)</option>
+                    <option value="Champô">Champô</option>
+                    <option value="Chá Preto">Chá Preto</option>
+                    <option value="Chá Verde">Chá Verde</option>
+                    <option value="Chocolate Culinária">Chocolate Culinária</option>
+                    <option value="Chocolate em Tablete">Chocolate em Tablete</option>
+                    <option value="Coentros">Coentros</option>
+                    <option value="Cogumelos">Cogumelos</option>
+                    <option value="Cogumelos Congelados">Cogumelos Congelados</option>
+                    <option value="Cotonetes">Cotonetes</option>
+                    <option value="Couve Branca">Couve Branca</option>
+                    <option value="Couve Coração">Couve Coração</option>
+                    <option value="Couve Lombarda">Couve Lombarda</option>
+                    <option value="Curgete">Curgete</option>
+                    <option value="Desinfetante">Desinfetante</option>
+                    <option value="Desodorizante">Desodorizante</option>
+                    <option value="Detergente Loiça">Detergente Loiça</option>
+                    <option value="Detergente Máquina Roupa">Detergente Máquina Roupa</option>
+                    <option value="Discos Desmaquilhantes">Discos Desmaquilhantes</option>
+                    <option value="Dourada Fresca">Dourada Fresca</option>
+                    <option value="Ervilhas (Lata)">Ervilhas (Lata)</option>
+                    <option value="Ervilhas Congeladas">Ervilhas Congeladas</option>
+                    <option value="Escova Dentes">Escova Dentes</option>
+                    <option value="Esparguete Integral">Esparguete Integral</option>
+                    <option value="Espinafres">Espinafres</option>
+                    <option value="Esponja Lavar Loiça">Esponja Lavar Loiça</option>
+                    <option value="Farinha Trigo">Farinha Trigo</option>
+                    <option value="Feijão Frade (Lata)">Feijão Frade (Lata)</option>
+                    <option value="Feijão Manteiga (Lata)">Feijão Manteiga (Lata)</option>
+                    <option value="Feijão Preto (Lata)">Feijão Preto (Lata)</option>
+                    <option value="Fiambre de Frango">Fiambre de Frango</option>
+                    <option value="Fiambre Peru">Fiambre Peru</option>
+                    <option value="Fio Dental">Fio Dental</option>
+                    <option value="Fraldas">Fraldas</option>
+                    <option value="Frango Assado">Frango Assado</option>
+                    <option value="Frango Inteiro">Frango Inteiro</option>
+                    <option value="Gel Cabelo">Gel Cabelo</option>
+                    <option value="Gel de Banho">Gel de Banho</option>
+                    <option value="Gelado">Gelado</option>
+                    <option value="Gengibre">Gengibre</option>
+                    <option value="Grão de Bico (Lata)">Grão de Bico (Lata)</option>
+                    <option value="Guardanapos de Papel">Guardanapos de Papel</option>
+                    <option value="Hambúrguer Frango">Hambúrguer Frango</option>
+                    <option value="Hambúrguer Vaca">Hambúrguer Vaca</option>
+                    <option value="Hambúrguer Vegetariano">Hambúrguer Vegetariano</option>
+                    <option value="Ice Tea">Ice Tea</option>
+                    <option value="Iogurte de Fruta">Iogurte de Fruta</option>
+                    <option value="Iogurte Grego">Iogurte Grego</option>
+                    <option value="Iogurte Líquido">Iogurte Líquido</option>
+                    <option value="Iogurte Natural">Iogurte Natural</option>
+                    <option value="Iogurte Skyr">Iogurte Skyr</option>
+                    <option value="Ketchup">Ketchup</option>
+                    <option value="Kiwi">Kiwi</option>
+                    <option value="Lâmpada LED">Lâmpada LED</option>
+                    <option value="Laranja">Laranja</option>
+                    <option value="Lasanha Congelada">Lasanha Congelada</option>
+                    <option value="Leite com Chocolate">Leite com Chocolate</option>
+                    <option value="Leite Condensado">Leite Condensado</option>
+                    <option value="Leite de Aveia">Leite de Aveia</option>
+                    <option value="Leite de Soja">Leite de Soja</option>
+                    <option value="Leite Magro">Leite Magro</option>
+                    <option value="Leite Meio Gordo">Leite Meio Gordo</option>
+                    <option value="Leite sem Lactose">Leite sem Lactose</option>
+                    <option value="Limão">Limão</option>
+                    <option value="Limpa Vidros">Limpa Vidros</option>
+                    <option value="Lixívia">Lixívia</option>
+                    <option value="Lixívia Cores">Lixívia Cores</option>
+                    <option value="Lombos de Salmão Congelados">Lombos de Salmão Congelados</option>
+                    <option value="Maçãs">Maçãs</option>
+                    <option value="Maionese">Maionese</option>
+                    <option value="Manga">Manga</option>
+                    <option value="Manteiga">Manteiga</option>
+                    <option value="Manteiga com Sal">Manteiga com Sal</option>
+                    <option value="Manteiga de Amendoim">Manteiga de Amendoim</option>
+                    <option value="Margarina">Margarina</option>
+                    <option value="Massa Cotovelos">Massa Cotovelos</option>
+                    <option value="Massa Esparguete">Massa Esparguete</option>
+                    <option value="Massa Espirais">Massa Espirais</option>
+                    <option value="Massa Folhada">Massa Folhada</option>
+                    <option value="Massa Fusilli">Massa Fusilli</option>
+                    <option value="Massa Penne">Massa Penne</option>
+                    <option value="Mel">Mel</option>
+                    <option value="Melancia">Melancia</option>
+                    <option value="Melão">Melão</option>
+                    <option value="Meloa">Meloa</option>
+                    <option value="Milho Congelado">Milho Congelado</option>
+                    <option value="Molho Tomate">Molho Tomate</option>
+                    <option value="Morangos">Morangos</option>
+                    <option value="Mostarda">Mostarda</option>
+                    <option value="Natas">Natas</option>
+                    <option value="Óleo Alimentar">Óleo Alimentar</option>
+                    <option value="Ovos M (Meia Dúzia)">Ovos M (Meia Dúzia)</option>
+                    <option value="Palitos">Palitos</option>
+                    <option value="Pão Alho">Pão Alho</option>
+                    <option value="Pão Centeio">Pão Centeio</option>
+                    <option value="Pão de Forma">Pão de Forma</option>
+                    <option value="Pão de Mistura">Pão de Mistura</option>
+                    <option value="Pão de Sementes">Pão de Sementes</option>
+                    <option value="Pão Ralado">Pão Ralado</option>
+                    <option value="Papel Alumínio">Papel Alumínio</option>
+                    <option value="Papel Higiénico">Papel Higiénico</option>
+                    <option value="Papel Vegetal">Papel Vegetal</option>
+                    <option value="Pasta Dentes">Pasta Dentes</option>
+                    <option value="Pastilhas Máq Loiça">Pastilhas Máq Loiça</option>
+                    <option value="Peito de Frango">Peito de Frango</option>
+                    <option value="Película Aderente">Película Aderente</option>
+                    <option value="Pepino">Pepino</option>
+                    <option value="Pera">Pera</option>
+                    <option value="Pescada Congelada">Pescada Congelada</option>
+                    <option value="Pêssego">Pêssego</option>
+                    <option value="Pilhas AA">Pilhas AA</option>
+                    <option value="Pilhas AAA">Pilhas AAA</option>
+                    <option value="Pimenta Preta">Pimenta Preta</option>
+                    <option value="Pimentos">Pimentos</option>
+                    <option value="Pizza Congelada">Pizza Congelada</option>
+                    <option value="Polpa de Tomate">Polpa de Tomate</option>
+                    <option value="Presunto Fatiado">Presunto Fatiado</option>
+                    <option value="Queijo Curado">Queijo Curado</option>
+                    <option value="Queijo Flamengo Fatias">Queijo Flamengo Fatias</option>
+                    <option value="Queijo Fresco">Queijo Fresco</option>
+                    <option value="Queijo Fresco Cabra">Queijo Fresco Cabra</option>
+                    <option value="Queijo Ralado">Queijo Ralado</option>
+                    <option value="Ração Cão">Ração Cão</option>
+                    <option value="Comida Húmida Cão">Comida Húmida Cão</option>
+                    <option value="Ração Gato">Ração Gato</option>
+                    <option value="Comida Húmida Gato">Comida Húmida Gato</option>
+                    <option value="Refrigerante Cola">Refrigerante Cola</option>
+                    <option value="Requeijão">Requeijão</option>
+                    <option value="Robalo Fresco">Robalo Fresco</option>
+                    <option value="Rolo de Cozinha">Rolo de Cozinha</option>
+                    <option value="Rúcula">Rúcula</option>
+                    <option value="Sabonete Líquido">Sabonete Líquido</option>
+                    <option value="Sacos Lixo">Sacos Lixo</option>
+                    <option value="Sal Fino">Sal Fino</option>
+                    <option value="Sal Grosso">Sal Grosso</option>
+                    <option value="Salmão Fresco">Salmão Fresco</option>
+                    <option value="Salmão Fumado">Salmão Fumado</option>
+                    <option value="Salsichas em Lata">Salsichas em Lata</option>
+                    <option value="Salsichas Frescas">Salsichas Frescas</option>
+                    <option value="Sopa Instantânea">Sopa Instantânea</option>
+                    <option value="Sumo de Maçã">Sumo de Maçã</option>
+                    <option value="Sumo de Laranja">Sumo de Laranja</option>
+                    <option value="Toalhetes Húmidos">Toalhetes Húmidos</option>
+                    <option value="Tomate">Tomate</option>
+                    <option value="Tostas">Tostas</option>
+                    <option value="Uvas">Uvas</option>
+                    <option value="Vinagre de Sidra">Vinagre de Sidra</option>
+                    <option value="Vinagre de Vinho">Vinagre de Vinho</option>
+                    <option value="Vinho Branco">Vinho Branco</option>
+                    <option value="Vinho Tinto">Vinho Tinto</option>
                 </select>
                 <div id="dica-preco" class="dica-preco" style="display: none;"></div>
             </div>
             <div class="form-group">
                 <label><span class="material-icons">store</span> Supermercado</label>
-                <select id="supermercado" required>
-                    <option value="" disabled selected>🛒 Escolha o supermercado...</option>
-                    <option value="Continente">Continente</option>
-                    <option value="Pingo Doce">Pingo Doce</option>
-                    <option value="Lidl">Lidl</option>
-                    <option value="Auchan">Auchan</option>
-                    <option value="Mercadona">Mercadona</option>
-                    <option value="Aldi">Aldi</option>
-                    <option value="Minipreço">Minipreço</option>
-                </select>
+                <input type="hidden" id="supermercado" value="Todos">
+                <div id="zona-botoes-supermercado" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                    <div style="color: #aaa; font-size: 0.9em; font-style: italic;">
+                        Escolhe um produto para ver os preços...
+                    </div>
+                </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -202,23 +280,22 @@
 
     <div class="area-lista">
         <div class="filtro-supermercado" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-        <label><span class="material-icons">filter_alt</span> Filtrar por supermercado:</label>
-        <select id="filtroSupermercadoPrincipal">
-            <option value="">Todos os supermercados</option>
-        </select>
-        <button id="limparFiltro" class="btn-limpar-filtro" title="Limpar filtro">
-            <span class="material-icons">clear</span>
-        </button>
-    </div>
-    <button id="btnShareShoppingList" class="btn-share" title="Partilhar lista de compras" >
-        <span class="material-icons">share</span>
-    </button>
-</div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <label><span class="material-icons">filter_alt</span> Filtrar por supermercado:</label>
+                <select id="filtroSupermercadoPrincipal">
+                    <option value="">Todos os supermercados</option>
+                </select>
+                <button id="limparFiltro" class="btn-limpar-filtro" title="Limpar filtro">
+                    <span class="material-icons">clear</span>
+                </button>
+            </div>
+        </div>
 
         <div class="cabecalho-recibo">
+            <button id="btnShareShoppingList" class="btn-share" title="Partilhar lista de compras">
+                <span class="material-icons">share</span>
+            </button>
             <span class="material-icons">receipt</span> LISTA DE COMPRAS
-            
         </div>
 
         <div id="lista-itens" class="lista-itens-container"></div>
@@ -228,6 +305,9 @@
             <span id="valor-total">0.00</span>
             <span class="moeda">€</span>
         </div>
+        <button id="btnLimparLista" class="btn-limpar-total" onclick="limparListaCompleta()">
+            <span class="material-icons">delete_sweep</span> Limpar Carrinho
+        </button>
     </div>
 </div>
 
@@ -278,11 +358,13 @@
     // =========================================================================
     let todasAsComprasGlobais = [];     // Armazena todos os itens para o Modo Compras
     let filtroAtivo = '';              // Filtro ativo na página principal
+    const cachePrecos = {};            // Cache para preços por produto
 
     const selectProduto = document.getElementById('produto');
-    const selectSupermercado = document.getElementById('supermercado');
     const inputPreco = document.getElementById('preco');
     const avisoPreco = document.getElementById('dica-preco');
+    const zonaBotoes = document.getElementById('zona-botoes-supermercado');
+    const inputHiddenSup = document.getElementById('supermercado');
 
     // =========================================================================
     // 2. FUNÇÕES AUXILIARES (escapeHtml, getDisplayName)
@@ -307,53 +389,97 @@
     }
 
     // =========================================================================
-    // 3. FUNÇÕES DE PREÇOS (estimado e mais barato)
+    // 3. LÓGICA DE PREÇOS COM IA (BOTÕES DINÂMICOS E CACHE)
     // =========================================================================
-    async function procurarPreco() {
-        const produto = selectProduto.value;
-        const supermercado = selectSupermercado.value;
-        if (produto && supermercado) {
-            try {
-                const resposta = await fetch(`/api/preco_estimado?produto=${encodeURIComponent(produto)}&supermercado=${encodeURIComponent(supermercado)}`);
-                const dados = await resposta.json();
-                if (dados.preco !== null) {
-                    inputPreco.value = dados.preco;
-                    avisoPreco.style.display = 'none';
-                } else {
-                    inputPreco.value = '';
-                    avisoPreco.style.display = 'flex';
-                }
-            } catch (erro) {
-                console.error("Erro ao procurar preço:", erro);
-            }
-        }
-    }
-
-    selectProduto.addEventListener('change', procurarPreco);
-    selectSupermercado.addEventListener('change', procurarPreco);
-
     if (selectProduto) {
         selectProduto.addEventListener('change', async function() {
             const produto = this.value;
-            if (!produto) {
-                avisoPreco.style.display = 'none';
+            if (!produto) return;
+
+            // Verifica cache
+            if (cachePrecos[produto]) {
+                renderizarInterfaceIA(cachePrecos[produto]);
                 return;
             }
+
+            // Mostra spinner
+            avisoPreco.style.display = 'block';
+            avisoPreco.innerHTML = `
+                <div style="padding:12px; background: rgba(255,255,255,0.1); border-radius:8px; display: flex; align-items: center;">
+                    <span class="material-icons spinner" style="animation: spin 1s linear infinite;">autorenew</span> 
+                    <span style="margin-left: 10px;">A consultar preços em tempo real...</span>
+                </div>`;
+            zonaBotoes.innerHTML = `<p style="color:#aaa; font-style:italic;">A aguardar resposta da IA...</p>`;
+
             try {
-                const resposta = await fetch(`/api/produto_mais_barato?produto=${encodeURIComponent(produto)}`);
-                if (resposta.ok) {
-                    const dados = await resposta.json();
-                    avisoPreco.innerHTML = `💡 Mais barato no <strong>${dados.supermercado}</strong> por ${dados.preco.toFixed(2)}€.`;
-                    avisoPreco.style.display = 'block';
+                const resp = await fetch('/api/compras/preco-produto', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ produto: produto })
+                });
+                const dados = await resp.json();
+
+                if (dados.sucesso && dados.precos) {
+                    cachePrecos[produto] = dados.precos;
+                    renderizarInterfaceIA(dados.precos);
                 } else {
-                    avisoPreco.style.display = 'none';
+                    throw new Error('Resposta inválida da IA');
                 }
-            } catch (erro) {
-                console.error("Erro ao buscar preço mais barato:", erro);
-                avisoPreco.style.display = 'none';
+            } catch (e) {
+                console.error(e);
+                avisoPreco.innerHTML = `<div style="color:#ff4444; padding:10px;">⚠️ Erro ao consultar preços.</div>`;
+                zonaBotoes.innerHTML = `<p style="color:#aaa;">Não foi possível obter preços. Tente novamente.</p>`;
             }
         });
     }
+
+    function renderizarInterfaceIA(precos) {
+        const mercados = Object.keys(precos);
+        if (mercados.length === 0) return;
+
+        // Encontra o mais barato
+        let maisBarato = mercados[0];
+        mercados.forEach(m => {
+            if (precos[m] < precos[maisBarato]) maisBarato = m;
+        });
+
+        // Atualiza aviso
+        avisoPreco.style.display = 'block';
+        avisoPreco.innerHTML = `
+            <div style="padding:10px; background:#155724; color:#d4edda; border-radius:8px; border: 1px solid #c3e6cb;">
+                <span class="material-icons" style="vertical-align:middle; margin-right:5px;">auto_awesome</span>
+                Opção mais barata: <strong>${maisBarato}</strong> (${precos[maisBarato].toFixed(2)}€)
+            </div>`;
+
+        // Gera botões
+        let htmlBotoes = `
+            <button type="button" class="btn-supermercado selecionado" id="btn-Todos" 
+                onclick="aplicarPrecoIA('Todos', '', 'btn-Todos')">🌍 Todos</button>`;
+        mercados.forEach(m => {
+            const idBtn = 'btn-' + m.replace(/\s+/g, '');
+            const icon = (m === maisBarato) ? '🌟' : '🛒';
+            htmlBotoes += `
+                <button type="button" class="btn-supermercado" id="${idBtn}" 
+                    onclick="aplicarPrecoIA('${m}', ${precos[m]}, '${idBtn}')">
+                    ${icon} ${m}: ${precos[m].toFixed(2)}€
+                </button>`;
+        });
+        zonaBotoes.innerHTML = htmlBotoes;
+    }
+
+    window.aplicarPrecoIA = function(mercado, preco, idBotao) {
+        inputHiddenSup.value = mercado;
+        if (preco) {
+            inputPreco.value = parseFloat(preco).toFixed(2);
+            inputPreco.style.background = '#d4edda';
+            setTimeout(() => inputPreco.style.background = '', 500);
+        } else {
+            inputPreco.value = '';
+        }
+        document.querySelectorAll('.btn-supermercado').forEach(b => b.classList.remove('selecionado'));
+        const btn = document.getElementById(idBotao);
+        if (btn) btn.classList.add('selecionado');
+    };
 
     // =========================================================================
     // 4. CARREGAR E EXIBIR A LISTA DE COMPRAS (com suporte a partilha e permissões)
@@ -373,7 +499,7 @@
             divLista.innerHTML = '';
             let total = 0;
 
-            // Aviso se a lista for partilhada (algum item com is_owner=0)
+            // Aviso se a lista for partilhada
             document.querySelectorAll('.shared-list-warning').forEach(el => el.remove());
             const sharedItems = itens.filter(item => item.is_owner === 0);
             if (sharedItems.length > 0) {
@@ -446,13 +572,13 @@
     }
 
     // =========================================================================
-    // 5. ADICIONAR, ALTERNAR E REMOVER ITENS (APIs)
+    // 5. ADICIONAR, ALTERNAR, REMOVER E LIMPAR ITENS (APIs)
     // =========================================================================
     document.getElementById('formCompras').addEventListener('submit', async (e) => {
         e.preventDefault();
         const dados = {
             produto: selectProduto.value,
-            supermercado: selectSupermercado.value,
+            supermercado: inputHiddenSup.value,
             quantidade: parseInt(document.getElementById('quantidade').value),
             preco_unidade: parseFloat(inputPreco.value)
         };
@@ -467,6 +593,7 @@
                 document.getElementById('quantidade').value = 1;
                 inputPreco.value = '';
                 if (avisoPreco) avisoPreco.style.display = 'none';
+                zonaBotoes.innerHTML = `<div style="color: #aaa; font-size: 0.9em; font-style: italic;">Escolhe um produto para ver os preços...</div>`;
                 carregarCompras();
             } else {
                 const erroDB = await resposta.json();
@@ -478,34 +605,21 @@
         }
     });
 
-    /**
-     * Alterna o estado de comprado/não comprado de um item.
-     * Se o modal estiver aberto, atualiza a UI imediatamente e depois chama a API.
-     * Se o modal estiver fechado, recarrega a lista toda.
-     * @param {number} id - ID do item a alternar
-     * @param {HTMLElement} [checkboxElement] - Opcional: o elemento checkbox do modal para atualização direta (usado internamente)
-     */
     async function alternarCompra(id, checkboxElement) {
         const item = todasAsComprasGlobais.find(i => i.id === id);
         if (!item) return;
 
-        // Verifica permissões
         if (item.is_owner != 1 && item.can_edit != 1) {
             alert('Não tens permissão para editar este item.');
-            if (checkboxElement) {
-                checkboxElement.checked = !checkboxElement.checked; // reverter
-            }
+            if (checkboxElement) checkboxElement.checked = !checkboxElement.checked;
             return;
         }
 
-        // Inverte estado localmente (otimista)
         const novoEstado = !item.comprado;
         item.comprado = novoEstado;
 
-        // Se o modal está aberto, atualiza a UI sem recarregar
         const modal = document.getElementById('modalModoCompras');
         if (modal && modal.style.display === 'block') {
-            // Procura a div do item no modal
             const divItem = document.querySelector(`.item-modo-compras[data-id="${id}"]`);
             if (divItem) {
                 const checkbox = divItem.querySelector('.checkbox-gigante');
@@ -515,11 +629,9 @@
             }
         }
 
-        // Envia a atualização ao servidor
         try {
             const resposta = await fetch(`/api/compras/${id}/alternar`, { method: 'PUT' });
             if (!resposta.ok) {
-                // Em caso de erro, reverter localmente
                 item.comprado = !novoEstado;
                 if (modal && modal.style.display === 'block') {
                     const divItem = document.querySelector(`.item-modo-compras[data-id="${id}"]`);
@@ -535,7 +647,6 @@
             }
         } catch (erro) {
             console.error('Erro na chamada API:', erro);
-            // Reverter localmente também em caso de falha de rede
             item.comprado = !novoEstado;
             if (modal && modal.style.display === 'block') {
                 const divItem = document.querySelector(`.item-modo-compras[data-id="${id}"]`);
@@ -549,7 +660,6 @@
             alert('Erro de rede. Tente novamente.');
         }
 
-        // Se o modal estiver fechado, recarrega a lista principal
         if (!modal || modal.style.display !== 'block') {
             carregarCompras();
         }
@@ -557,7 +667,6 @@
 
     async function removerCompra(id) {
         const item = todasAsComprasGlobais.find(i => i.id === id);
-        
         if (item && item.is_owner != 1 && item.can_edit != 1) {
             alert('Não tens permissão para remover este item.');
             return;
@@ -565,6 +674,19 @@
         if (confirm("Remover do carrinho?")) {
             await fetch(`/api/compras/${id}`, { method: 'DELETE' });
             carregarCompras();
+        }
+    }
+
+    async function limparListaCompleta() {
+        if (confirm("Tens a certeza que queres apagar TODOS os teus itens da lista?")) {
+            try {
+                const resposta = await fetch('/api/compras/limpar', { method: 'DELETE' });
+                if (resposta.ok) carregarCompras();
+                else alert("Erro ao limpar a lista.");
+            } catch (erro) {
+                console.error(erro);
+                alert("Erro de rede ao limpar a lista.");
+            }
         }
     }
 
@@ -658,20 +780,18 @@
             atualizarFiltrosModoCompras();
             renderizarModoCompras();
         });
-    } else {
-        console.error('Elementos do modo compras não encontrados!');
     }
 
     if (closeModoCompras) {
         closeModoCompras.addEventListener('click', () => {
             modalModoCompras.style.display = 'none';
-            carregarCompras(); // Atualiza a lista principal ao fechar
+            carregarCompras();
         });
     }
     window.addEventListener('click', (event) => {
         if (event.target == modalModoCompras) {
             modalModoCompras.style.display = 'none';
-            carregarCompras(); // Atualiza a lista principal ao fechar
+            carregarCompras();
         }
     });
 
@@ -697,78 +817,64 @@
 
     filtroModoCompras.addEventListener('change', renderizarModoCompras);
 
-    /**
-     * Renderiza os itens no modo compras.
-     * Cada item é uma div com uma checkbox funcional.
-     * A checkbox tem um evento onchange que chama alternarCompra com o ID e a própria checkbox.
-     */
     function renderizarModoCompras() {
-    listaModoCompras.innerHTML = '';
-    const filtro = filtroModoCompras.value;
-    const comprasFiltradas = todasAsComprasGlobais.filter(c => filtro === 'Todos' || c.supermercado === filtro);
-    
-    if (comprasFiltradas.length === 0) {
-        listaModoCompras.innerHTML = `
-            <div style="text-align:center; color:#aaa; margin-top:40px;">
-                <span class="material-icons" style="font-size: 3rem; opacity: 0.5;">remove_shopping_cart</span>
-                <p style="font-size: 1.1rem; margin-top: 10px;">Não tens produtos registados<br>para este supermercado.</p>
-            </div>`;
-        return;
-    }
-
-    comprasFiltradas.forEach(compra => {
-        // Verifica permissões
-        const isOwner = compra.is_owner == 1 || compra.is_owner === true;
-        const canEdit = compra.can_edit == 1 || compra.can_edit === true;
-        const hasEditPermission = isOwner || canEdit;
+        listaModoCompras.innerHTML = '';
+        const filtro = filtroModoCompras.value;
+        const comprasFiltradas = todasAsComprasGlobais.filter(c => filtro === 'Todos' || c.supermercado === filtro);
         
-        const div = document.createElement('div');
-        div.className = `item-modo-compras ${compra.comprado ? 'comprado' : ''}`;
-        div.setAttribute('data-id', compra.id);
-        
-        const precoExibicao = (compra.preco_unidade || 0).toFixed(2);
-        const iconeLoja = compra.supermercado ? 'storefront' : 'help_outline';
-        
-        // Cria a checkbox (apenas visual, sem evento próprio)
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'checkbox-gigante';
-        checkbox.checked = compra.comprado;
-        checkbox.disabled = !hasEditPermission;
-        // Remove qualquer pointer-events que possa estar no CSS
-        checkbox.style.pointerEvents = 'none';
-        
-        // Conteúdo do item
-        div.innerHTML = `
-            <div class="modo-info">
-                <span class="nome">${compra.quantidade}x ${escapeHtml(compra.produto)}</span>
-                <span class="supermercado">
-                    <span class="material-icons" style="font-size: 16px;">${iconeLoja}</span>
-                    ${compra.supermercado || 'Qualquer Supermercado'}
-                </span>
-                <span class="preco">${precoExibicao}€ /un</span>
-            </div>
-        `;
-        
-        div.appendChild(checkbox);
-        
-        // Se tiver permissão, adiciona o evento de clique na div
-        if (hasEditPermission) {
-            div.style.cursor = 'pointer';
-            div.onclick = async (e) => {
-                // Impede que o clique na checkbox dispare duas vezes
-                if (e.target === checkbox) return;
-                // Chama a função que alterna o estado
-                await alternarCompra(compra.id);
-            };
-        } else {
-            div.style.opacity = '0.6';
-            div.style.cursor = 'not-allowed';
+        if (comprasFiltradas.length === 0) {
+            listaModoCompras.innerHTML = `
+                <div style="text-align:center; color:#aaa; margin-top:40px;">
+                    <span class="material-icons" style="font-size: 3rem; opacity: 0.5;">remove_shopping_cart</span>
+                    <p style="font-size: 1.1rem; margin-top: 10px;">Não tens produtos registados<br>para este supermercado.</p>
+                </div>`;
+            return;
         }
-        
-        listaModoCompras.appendChild(div);
-    });
-}
+
+        comprasFiltradas.forEach(compra => {
+            const isOwner = compra.is_owner == 1 || compra.is_owner === true;
+            const canEdit = compra.can_edit == 1 || compra.can_edit === true;
+            const hasEditPermission = isOwner || canEdit;
+            
+            const div = document.createElement('div');
+            div.className = `item-modo-compras ${compra.comprado ? 'comprado' : ''}`;
+            div.setAttribute('data-id', compra.id);
+            
+            const precoExibicao = (compra.preco_unidade || 0).toFixed(2);
+            const iconeLoja = compra.supermercado ? 'storefront' : 'help_outline';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'checkbox-gigante';
+            checkbox.checked = compra.comprado;
+            checkbox.disabled = !hasEditPermission;
+            checkbox.style.pointerEvents = 'none';
+            
+            div.innerHTML = `
+                <div class="modo-info">
+                    <span class="nome">${compra.quantidade}x ${escapeHtml(compra.produto)}</span>
+                    <span class="supermercado">
+                        <span class="material-icons" style="font-size: 16px;">${iconeLoja}</span>
+                        ${compra.supermercado || 'Qualquer Supermercado'}
+                    </span>
+                    <span class="preco">${precoExibicao}€ /un</span>
+                </div>
+            `;
+            div.appendChild(checkbox);
+            
+            if (hasEditPermission) {
+                div.style.cursor = 'pointer';
+                div.onclick = async (e) => {
+                    if (e.target === checkbox) return;
+                    await alternarCompra(compra.id);
+                };
+            } else {
+                div.style.opacity = '0.6';
+                div.style.cursor = 'not-allowed';
+            }
+            listaModoCompras.appendChild(div);
+        });
+    }
 
     // =========================================================================
     // 9. GESTÃO DE AMIGOS (modal e funções)

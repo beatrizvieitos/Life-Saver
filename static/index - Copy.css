@@ -219,21 +219,6 @@ button:hover {
     color: white;
 }
 
-/* Forçar os botões de supermercado a ficarem em coluna */
-.supermercados-container,
-.supermercados-grid,
-#supermercadosContainer,
-div:has(> .btn-supermercado) {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.btn-supermercado {
-    width: 100%;
-    justify-content: center;
-}
-
 /* Botão de apagar (icone lixo) – icon‑only */
 .btn-apagar {
     background: transparent;
@@ -280,13 +265,11 @@ div:has(> .btn-supermercado) {
     font-size: 1.4rem;
 }
 
-/* =========================================
-   NOVOS BOTÕES DE SUPERMERCADO – COR ALTERADA
-   ========================================= */
+/* Estilo dos novos botões de supermercado */
 .btn-supermercado {
-    background-color: var(--accent-primary); /* Laranja/dourado principal */
+    background-color: #444; /* Cinza escuro por defeito */
     color: #fff;
-    border: 1px solid #e2b334;
+    border: 1px solid #666;
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
@@ -299,12 +282,12 @@ div:has(> .btn-supermercado) {
 
 .btn-supermercado:hover {
     transform: translateY(-2px);
-    background-color: #b57c00; /* Tom mais escuro para o hover */
-    border-color: #f0c674;
+    background-color: #810b0b;
 }
 
+/* O estado "Selecionado" que destaca o botão */
 .btn-supermercado.selecionado {
-    background-color: var(--success, #0b4d0e); /* Verde para o selecionado */
+    background-color: var(--success, #0b4d0e); /* Fica Verde */
     border-color: #fff;
     font-weight: bold;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
@@ -666,60 +649,62 @@ div[style*="background: #252525"] select {
 }
 
 /* Aviso de lista partilhada */
-.shared-list-warning {
-    background-color: rgba(202, 150, 7, 0.2);
-    border-left: 4px solid var(--accent-primary);
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    border-radius: 24px;
-    font-size: 0.9rem;
-    color: var(--text-dim);
-}
+        .shared-list-warning {
+            background-color: rgba(202, 150, 7, 0.2);
+            border-left: 4px solid var(--accent-primary);
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
 
-/* Itens partilhados sem permissão de edição – desactivados */
-.med-item.shared-item .med-check input,
-.med-item.shared-item .med-actions button {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-/* Estilo para o modal de partilha */
-.share-friend-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-    padding: 8px;
-    border-bottom: 1px solid #ff1414;
-}
-.share-friend-info {
-    flex: 1;
-}
-.share-friend-options {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-.share-friend-options label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-}
-.share-friend-options input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-}
-/* Posicionamento do botão de partilha no móvel */
-@media (max-width: 768px) {
-    #btnShareMedicationList {
-        position: absolute;
-        top: 7px;
-        right: 60px;
-        z-index: 10;
-    }
-}
+        /* Itens partilhados sem permissão de edição – desactivados */
+        .med-item.shared-item .med-check input,
+        .med-item.shared-item .med-actions button {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        /* Estilo para o modal de partilha */
+        .share-friend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px;
+            border-bottom: 1px solid #ff1414;
+        }
+        .share-friend-info {
+            flex: 1;
+        }
+        .share-friend-options {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .share-friend-options label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .share-friend-options input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        /* Posicionamento do botão de partilha no móvel */
+        @media (max-width: 768px) {
+            #btnShareMedicationList {
+                position: absolute;
+                top: 7px;
+                right: 60px;
+                z-index: 10;
+            }
+        }
+
+
 
 /* =========================================
    BOTÃO ESPECÍFICO DA PÁGINA NOTAS
@@ -858,7 +843,7 @@ div[style*="background: #252525"] select {
         font-size: 1.05rem;
         line-height: 1.3;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
+        -webkit-line-clam: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }

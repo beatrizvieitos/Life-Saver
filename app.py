@@ -6,6 +6,18 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import mysql.connector
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import timedelta
+import requests
+import os
+import json
+import re
+from dotenv import load_dotenv
+from google import genai
+
+load_dotenv()   # Carrega as variáveis do ficheiro .env
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')   # Chave para Gemini (gratuita)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 app = Flask(__name__)
 app.secret_key = '549-937-952'
@@ -1112,10 +1124,145 @@ def api_tarefas_estado():
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals() and conn.is_connected(): conn.close()
 
+
+
 @app.route('/estatisticas')
 @login_required
 def estatisticas_page():
     return render_template('estatisticas.html')
+
+
+
+@app.route('/api/compras/limpar', methods=['DELETE'])
+@login_required
+def api_limpar_compras():
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        # Apaga apenas os itens do próprio utilizador (não apaga os que lhe foram partilhados)
+        cursor.execute("DELETE FROM compras WHERE utilizador_id = %s", (current_user.id,))
+        conn.commit()
+        return jsonify({'mensagem': 'Carrinho limpo com sucesso!'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'erro': str(err)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+
+
+@app.route('/api/compras/preco-produto', methods=['POST'])
+def preco_produto_groq():
+    dados = request.json
+    produto = dados.get('produto')
+    
+    if not produto:
+        return jsonify({"sucesso": False, "erro": "Produto não especificado"}), 400
+
+    # --- 1. Tentar Cache da Base de Dados PRIMEIRO ---
+    def get_cached_precos(prod_nome):
+        try:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute(
+                "SELECT supermercado, preco FROM catalogo_precos WHERE LOWER(produto) = LOWER(%s)",
+                (prod_nome,)
+            )
+            rows = cursor.fetchall()
+            if rows:
+                return {row['supermercado']: float(row['preco']) for row in rows}
+        except Exception as e:
+            print(f"Erro ao ler cache: {e}")
+        finally:
+            if 'cursor' in locals(): cursor.close()
+            if 'conn' in locals() and conn.is_connected(): conn.close()
+        return None
+
+    cached = get_cached_precos(produto)
+    if cached:
+        print(f"[CACHE] Preços encontrados para {produto}")
+        return jsonify({"sucesso": True, "precos": cached, "origem": "base_dados"})
+
+    # --- 2. Tentar Groq (Com modelo mais leve) ---
+    precos = None
+    try:
+        print(f"[IA] A pedir à Groq para: {produto}...")
+        # CORREÇÃO 1: As chavetas do JSON têm de ser duplicadas {{ e }} dentro de f-strings
+        prompt = f"""
+        Procura o preço atual, realista e médio em euros (€) do produto "{produto}" nos supermercados portugueses no ano de 2026.
+        Considera a inflação recente. NÃO inventes preços absurdamente baixos nem uses valores de anos passados.
+        Queremos o valor de uma marca branca normal ou o produto mais comum.
+        Supermercados: Continente, Pingo Doce, Lidl, Auchan, Mercadona, Aldi.
+        Devolve APENAS um JSON puro (sem texto antes ou depois): {{"Continente": 1.25, "Pingo Doce": 1.19, "Lidl": 1.20, "Auchan": 1.22, "Mercadona": 1.20, "Aldi": 1.19}}
+        """
+        response = requests.post(
+            GROQ_URL,
+            headers={
+                "Authorization": f"Bearer {GROQ_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.1,
+                "response_format": {"type": "json_object"}
+            },
+            timeout=8
+        )
+        
+        if response.status_code == 200:
+            conteudo = response.json()["choices"][0]["message"]["content"]
+            precos = json.loads(conteudo)
+            save_to_cache(produto, precos)
+            return jsonify({"sucesso": True, "precos": precos, "origem": "groq"})
+        
+        elif response.status_code == 429:
+            print("Groq atingiu o limite (429). A tentar Gemini...")
+    except Exception as e:
+        print(f"Erro na Groq: {e}")
+
+    # --- 3. Tentar Gemini (Fallback Final) ---
+    try:
+        print(f"[IA] A pedir ao Gemini para: {produto}...")
+        # CORREÇÃO 2: Indentação alinhada, aspas triplas fechadas e chavetas JSON duplicadas {{ }}
+        response = client.models.generate_content(
+            model="models/gemini-2.0-flash",
+            contents=f"""
+                Procura o preço atual, realista e médio em euros (€) do produto "{produto}" nos supermercados portugueses no ano de 2026.
+                Considera a inflação recente. NÃO inventes preços absurdamente baixos nem uses valores de anos passados.
+                Queremos o valor de uma marca branca normal ou o produto mais comum.
+                Supermercados: Continente, Pingo Doce, Lidl, Auchan, Mercadona, Aldi.
+                Devolve APENAS um JSON puro (sem texto antes ou depois): {{"Continente": 1.25, "Pingo Doce": 1.19, "Lidl": 1.20, "Auchan": 1.22, "Mercadona": 1.20, "Aldi": 1.19}}
+                """
+        )
+        text = response.text
+        json_match = re.search(r'\{.*\}', text, re.DOTALL)
+        if json_match:
+            precos = json.loads(json_match.group())
+            save_to_cache(produto, precos)
+            return jsonify({"sucesso": True, "precos": precos, "origem": "gemini"})
+    except Exception as e:
+        print(f"Erro no Gemini: {e}")
+
+    return jsonify({"sucesso": False, "erro": "Limite de todas as APIs excedido. Tenta mais tarde."}), 429
+
+# --- Função auxiliar para guardar no cache ---
+def save_to_cache(produto, precos):
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        for sup, preco in precos.items():
+            cursor.execute("""
+                INSERT INTO catalogo_precos (produto, supermercado, preco)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE preco = %s
+            """, (produto, sup, preco, preco))
+        conn.commit()
+    except Exception as e:
+        print(f"Erro ao salvar cache: {e}")
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
 
 # --------------------------------------------------------------
 # Executar a aplicação
