@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Task Boss</title>
+    <title>Life Saver</title>
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logomini.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
 <body>
+
 <div class="logo-topo">
     <img src="{{ url_for('static', filename='logo.png') }}" alt="Task Boss Logo" style="margin-top: -60px; width: 300px; height: auto; border-radius: 10%;">
 </div>
@@ -29,7 +30,11 @@
             </div>
             <button type="submit" class="btn-add btn-largo">ENTRAR</button>
         </form>
-        <span class="link-alternar" onclick="alternarVistas('registo')">Regista-te e começa a gerir as tuas tarefas!</span>
+        <span class="link-alternar" onclick="alternarVistas('registo')">Regista-te e começa a gerir a tua vida!</span>
+        <div style="margin-top: 15px; font-size: 0.9em; text-align: center;">
+    <a href="#" id="linkEsqueciUsername" style="color: var(--accent-primary); text-decoration: none;">Esqueci-me do Utilizador</a> | 
+    <a href="#" id="linkEsqueciPassword" style="color: var(--accent-primary); text-decoration: none;">Esqueci-me da Palavra-passe</a>
+</div>
     </div>
 
     <div id="seccao-registo">
@@ -48,6 +53,28 @@
             <button type="submit" class="btn-add btn-largo">REGISTAR</button>
         </form>
         <span class="link-alternar" onclick="alternarVistas('login')">Já tens conta? Faz Login.</span>
+    </div>
+</div>
+
+<div id="modalRecuperacao" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center;">
+    
+    <div class="modal-content" style="background-color: var(--card-bg, #27707b); margin: 15% auto; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: var(--shadow, 0 10px 25px -5px rgba(0,0,0,0.5)); position: relative; text-align: center;">
+        
+        <span id="fecharModalRecuperacao" style="color: var(--accent, #e3e3e3); float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        
+        <h2 id="tituloModalRecuperacao" style="color: var(--accent, #e3e3e3); margin-top: 0;">Recuperação</h2>
+        <p id="descricaoModalRecuperacao" style="color: var(--text-dim, #d2c1c1); font-size: 0.9em; margin-bottom: 20px;">Introduz o teu e-mail:</p>
+        
+        <form id="formRecuperacao" style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="email" id="emailRecuperacao" placeholder="O teu e-mail de registo" required 
+                   style="padding: 12px; border-radius: 8px; border: 1px solid var(--border, #e2b3345d); background-color: rgba(255, 255, 255, 0.9); color: #333; font-size: 1em;">
+            
+            <button type="submit" class="btn-supermercado" style="background-color: var(--accent-primary, #ca9607); color: #fff; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;">
+                Enviar
+            </button>
+        </form>
+        
+        <div id="msgRecuperacao" style="margin-top: 15px; font-weight: bold; font-size: 0.9em;"></div>
     </div>
 </div>
 
@@ -134,6 +161,93 @@
             msgDiv.innerText = "Erro ao ligar ao servidor.";
         }
     });
+
+// Captura os elementos do DOM
+const modalRecuperacao = document.getElementById('modalRecuperacao');
+const fecharModal = document.getElementById('fecharModalRecuperacao');
+const formRecuperacao = document.getElementById('formRecuperacao');
+const tituloModal = document.getElementById('tituloModalRecuperacao');
+const descModal = document.getElementById('descricaoModalRecuperacao');
+const emailInput = document.getElementById('emailRecuperacao');
+const msgRecuperacao = document.getElementById('msgRecuperacao');
+
+let tipoRecuperacao = ''; // Vai guardar se é 'username' ou 'password'
+
+// Abrir modal para "Esqueci-me do Utilizador"
+document.getElementById('linkEsqueciUsername').addEventListener('click', (e) => {
+    e.preventDefault();
+    tipoRecuperacao = 'username';
+    tituloModal.innerText = 'Recuperar Utilizador 👤';
+    descModal.innerText = 'Introduz o teu e-mail para receberes o teu nome de utilizador.';
+    abrirModal();
+});
+
+// Abrir modal para "Esqueci-me da Palavra-passe"
+document.getElementById('linkEsqueciPassword').addEventListener('click', (e) => {
+    e.preventDefault();
+    tipoRecuperacao = 'password';
+    tituloModal.innerText = 'Recuperar Palavra-passe 🔑';
+    descModal.innerText = 'Introduz o teu e-mail. Enviaremos um link de redefinição.';
+    abrirModal();
+});
+
+function abrirModal() {
+    emailInput.value = ''; // Limpa o input
+    msgRecuperacao.innerText = ''; // Limpa mensagens anteriores
+    modalRecuperacao.style.display = 'block'; // Mostra o modal
+}
+
+// Fechar o modal no "X"
+fecharModal.addEventListener('click', () => {
+    modalRecuperacao.style.display = 'none';
+});
+
+// Fechar o modal se o utilizador clicar fora da caixa
+window.addEventListener('click', (e) => {
+    if (e.target === modalRecuperacao) {
+        modalRecuperacao.style.display = 'none';
+    }
+});
+
+// Lidar com o envio do formulário do modal
+formRecuperacao.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = emailInput.value;
+    
+    // Mostra que está a carregar
+    msgRecuperacao.innerText = 'A enviar pedido... ⏳';
+    msgRecuperacao.style.color = 'var(--accent, #e3e3e3)';
+
+    // Decide qual é o endpoint com base no botão que o utilizador clicou antes
+    const endpoint = tipoRecuperacao === 'username' ? '/api/esqueci_username' : '/api/esqueci_password';
+
+    try {
+        const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+            msgRecuperacao.style.color = '#00C851'; // Verde sucesso
+            msgRecuperacao.innerText = data.mensagem;
+            
+            // Fecha o modal automaticamente após 3.5 segundos em caso de sucesso
+            setTimeout(() => {
+                modalRecuperacao.style.display = 'none';
+            }, 3500);
+        } else {
+            msgRecuperacao.style.color = '#ff4444'; // Vermelho erro
+            msgRecuperacao.innerText = data.erro || 'Ocorreu um erro inesperado.';
+        }
+    } catch (err) {
+        msgRecuperacao.style.color = '#ff4444';
+        msgRecuperacao.innerText = "Erro de ligação. Verifica a tua internet.";
+    }
+});
+
 </script>
+
 </body>
 </html>

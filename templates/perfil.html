@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Perfil - Life Saver</title>
+    <link rel="icon" href="{{ url_for('static', filename='logomini.ico') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+</head>
+<body>
+
+    <div class="logo-topo-container">
+        <a href="/" class="logo-link">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Task Boss Logo">
+        </a>
+    </div>
+
+    <div class="cabecalho">
+        <div class="esquerda">
+            <div class="menu-hamburger" id="menuHamburger">
+                <div class="hamburger-icon">☰</div>
+                <div class="menu-dropdown" id="menuDropdown">
+                    <a href="/" class="menu-item">Lista de Tarefas 📋</a>
+                    <a href="/notas" class="menu-item">As Minhas Notas ✍️</a>
+                    <a href="/listas" class="menu-item">Lista de Compras 🛒</a>
+                    <a href="/receitas" class="menu-item">As Minhas Receitas 👩‍🍳</a>
+                    <a href="/medicamentos" class="menu-item">Medicamentos 💊</a>
+                    <a href="/estatisticas" class="menu-item">Estatísticas 📊</a>
+                    <a href="#" id="openFriendsModal" class="menu-item">Amigos 👥</a>
+                </div>
+            </div>
+        </div>
+        <div class="centro">
+            <h2>O Meu Perfil 👤</h2>
+        </div>
+        <div class="direita">
+            <button class="btn-sair" onclick="fazerLogout()" title="Sair">
+                <span class="material-icons">logout</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="caixa-perfil">
+            <h2 style="color: var(--accent); margin-top: 0;">Os Meus Dados</h2>
+            <p style="color: var(--text-dim); margin-bottom: 20px;">@{{ current_user.username }}</p>
+
+            <form id="formPerfil">
+                <div class="campo-grupo">
+                    <label>Nome</label>
+                    <input type="text" id="p_nome" value="{{ current_user.nome }}" disabled required>
+                </div>
+                <div class="campo-grupo">
+                    <label>Apelido</label>
+                    <input type="text" id="p_apelido" value="{{ current_user.apelido }}" disabled required>
+                </div>
+                <div class="campo-grupo">
+                    <label>E-mail</label>
+                    <input type="email" id="p_email" value="{{ current_user.email }}" disabled required>
+                </div>
+                <div class="campo-grupo">
+                    <label>Palavra-passe</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" value="********" disabled style="flex: 1;">
+                    <button type="button" onclick="abrirModalPass()" class="btn-supermercado" style="padding: 6px 12px !important; width: max-content !important; min-width: 0 !important; flex: 0 0 auto !important; font-size: 0.8em; margin: 0;">Mudar Palavra-Passe</button>                    
+                    </div>
+                </div>
+
+                <div id="btnAcaoPrincipal">
+                    <button type="button" id="btnEditar" class="btn-supermercado" style="width: 100%; padding: 15px 25px !important; margin-top: 40px; font-size: 0.8em; white-space: nowrap;">Alterar Dados do Perfil</button>
+                </div>
+                <div id="btnsEdicao" style="display: none; gap: 10px; margin-top: 10px;">
+                    <button type="submit" class="btn-supermercado" style="flex: 1;">Guardar</button>
+                    <button type="button" id="btnCancelar" class="btn-supermercado" style="flex: 1; background: #555; border-color: #555;">Cancelar</button>
+                </div>
+            </form>
+            <div id="feedback_perfil" style="margin-top: 15px; font-weight: bold; font-size: 0.9em;"></div>
+        </div>
+    </div>
+
+    <div id="modalPass" class="modal">
+        <div class="modal-content">
+            <h3 style="color: var(--accent); margin-top: 0; text-align: center;">Mudar Palavra-passe</h3>
+            <form id="formNovaPass">
+                <input type="password" id="pass_antiga" placeholder="Palavra-passe atual" required style="margin-bottom: 10px;">
+                <input type="password" id="pass_nova" placeholder="Nova palavra-passe" required style="margin-bottom: 10px;">
+                <input type="password" id="pass_conf" placeholder="Confirmar nova palavra-passe" required style="margin-bottom: 20px;">
+                
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-supermercado" style="flex: 1;">Guardar Nova</button>
+                    <button type="button" onclick="fecharModalPass()" class="btn-supermercado" style="flex: 1; background: #555; border-color: #555;">Sair</button>
+                </div>
+            </form>
+            <div id="msg_pass" style="margin-top: 10px; font-size: 0.85em; text-align: center;"></div>
+        </div> 
+    </div> 
+    <div id="modalAmigos" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3>Amigos</h3>
+            <span class="close-modal" id="closeAmigosModal">&times;</span>
+        </div>
+        <div id="amigosContent"></div>
+    </div>
+</div>
+
+    </div>
+
+    <script>
+        // --- FUNÇÕES AUXILIARES (Adiciona isto logo no início do script) ---
+        function escapeHtml(unsafe) {
+            return (unsafe || "").toString()
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        function getDisplayName(user) {
+            if (user.nome && user.apelido) return `${escapeHtml(user.nome)} ${escapeHtml(user.apelido)}`;
+            if (user.nome) return escapeHtml(user.nome);
+            return escapeHtml(user.username);
+        }
+
+    
+        // --- Lógica do Menu Hambúrguer e Logout ---
+        const hamburgerIcon = document.querySelector('.hamburger-icon');
+        const dropdown = document.querySelector('.menu-dropdown');
+        if (hamburgerIcon && dropdown) {
+            hamburgerIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+            document.addEventListener('click', (e) => {
+                if (!dropdown.contains(e.target) && !hamburgerIcon.contains(e.target)) dropdown.classList.remove('show');
+            });
+        }
+
+        async function fazerLogout() {
+            try {
+                await fetch('/api/logout');
+                window.location.href = "/login";
+            } catch (erro) {
+                console.error("Erro ao fazer logout:", erro);
+                window.location.href = "/login";
+            }
+        }
+
+        // --- Lógica de Edição de Perfil ---
+        const inputs = document.querySelectorAll('#formPerfil input:not([value="********"])');
+        const btnEditar = document.getElementById('btnEditar');
+        const btnsEdicao = document.getElementById('btnsEdicao');
+        const btnCancelar = document.getElementById('btnCancelar');
+        const feedbackPerfil = document.getElementById('feedback_perfil');
+
+        btnEditar.onclick = () => {
+            inputs.forEach(i => i.disabled = false);
+            btnEditar.parentElement.style.display = 'none';
+            btnsEdicao.style.display = 'flex';
+            feedbackPerfil.innerText = '';
+        };
+
+        btnCancelar.onclick = () => { location.reload(); };
+
+        document.getElementById('formPerfil').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const dados = {
+                nome: document.getElementById('p_nome').value,
+                apelido: document.getElementById('p_apelido').value,
+                email: document.getElementById('p_email').value,
+                localidade: "" // Mantém vazio ou adiciona o campo se precisares
+            };
+
+            feedbackPerfil.innerText = "A guardar... ⏳";
+            feedbackPerfil.style.color = "var(--accent)";
+
+            try {
+                const res = await fetch('/api/user/update', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dados)
+                });
+                
+                if (res.ok) {
+                    feedbackPerfil.innerText = "Perfil atualizado com sucesso! ✅";
+                    feedbackPerfil.style.color = "#00C851";
+                    inputs.forEach(input => input.disabled = true);
+                    btnsEdicao.style.display = 'none';
+                    btnEditar.parentElement.style.display = 'block';
+                } else {
+                    feedbackPerfil.innerText = "Erro ao guardar dados.";
+                    feedbackPerfil.style.color = "#ff4444";
+                }
+            } catch (err) {
+                feedbackPerfil.innerText = "Erro de ligação ao servidor.";
+            }
+        });
+
+        // --- Lógica do Modal de Password ---
+        const modal = document.getElementById('modalPass');
+        function abrirModalPass() { modal.style.display = 'flex'; }
+        function fecharModalPass() { modal.style.display = 'none'; document.getElementById('formNovaPass').reset(); document.getElementById('msg_pass').innerText = ''; }
+
+        document.getElementById('formNovaPass').onsubmit = async (e) => {
+            e.preventDefault();
+            const msg = document.getElementById('msg_pass');
+            const dados = {
+                antiga: document.getElementById('pass_antiga').value,
+                nova: document.getElementById('pass_nova').value,
+                confirmacao: document.getElementById('pass_conf').value
+            };
+
+            try {
+                const res = await fetch('/api/user/change_password', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(dados)
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    alert(data.mensagem);
+                    fecharModalPass();
+                } else {
+                    msg.innerText = data.erro;
+                    msg.style.color = "#ff4444";
+                }
+            } catch(err) { msg.innerText = "Erro de conexão."; }
+        };
+
+        // =========================================================================
+    // 9. GESTÃO DE AMIGOS (modal e funções)
+    // =========================================================================
+    async function abrirModalAmigos() {
+        const modalAmigos = document.getElementById('modalAmigos');
+        const content = document.getElementById('amigosContent');
+        modalAmigos.style.display = 'flex';
+        try {
+            const resp = await fetch('/api/friends');
+            const data = await resp.json();
+
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <h4>Adicionar amigo por username ou e-mail</h4>
+                    <input type="text" id="emailAmigo" placeholder="Username ou e-mail" style="width: 100%; margin-bottom: 10px;">
+                    <button id="btnAddAmigo" class="btn-add">Enviar pedido</button>
+                </div>
+                <hr>
+                <h4>Pedidos pendentes recebidos</h4>
+                <div id="pedidosRecebidos">
+            `;
+            if (data.pending && data.pending.length) {
+                data.pending.forEach(p => {
+                    const displayName = getDisplayName(p);
+                    const info = `${displayName} (${escapeHtml(p.username)}${p.email ? ' - ' + escapeHtml(p.email) : ''})`;
+                    html += `<div class="amigo-item">
+                                <span>${info}</span>
+                                <div class="btn-group">
+                                    <button onclick="aceitarPedido(${p.request_id})">✔ Aceitar</button>
+                                    <button onclick="recusarPedido(${p.request_id})">✖ Recusar</button>
+                                </div>
+                            </div>`;
+                });
+            } else html += '<p>Nenhum pedido pendente</p>';
+            html += `</div><hr><h4>Os teus amigos</h4><div id="listaAmigos">`;
+            if (data.friends && data.friends.length) {
+                data.friends.forEach(f => {
+                    const displayName = getDisplayName(f);
+                    const info = `${displayName} (${escapeHtml(f.username)}${f.email ? ' - ' + escapeHtml(f.email) : ''})`;
+                    html += `<div class="amigo-item">
+                                <span>${info}</span>
+                                <div class="btn-group">
+                                    <button onclick="removerAmigo(${f.id})">🗑 Remover</button>
+                                </div>
+                            </div>`;
+                });
+            } else html += '<p>Nenhum amigo adicionado</p>';
+            html += `</div>`;
+            content.innerHTML = html;
+            document.getElementById('btnAddAmigo').addEventListener('click', enviarPedidoAmigo);
+        } catch (e) {
+            console.error(e);
+            content.innerHTML = '<p>Erro ao carregar dados de amigos.</p>';
+        }
+    }
+
+    async function enviarPedidoAmigo() {
+        const identifier = document.getElementById('emailAmigo').value.trim();
+        if (!identifier) return alert('Insira um username ou e-mail');
+        try {
+            const resp = await fetch('/api/friends/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: identifier })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                alert('Pedido enviado!');
+                document.getElementById('emailAmigo').value = '';
+                abrirModalAmigos();
+            } else alert('Erro: ' + (data.erro || 'Desconhecido'));
+        } catch (e) { console.error(e); }
+    }
+
+    async function aceitarPedido(requestId) {
+        const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
+        if (resp.ok) abrirModalAmigos();
+        else alert('Erro ao aceitar pedido');
+    }
+
+    async function recusarPedido(requestId) {
+        const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
+        if (resp.ok) abrirModalAmigos();
+        else alert('Erro ao recusar pedido');
+    }
+
+    async function removerAmigo(friendId) {
+        if (confirm('Remover este amigo?')) {
+            const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
+            if (resp.ok) abrirModalAmigos();
+            else alert('Erro ao remover amigo');
+        }
+    }
+
+    document.getElementById('openFriendsModal').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirModalAmigos();
+    });
+    document.getElementById('closeAmigosModal').addEventListener('click', () => {
+        document.getElementById('modalAmigos').style.display = 'none';
+    });
+
+    </script>
+</body>
+</html>

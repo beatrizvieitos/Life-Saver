@@ -12,6 +12,9 @@ import json
 import re
 from dotenv import load_dotenv
 from google import genai
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
+
 
 load_dotenv()   # Carrega as variáveis do ficheiro .env
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
@@ -30,6 +33,18 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=timedelta(days=7)
 )
 
+# Configuração do envio de E-mails (Exemplo com Gmail)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') # O teu email (ex: no .env)
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') # Palavra-passe de aplicação (ex: no .env)
+
+mail = Mail(app)
+
+# Serializer para gerar tokens seguros baseados na tua secret_key
+s = URLSafeTimedSerializer(app.secret_key)
+
 # Configuração da base de dados
 db_config = {
     'host': 'localhost',
@@ -43,12 +58,43 @@ login_manager.init_app(app)
 login_manager.login_view = 'login_page'
 
 class User(UserMixin):
-    def __init__(self, id):
+    # Adicionamos os novos campos com valores por defeito vazios ('')
+    def __init__(self, id, username, nome='', apelido='', email='', localidade=''):
         self.id = id
+        self.username = username
+        self.nome = nome
+        self.apelido = apelido
+        self.email = email
+        self.localidade = localidade
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User(user_id)
+    try:
+        conn = mysql.connector.connect(**db_config)
+        # O dictionary=True é importante para podermos usar user_db['nome']
+        cursor = conn.cursor(dictionary=True) 
+        
+        # O SELECT * garante que trazemos todas as colunas da tabela utilizadores
+        cursor.execute("SELECT * FROM utilizadores WHERE id = %s", (user_id,))
+        user_db = cursor.fetchone()
+        
+        if user_db:
+            # Criamos o utilizador com TODOS os dados que vieram da BD
+            return User(
+                id=user_db['id'],
+                username=user_db['username'],
+                nome=user_db.get('nome', ''),
+                apelido=user_db.get('apelido', ''),
+                email=user_db.get('email', ''),
+                localidade=user_db.get('localidade', '')
+            )
+        return None
+    except Exception as e:
+        print(f"Erro ao carregar utilizador: {e}")
+        return None
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
 
 # --------------------------------------------------------------
 # Função auxiliar para verificar se uma tabela existe
@@ -126,7 +172,7 @@ def login():
         if 'conn' in locals() and conn.is_connected(): conn.close()
 
     if user and check_password_hash(user['password'], data['password']):
-        login_user(User(user['id']))
+        login_user(User(id=user['id'], username=data['username']))
         return jsonify({'mensagem': 'Login efetuado com sucesso!'})
 
     return jsonify({'erro': 'Username ou palavra-passe incorretos.'}), 401
@@ -1434,6 +1480,167 @@ def api_apagar_receita(receita_id):
             
     except mysql.connector.Error as err:
         return jsonify({'erro': str(err)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+# --------------------------------------------------------------
+# Recuperação de Conta
+# --------------------------------------------------------------
+
+@app.route('/api/esqueci_username', methods=['POST'])
+def esqueci_username():
+    data = request.json
+    email = data.get('email')
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT username FROM utilizadores WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        
+        if user:
+            msg = Message('Recuperação de Nome de Utilizador', 
+                          sender=app.config['MAIL_USERNAME'], 
+                          recipients=[email])
+            msg.body = f"Olá!\n\nO teu nome de utilizador é: {user['username']}\n\nCumprimentos,\nEquipa Life Saver"
+            mail.send(msg)
+            
+        # Retornamos sucesso mesmo que não exista para não revelar e-mails registados (boa prática de segurança)
+        return jsonify({'mensagem': 'Se o e-mail existir no nosso sistema, receberás o teu nome de utilizador em breve.'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+@app.route('/api/esqueci_password', methods=['POST'])
+def esqueci_password():
+    data = request.json
+    email = data.get('email')
+    
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id FROM utilizadores WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        
+        if user:
+            # Gera um token válido por 1 hora (3600 segundos)
+            token = s.dumps(email, salt='recuperacao-password')
+            link = request.url_root + f'reset_password/{token}'
+            
+            msg = Message('Redefinição de Palavra-passe', 
+                          sender=app.config['MAIL_USERNAME'], 
+                          recipients=[email])
+            msg.body = f"Olá!\n\nClica no link abaixo para redefinir a tua palavra-passe. O link é válido por 1 hora.\n{link}\n\nSe não pediste isto, ignora este e-mail."
+            mail.send(msg)
+            
+        return jsonify({'mensagem': 'Se o e-mail existir, receberás um link de recuperação.'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        # Verifica o token (expira em 3600 segundos = 1 hora)
+        email = s.loads(token, salt='recuperacao-password', max_age=3600)
+    except Exception:
+        return "O link de recuperação é inválido ou expirou.", 400
+
+    if request.method == 'GET':
+        # Retorna uma página HTML simples para definir a nova password
+        return '''
+        <form method="POST">
+            <h2>Redefinir Palavra-passe</h2>
+            <input type="password" name="password" placeholder="Nova Palavra-passe" required>
+            <button type="submit">Atualizar</button>
+        </form>
+        '''
+    elif request.method == 'POST':
+        nova_password = request.form.get('password')
+        hashed_password = generate_password_hash(nova_password)
+        
+        try:
+            conn = mysql.connector.connect(**db_config)
+            cursor = conn.cursor()
+            cursor.execute("UPDATE utilizadores SET password = %s WHERE email = %s", (hashed_password, email))
+            conn.commit()
+            return "Palavra-passe atualizada com sucesso! Já podes fazer <a href='/login'>login</a>."
+        except Exception as e:
+            return "Erro ao atualizar a base de dados.", 500
+        finally:
+            if 'cursor' in locals(): cursor.close()
+            if 'conn' in locals() and conn.is_connected(): conn.close()
+
+# --- Rota para renderizar a página de Perfil ---
+@app.route('/perfil')
+@login_required
+def perfil():
+    # O objeto 'current_user' já contém os dados do utilizador logado
+    return render_template('perfil.html', user=current_user)
+
+@app.route('/api/user/update', methods=['POST'])
+@login_required
+def update_user():
+    data = request.json
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        
+        query = """
+            UPDATE utilizadores 
+            SET nome = %s, apelido = %s, email = %s, localidade = %s 
+            WHERE id = %s
+        """
+        cursor.execute(query, (data['nome'], data['apelido'], data['email'], data['localidade'], current_user.id))
+        conn.commit()
+        
+        return jsonify({'mensagem': 'Dados atualizados com sucesso!'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+
+
+@app.route('/api/user/change_password', methods=['POST'])
+@login_required
+def change_password():
+    data = request.json
+    antiga = data.get('antiga')
+    nova = data.get('nova')
+    confirmacao = data.get('confirmacao')
+
+    if nova != confirmacao:
+        return jsonify({'erro': 'As novas palavras-passe não coincidem.'}), 400
+    
+    if len(nova) < 6:
+        return jsonify({'erro': 'A nova palavra-passe deve ter pelo menos 6 caracteres.'}), 400
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        
+        # Verificar se a password antiga está correta
+        cursor.execute("SELECT password FROM utilizadores WHERE id = %s", (current_user.id,))
+        user = cursor.fetchone()
+
+        if not user or not check_password_hash(user['password'], antiga):
+            return jsonify({'erro': 'A palavra-passe antiga está incorreta.'}), 400
+
+        # Atualizar para a nova hash
+        nova_hash = generate_password_hash(nova)
+        cursor.execute("UPDATE utilizadores SET password = %s WHERE id = %s", (nova_hash, current_user.id))
+        conn.commit()
+
+        return jsonify({'mensagem': 'Palavra-passe alterada com sucesso!'}), 200
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
     finally:
         if 'cursor' in locals(): cursor.close()
         if 'conn' in locals() and conn.is_connected(): conn.close()

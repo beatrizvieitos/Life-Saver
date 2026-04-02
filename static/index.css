@@ -4,8 +4,8 @@
 :root {
     --bg-color: #234247;          /* fundo da página */
     --card-bg: #27707b;           /* fundo dos cards e containers (não usado no container principal) */
-    --text-main: #252525;         /* cor do texto principal */
-    --text-dim: #d2c1c1;             /* texto secundário */
+    --text-main: #ffffff;         /* cor do texto principal */
+    --text-dim: #ffffff;             /* texto secundário */
     --accent: #e3e3e3;            /* cor de destaque (títulos, bordas) */
     --accent-primary: #ca9607;    /* cor principal de destaque (botões, links) */
     --border: #e2b3345d;          /* cor das bordas */
@@ -410,7 +410,7 @@ div[style*="background: #252525"] {
     box-shadow: var(--shadow) !important;
 }
 div[style*="background: #252525"] select {
-    background-color: #a1a1a1;
+    background-color: #234247;
     border-color: var(--border-light);
     min-width: auto !important;
     width: 100%;
