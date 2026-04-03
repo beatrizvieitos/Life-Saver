@@ -1,38 +1,90 @@
-# 📋 Life Saver - Gestor Pessoal e Colaborativo
+🛟 Life Saver - Gestor Pessoal e Colaborativo
+Dica para o GitHub: Adiciona aqui um screenshot ou um GIF curto a mostrar o Dashboard principal da tua aplicação.
 
-Bem-vindo(a) ao **Life Saver**! Uma aplicação web *full-stack* desenvolvida para centralizar a organização pessoal. Mais do que uma simples lista de tarefas (To-Do list), o Task Boss integra gestão de compras, controlo de medicamentos, notas pessoais e um sistema de estatísticas visuais.
+Bem-vindo(a) ao Life Saver! Uma aplicação web full-stack desenvolvida para centralizar a gestão e organização pessoal. Mais do que uma simples To-Do list, o Life Saver integra gestão de tarefas, listas de compras, controlo de medicamentos, notas pessoais e um painel de métricas visuais.
 
-O grande diferencial deste projeto é a sua **vertente colaborativa**: os utilizadores podem adicionar amigos e partilhar tarefas ou listas específicas, controlando permissões de edição em tempo real.
+O grande diferencial tecnológico deste projeto é o seu motor colaborativo: a arquitetura permite aos utilizadores estabelecerem ligações de amizade e partilharem recursos específicos (tarefas, listas), utilizando um sistema de controlo de permissões de edição em tempo real.
 
-## Tecnologias Utilizadas
+🚀 Arquitetura e Tecnologias
+O projeto adota uma arquitetura MVC (Model-View-Controller) simplificada, separando claramente a lógica de negócio da interface, garantindo escalabilidade e facilidade de manutenção.
 
-**Backend:**
-* **Python 3 & Flask:** Lógica de rotas e API RESTful.
-* **Flask-Login:** Gestão segura de sessões e autenticação.
-* **MySQL:** Base de dados relacional para persistência de dados.
-* **Werkzeug Security:** *Hashing* seguro de passwords.
+Backend (Lógica & API):
 
-**Frontend:**
-* **HTML5, CSS3 & JavaScript (ES6):** Interface de utilizador responsiva e dinâmica (Fetch API para chamadas assíncronas).
-* **Chart.js:** Renderização de gráficos interativos para a secção de estatísticas.
-* **CSS Variables:** Implementação de um tema escuro consistente e moderno.
+Python 3 & Flask: Desenvolvimento de rotas e construção de uma API RESTful.
 
-## Funcionalidades Principais
+Flask-Login: Gestão de sessões de utilizador com persistência segura.
 
-* **Autenticação Segura:** Registo e login de utilizadores com encriptação de passwords.
-* **Dashboard de Tarefas:** Criação de tarefas (CRUD) com estados (pendente/concluído) e prazos.
-* **Módulos Especializados:** 
-  * *Listas de Compras* organizadas por supermercado/categoria.
-  * *Gestão de Medicamentos* com registo de dosagens e horários.
-  * *Bloco de Notas* pessoal para ideias rápidas.
-* **Sistema de Amizades e Partilha:** Envio/aceitação de pedidos de amizade e partilha de itens específicos com permissões de leitura ou edição.
-* **Dashboard Analítico:** Gráficos visuais que mostram o rácio de tarefas pendentes vs. concluídas.
+Werkzeug Security: Hashing e verificação de palavras-passe (salting).
 
-## Como correr o projeto localmente
+Base de Dados:
 
-**Pré-requisitos:** Python 3.x e um servidor MySQL (ex: XAMPP, MySQL Workbench) a correr localmente.
+MySQL: Modelação de dados relacional (utilizadores, tarefas, listas, relacionamentos de amizade e partilha de permissões).
 
-1. **Clona o repositório:**
-   ```bash
-   git clone [https://github.com/beatrizvieitos/task-boss.git](https://github.com/beatrizvieitos/task-boss.git)
-   cd task-boss
+Frontend (Interface & Dinâmica):
+
+HTML5, CSS3 & JavaScript (ES6): Interface responsive, construída de raiz com CSS Variables para gestão de um tema escuro dinâmico.
+
+Fetch API: Comunicação assíncrona com o backend (AJAX), permitindo atualizações na interface sem necessidade de recarregar a página (ex: mudança de estado de tarefas, edição de perfil).
+
+Chart.js: Renderização de gráficos interativos para visualização de dados e estatísticas.
+
+✨ Funcionalidades Principais
+Autenticação Segura: Registo, login e gestão de perfil de utilizadores.
+
+Sistema de Amizades e RBAC (Role-Based Access Control): Envio e gestão de pedidos de amizade. Partilha granular de listas e tarefas com amigos, definindo permissões de "Apenas Leitura" ou "Edição".
+
+Dashboard de Tarefas: Operações CRUD completas, com gestão de prazos e estados de conclusão.
+
+Módulos Especializados: * Compras: Organização inteligente por categoria/supermercado.
+
+Medicamentos: Registo de tomas, dosagens e horários.
+
+Notas: Bloco de texto pessoal para acesso rápido.
+
+Métricas Visuais: Painel analítico que calcula e exibe, através de gráficos, o rácio de produtividade e execução do utilizador.
+
+🛠️ Como executar o projeto localmente
+Pré-requisitos: * Python 3.x instalado.
+
+Servidor MySQL a correr localmente (ex: XAMPP, MySQL Workbench, Docker).
+
+1. Clonar o repositório
+
+Bash
+git clone https://github.com/o-teu-utilizador/life-saver.git
+cd life-saver
+2. Configurar o Ambiente Virtual (Recomendado)
+
+Bash
+python -m venv venv
+# No Windows:
+venv\Scripts\activate
+# No macOS/Linux:
+source venv/bin/activate
+3. Instalar as dependências
+
+Bash
+pip install -r requirements.txt
+
+4. Configurar a Base de Dados e Variáveis de Ambiente
+
+Cria uma base de dados no teu servidor MySQL (ex: life_saver_db).
+
+Importa o esquema da base de dados fornecido no ficheiro schema.sql (ou equivalente).
+
+Renomeia o ficheiro .env.example para .env e preenche as tuas credenciais de acesso à base de dados e chaves secretas.
+
+5. Iniciar o Servidor
+
+Bash
+flask run
+# ou
+python app.py
+A aplicação estará disponível em http://localhost:5000.
+
+📈 Próximos Passos (Roadmap)
+Integração de notificações por E-mail/Push para tarefas prestes a expirar.
+
+Recuperação de palavra-passe através de tokens temporários.
+
+Otimização da acessibilidade (a11y) no Frontend.
