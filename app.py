@@ -1344,8 +1344,8 @@ def api_gerar_receita():
         return jsonify({"erro": "Nome do prato não fornecido."}), 400
 
     prompt = f"""
-    És um chef profissional português. Cria a melhor receita clássica para "{prato}".
-    Devolve APENAS um objeto JSON estrito com esta estrutura, sem qualquer texto adicional ou formatação markdown:
+    És um chef profissional, especialmente especializado em receitas portuguesas e culinária portuguesa. Segue exatamente aquilo que é pedido e cria a melhor receita que encontrares para "{prato}".
+    Devolve EM PORTUGUÊS DE PORTUGAL, APENAS um objeto JSON estrito com esta estrutura, sem qualquer texto adicional ou formatação markdown:
     {{
         "nome": "Nome completo do prato",
         "instrucoes": "Passo 1: ... Passo 2: ... (tudo numa string com \\n para quebras de linha)",

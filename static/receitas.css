@@ -19,11 +19,66 @@
     border-radius: 20px;
     padding: 28px;
     box-shadow: var(--shadow);
-    color: #fff;
     box-sizing: border-box;
 }
 
-.painel-receita h3 {
+.painel-receitas-guardadas {
+    flex: 1;
+    min-width: 320px;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+    color: #000000;
+    background: #c1c1c1;
+    box-sizing: border-box;
+}
+
+/* Título do painel "O Meu Livro de Receitas" */
+.painel-receitas-guardadas h3 {
+    color: #000000 !important;   /* muda para a cor que desejares */
+    border-bottom: 2px solid #00000000;
+    padding-bottom: 5px;
+    margin-top: 0;
+    font-size: 1.4rem;
+}
+
+.painel-receitas-guardadas h3 .material-icons {
+    color: #000000;
+}
+
+.painel-receitas-guardadas p {
+    color: #000000;              /* cinza claro */
+}
+
+.painel-receitas-guardadas .cartao-receita {
+    background-color: #9f3d05;   /* fundo dos cartões */
+    color: #000000;              /* texto principal */
+    border-color: #ffb347;
+}
+
+.painel-receitas-guardadas .cartao-receita strong {
+    color: #dcdcdc;              /* nome da receita */
+}
+
+.painel-receitas-guardadas .shared-indicator {
+    color: #dadada !important;
+}
+
+.painel-receitas-guardadas .btn-apagar {
+    color: #e74c3c;
+}
+
+.painel-receitas-guardadas .btn-ver-cartao {
+    background-color: #c99720;
+    color: white;
+}
+
+.painel-receitas-guardadas .btn-comprar-cartao {
+    background-color: #27ae60;
+    color: white;
+}
+
+.painel-receita h4 {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -32,11 +87,7 @@
     font-size: 1.4rem;
     border-bottom: 2px solid var(--accent-primary);
     padding-bottom: 12px;
-    color: #fff;
-}
-
-.painel-receita h3 .material-icons {
-    color: var(--accent-primary);
+    color: #ffffff;
 }
 
 .painel-receita input[type="text"] {
@@ -80,18 +131,22 @@
 
 /* Cartões das receitas guardadas */
 .cartao-receita {
-    background: var(--receipt-bg);
     border: 1px solid var(--border-light);
     border-radius: 20px;
     padding: 20px;
-    background-color: #cfa941; /* Amarelo igual às tarefas */
-    color: rgb(32, 32, 32);
-    box-shadow: 0 2px 8px rgba(97, 91, 91, 0.2);
+    background-color: #d9d9d9; /* Amarelo igual às tarefas */
+    color: rgb(255, 0, 0);
+    box-shadow: 0 2px 8px rgba(128, 112, 112, 0.2);
     transition: transform 0.2s, box-shadow 0.2s;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
+
+.painel-receita #listaReceitasGuardadas {
+    color: #000000;
+}
+
 
 .cartao-receita:hover {
     transform: translateY(-2px);
@@ -101,7 +156,7 @@
 
 .cartao-receita h4 {
     margin: 0;
-    color: rgb(30, 30, 30);
+    color: rgb(0, 0, 0);
     font-size: 1.1em;
     border-bottom: none;
     padding-bottom: 0;
@@ -190,4 +245,14 @@
     .botoes-acao-receita {
         flex-direction: column;
     }
+
+    /* Título do painel "O Meu Livro de Receitas" */
+    .painel-receitas-guardadas h3 {
+        color: #000000 !important;   /* muda para a cor que desejares */
+        border-bottom: 2px solid #00000000;
+        padding-bottom: 5px;
+        margin-top: 0;
+        font-size: 1.3rem;
+    }
+
 }
