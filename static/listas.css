@@ -4,8 +4,8 @@
 
 :root {
     --form-bg: #ca9607;
-    --receipt-bg: #27707b;
-    --accent-primary: #27707b;
+    --receipt-bg: #d4d4d4;
+    --accent-primary: #ffd02b;
     --accent-hover: #27707b;
     --danger: #922121;
     --success: #0b4d0e;
@@ -78,7 +78,7 @@
     padding: 12px 14px;
     border-radius: 12px;
     border: 1px solid var(--border-light);
-    background: #27707b;
+    background: #f39c12;
     color: rgb(255, 255, 255);
     font-size: 0.95rem;
     transition: all 0.2s;
@@ -89,8 +89,9 @@
 .form-lateral input:focus {
     outline: none;
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 3px rgba(247, 247, 247, 0.3);
-    background: #27707b;
+    box-shadow: 0 0 0 3px rgba(242, 11, 11, 0.3);
+    background: #a0301ed9;
+    
 }
 
 .form-row {
@@ -109,7 +110,7 @@
     align-items: center;
     gap: 25px;
     color: #000000;
-    background: rgba(200, 200, 200, 0.707);
+    background: rgba(235, 235, 235, 0.707);
     border-radius: 40px;
     padding: 4px;
     border: 1px solid var(--border-light);
@@ -149,7 +150,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #27707b;
+    background: #ffd02b;
     border: none;
     color: rgb(255, 255, 255);
     font-size: 1.4rem;
@@ -173,7 +174,7 @@
 /* ========== FIM CONTROLE DE QUANTIDADE ========== */
 
 .dica-preco {
-    background: rgba(243, 157, 18, 0);
+    background: rgba(255, 255, 255, 0);
     padding: 12px 15px;
     color: #802a2a;
     margin-top: 1px;
@@ -189,7 +190,7 @@
 .btn-adicionar {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, var(--accent-primary), #1f3a5f);
+    background: linear-gradient(135deg, #ffd02b, #df441e);
     color: white;
     border: none;
     border-radius: 40px;
@@ -212,7 +213,7 @@
 }
 
 .btn-adicionar:hover {
-    background: linear-gradient(135deg, #2c446b, #15519b);
+    background: linear-gradient(135deg, #ffd02b, #df441e);
     transform: translateY(-2px);
     box-shadow: 0 8px 18px rgba(144, 207, 29, 0.396);
 }
@@ -232,7 +233,7 @@
     box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
-    border: 1px solid #222;
+    border: 1px solid #ef720b29;
     backdrop-filter: blur(2px);
 }
 
@@ -242,7 +243,7 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 15px;
-    background: rgba(0,0,0,0.3);
+    background: rgba(220, 132, 17, 0.346);
     flex-wrap: wrap;     /* Permite que os elementos saltem para a linha de baixo */
     border-radius: 16px; /* Ajusta o contorno para o novo formato */
     padding: 12px;
@@ -253,7 +254,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.9rem;
-    color: #ccc;
+    color: #000000;
     width: 100%;
     margin-bottom: 8px;
 }
@@ -287,7 +288,7 @@
 }
 
 .cabecalho-recibo {
-    color: #e9e9e9;
+    color: #000000;
     width: 100%;
         display: flex;
         justify-content: center;
@@ -315,7 +316,7 @@
     padding-right: 5px;
     margin-bottom: 15px;
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-primary) #222;
+    scrollbar-color: var(--accent-primary) #e1a72bc4;
 }
 
 .lista-itens-container::-webkit-scrollbar {
@@ -337,18 +338,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 0;
+    padding: 20px 0;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     font-family: 'Courier New', monospace;
     font-size: 1rem;
     transition: all 0.2s;
+    margin-left: 20px;
 }
 
 .item-compra:hover {
-    background: rgba(255,255,255,0.02);
+    background: rgba(84, 10, 10, 0.294);
     padding-left: 8px;
-    margin-left: -8px;
+    margin-left: 1px;
     border-radius: 12px;
+    
 }
 
 .item-comprado {
@@ -357,7 +360,7 @@
 
 .item-comprado .item-info {
     text-decoration: line-through;
-    color: #888;
+    color: #4d1010;
 }
 
 .item-info {
@@ -368,12 +371,12 @@
     font-size: 1rem;
     font-weight: 500;
     display: block;
-    color: #eee;
+    color: #000000;
 }
 
 .item-detalhe {
     font-size: 0.75rem;
-    color: #aaa;
+    color: #000000;
     font-family: monospace;
 }
 
@@ -381,15 +384,17 @@
     font-weight: bold;
     color: #fff;
     font-size: 1rem;
-    background: #1e1e1e;
+    background: #e4ab19;
     padding: 4px 8px;
     border-radius: 20px;
-    margin-right: 12px;
+    margin-right: 1px;
 }
 
 .acoes-item {
     display: flex;
-    gap: 8px;
+    gap: 3px;
+    margin-top: 7px;
+    margin-right: 24px;
 }
 
 .acoes-item button {
@@ -420,7 +425,7 @@
 }
 
 .btn-remove {
-    color: var(--danger);
+    color: rgb(123, 0, 0);
 }
 
 .btn-remove:hover {
@@ -432,7 +437,7 @@
 .total-caixa {
     font-size: 1.6rem;
     font-weight: bold;
-    color: #dcd31c;
+    color: #000000;
     text-align: right;
     padding: 16px 0 0 0;
     margin-top: 12px;
@@ -446,7 +451,7 @@
 
 .total-caixa .moeda {
     font-size: 1rem;
-    color: #aaa;
+    color: #cfcfcf;
 }
 
 #valor-total {
@@ -469,6 +474,14 @@
 .vazio .material-icons {
     font-size: 3rem;
     color: #444;
+}
+
+.cabecalho-recibo .btn-share {
+    position: relative !important;   /* anula o absolute se existir */
+    right: auto !important;
+    top: auto !important;
+    margin-left: 50px !important;    /* move para a direita */
+    margin-top: -5px !important;     /* sobe um pouco */
 }
 
 /* Animação de entrada */
@@ -679,6 +692,90 @@
     .acoes-item {
         flex-shrink: 0;
     }
+
+    /* =========================================
+   MODO COMPRAS - VERSÃO TELEMÓVEL
+   ========================================= */
+
+/* Modal do Modo Compras ocupa quase todo o ecrã */
+#modalModoCompras {
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    background-color: rgba(207, 57, 15, 0.9);
+}
+
+.modo-compras-content {
+    width: 98% !important;
+    max-width: 98% !important;
+    height: 95vh !important;
+    max-height: 95vh !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Cabeçalho do modo compras */
+.modo-compras-header {
+    padding: 15px !important;
+    flex-shrink: 0;
+}
+
+.modo-compras-header h2 {
+    font-size: 1.2rem !important;
+    margin-bottom: 10px !important;
+}
+
+/* Filtros empilhados verticalmente para não cortar opções */
+.filtros-compras {
+    flex-direction: column !important;
+    gap: 10px !important;
+    align-items: stretch !important;
+}
+
+.filtros-compras select,
+.filtros-compras button {
+    width: 100% !important;
+    height: 48px !important;
+    font-size: 0.9rem !important;
+    margin: 0 !important;
+}
+
+/* Botão de limpar filtros ao lado? Vai ficar em baixo, mas mantém-se funcional */
+#btnLimparFiltrosModo {
+    width: 100% !important;
+    height: 48px !important;
+}
+
+/* Lista de itens ocupa o espaço restante e tem scroll */
+.lista-modo-compras {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px !important;
+    gap: 12px !important;
+}
+
+/* Cada item do modo compras (cartão) */
+.item-modo-compras {
+    padding: 12px 15px !important;
+    grid-template-columns: 1fr 32px !important;
+    gap: 10px !important;
+}
+
+.modo-info .nome {
+    font-size: 0.95rem !important;
+}
+
+.modo-info .supermercado,
+.modo-info .preco {
+    font-size: 0.75rem !important;
+}
+
+.checkbox-gigante {
+    width: 32px !important;
+    height: 32px !important;
 }
 
 
@@ -691,39 +788,24 @@
     /* as restantes propriedades originais permanecem */
 }
 
-.btn-share {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-left: auto;  /* alinha à direita dentro do flex */
-}
 
-.btn-share .material-icons {
-    font-size: 28px;
-    color: var(--accent-primary);
-}
-
-/* Clarear a caixa de seleção do filtro de supermercados */
-.filtro-metade select {
-    background-color: #ca9607 !important; /* Um cinza mais claro e elegante */
-    color: #ffffff !important;           /* Texto a branco para ler bem */
-    border: 1px solid var(--border) !important;
-}
-
-/* Opcional: Efeito hover para ficar ainda mais claro quando passas o rato */
-.filtro-metade select:hover,
-.filtro-metade select:focus {
-    background-color: #ca9607 !important;
-}
-
-/* No telemóvel, mantemos o mesmo comportamento */
-@media (max-width: 768px) {
-    .med-section h3 {
+    .cabecalho-recibo {
+    color: #000000;
+    width: 100%;
         display: flex;
-        justify-content: space-between;
-        width: 100%;
-    }
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 1.1rem; /* Letra um bocadinho mais pequena para o telemóvel */
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0px; /* Tira o espaçamento largo para caber perfeitamente no meio */
+        margin-left: -15px;
+        margin-bottom: 30px;
+        margin-top: 20px;
+        padding-right: 0;
+}
 
     /* Remove qualquer posicionamento absoluto anterior */
     #btnShareMedicationList {

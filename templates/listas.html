@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='listas.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
 </head>
+
 <body>
 <div class="logo-topo-container">
     <a href="/" class="logo-link">
@@ -53,7 +53,7 @@
             <div class="form-group">
                 <label><span class="material-icons">shopping_basket</span> Produto</label>
                 <select id="produto" required>
-                    <option value="" disabled selected>🛍️ Escolha o produto...</option>
+                <option value="" disabled selected hidden>Escolha o seu produto...</option>
                     <option value="Abacate">Abacate</option>
                     <option value="Achocolatado em Pó">Achocolatado em Pó</option>
                     <option value="Açúcar Branco">Açúcar Branco</option>
@@ -255,7 +255,7 @@
                 <label><span class="material-icons">store</span> Supermercado</label>
                 <input type="hidden" id="supermercado" value="Todos">
                 <div id="zona-botoes-supermercado" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
-                    <div style="color: #303030; font-size: 0.9em; font-style: italic;">
+                    <div style="font-size: 0.9em; font-style: italic;">
                         Escolhe um produto para ver os preços...
                     </div>
                 </div>
@@ -282,7 +282,6 @@
 
     <div class="area-lista">
         <div class="zona-filtros-linha">
-            
             <div class="filtro-metade">
                 <label><span class="material-icons" style="font-size: 16px;">filter_alt</span> Supermercado</label>
                 <select id="filtroSupermercadoPrincipal">
@@ -293,22 +292,21 @@
             <div class="filtro-metade">
                 <label><span class="material-icons" style="font-size: 16px;">restaurant_menu</span> Receitas</label>
                 <div style="display: flex; gap: 5px; width: 100%; height: 45px;">
-                    <button class="btn-supermercado" id="btnFiltroReceitas" onclick="filtrarPorReceitas()" style="margin: 0; flex: 1; height: 100%;">
-                        Receitas 🍳
-                    </button>
-                    <button id="limparFiltro" class="btn-limpar-filtro" title="Limpar filtro" style="display: flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 12px; border: none; background: #c62828; color: white; cursor: pointer; transition: 0.2s; height: 100%;">
+                    <select id="filtroReceita" style="margin: 0; flex: 1; height: 100%; border-radius: 12px; border: 1px; padding: 0 10px;">
+                        <option value="">Todos os Itens</option>
+                    </select>
+                    <button id="limparFiltro" class="btn-limpar-filtro" title="Limpar filtros" style="display: flex; align-items: center; justify-content: center; padding: 0 12px; border-radius: 12px; border: none; background: #750a0a; color: white; cursor: pointer; transition: 0.2s; height: 100%;">
                         <span class="material-icons" style="font-size: 17px;">clear</span>
                     </button>
                 </div>
             </div>
-
         </div>
 
         <div class="cabecalho-recibo">
+            <span class="material-icons" style="color: #000000; font-size: 25px; margin-left: 90px; margin-right: 6px;">receipt</span> LISTA DE COMPRAS
             <button id="btnShareShoppingList" class="btn-share" title="Partilhar lista de compras">
                 <span class="material-icons">share</span>
             </button>
-            <span class="material-icons">receipt</span> LISTA DE COMPRAS
         </div>
 
         <div id="lista-itens" class="lista-itens-container"></div>
@@ -332,10 +330,16 @@
             <h2 style="margin: 0; display: flex; align-items: center; gap: 8px;">
                 <span class="material-icons">shopping_cart_checkout</span> Em Compras
             </h2>
-            <div class="filtros-compras">
-                <select id="filtroModoCompras">
+            <div class="filtros-compras" style="display: flex; gap: 8px; margin-top: 10px; align-items: stretch;">
+                <select id="filtroModoCompras" style="flex: 1; height: 50px; border-radius: 12px;">
                     <option value="Todos">🏬 Todos os Supermercados</option>
                 </select>
+                <select id="filtroReceitaModoCompras" style="flex: 1; height: 50px; border-radius: 12px;">
+                    <option value="Todas">🍳 Todas as Receitas</option>
+                </select>
+                <button id="btnLimparFiltrosModo" title="Limpar todos os filtros" style="background: #750a0a; color: white; border: none; border-radius: 12px; padding: 0 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 45px;">
+                    <span class="material-icons" style="font-size: 1.2rem;">filter_alt_off</span>
+                </button>
             </div>
         </div>
         <div id="listaModoCompras" class="lista-modo-compras"></div>
@@ -369,9 +373,9 @@
     // =========================================================================
     // 1. VARIÁVEIS GLOBAIS
     // =========================================================================
-    let todasAsComprasGlobais = [];     // Armazena todos os itens para o Modo Compras
-    let filtroAtivo = '';              // Filtro ativo na página principal
-    const cachePrecos = {};            // Cache para preços por produto
+    let todasAsComprasGlobais = [];
+    let filtroAtivo = '';
+    const cachePrecos = {};
 
     const selectProduto = document.getElementById('produto');
     const inputPreco = document.getElementById('preco');
@@ -401,6 +405,53 @@
         return '';
     }
 
+    // ========== NOTIFICAÇÕES PERSONALIZADAS ==========
+    function showMessage(mensagem) {
+        const notExistente = document.querySelector('.notificacao');
+        if (notExistente) notExistente.remove();
+
+        const div = document.createElement('div');
+        div.className = 'notificacao';
+        div.innerHTML = `
+            <p>${escapeHtml(mensagem)}</p>
+            <button onclick="this.parentElement.remove()">OK</button>
+        `;
+        document.body.appendChild(div);
+
+        setTimeout(() => {
+            if (div && div.parentElement) div.remove();
+        }, 3000);
+    }
+
+    function showConfirm(mensagem, callback) {
+        const existente = document.querySelector('.confirm-modal');
+        if (existente) existente.remove();
+
+        const div = document.createElement('div');
+        div.className = 'confirm-modal';
+        div.innerHTML = `
+            <p>${escapeHtml(mensagem)}</p>
+            <div class="confirm-buttons">
+                <button class="btn-confirm-yes">Sim</button>
+                <button class="btn-confirm-no">Não</button>
+            </div>
+        `;
+        document.body.appendChild(div);
+
+        const btnSim = div.querySelector('.btn-confirm-yes');
+        const btnNao = div.querySelector('.btn-confirm-no');
+        const remover = () => div.remove();
+
+        btnSim.onclick = () => {
+            remover();
+            if (callback) callback(true);
+        };
+        btnNao.onclick = () => {
+            remover();
+            if (callback) callback(false);
+        };
+    }
+
     // =========================================================================
     // 3. LÓGICA DE PREÇOS COM IA (BOTÕES DINÂMICOS E CACHE)
     // =========================================================================
@@ -409,13 +460,11 @@
             const produto = this.value;
             if (!produto) return;
 
-            // Verifica cache
             if (cachePrecos[produto]) {
                 renderizarInterfaceIA(cachePrecos[produto]);
                 return;
             }
 
-            // Mostra spinner
             avisoPreco.style.display = 'block';
             avisoPreco.innerHTML = `
                 <div style="padding:12px; background: rgba(255,255,255,0.1); border-radius:8px; display: flex; align-items: center;">
@@ -450,13 +499,11 @@
         const mercados = Object.keys(precos);
         if (mercados.length === 0) return;
 
-        // Encontra o mais barato
         let maisBarato = mercados[0];
         mercados.forEach(m => {
             if (precos[m] < precos[maisBarato]) maisBarato = m;
         });
 
-        // Atualiza aviso
         avisoPreco.style.display = 'block';
         avisoPreco.innerHTML = `
             <div style="padding:10px; background:#155724; color:#d4edda; border-radius:8px; border: 1px solid #c3e6cb;">
@@ -464,7 +511,6 @@
                 Opção mais barata: <strong>${maisBarato}</strong> (${precos[maisBarato].toFixed(2)}€)
             </div>`;
 
-        // Gera botões
         let htmlBotoes = `
             <button type="button" class="btn-supermercado selecionado" id="btn-Todos" 
                 onclick="aplicarPrecoIA('Todos', '', 'btn-Todos')">🌍 Todos</button>`;
@@ -495,14 +541,14 @@
     };
 
     // =========================================================================
-    // 4. CARREGAR E EXIBIR A LISTA DE COMPRAS (com suporte a partilha e permissões)
+    // 4. CARREGAR E EXIBIR A LISTA DE COMPRAS
     // =========================================================================
     async function carregarCompras() {
         try {
             const resposta = await fetch('/api/compras');
             if (!resposta.ok) {
                 const erroDB = await resposta.json();
-                alert("ERRO AO CARREGAR LISTA: " + erroDB.erro);
+                showMessage("Erro ao carregar lista: " + (erroDB.erro || "Erro desconhecido"));
                 return;
             }
             const itens = await resposta.json();
@@ -512,7 +558,6 @@
             divLista.innerHTML = '';
             let total = 0;
 
-            // Aviso se a lista for partilhada
             document.querySelectorAll('.shared-list-warning').forEach(el => el.remove());
             const sharedItems = itens.filter(item => item.is_owner === 0);
             if (sharedItems.length > 0) {
@@ -543,6 +588,7 @@
                 const div = document.createElement('div');
                 div.className = `item-compra ${item.comprado ? 'item-comprado' : ''}`;
                 div.setAttribute('data-supermercado', item.supermercado || '');
+                div.setAttribute('data-receita', item.receita || '');
 
                 const isOwner = item.is_owner === 1;
                 const canEdit = item.can_edit == 1;
@@ -574,6 +620,7 @@
 
             document.getElementById('valor-total').innerText = total.toFixed(2);
             atualizarFiltroSupermercadosPrincipal(itens);
+            atualizarFiltroReceitas(itens);
             aplicarFiltroPrincipal();
             atualizarFiltrosModoCompras();
             if (document.getElementById('modalModoCompras').style.display === 'block') {
@@ -610,11 +657,11 @@
                 carregarCompras();
             } else {
                 const erroDB = await resposta.json();
-                alert("Erro na BD: " + (erroDB.erro || "Erro desconhecido."));
+                showMessage("Erro: " + (erroDB.erro || "Erro desconhecido."));
             }
         } catch (erro) {
             console.error("Erro no JavaScript:", erro);
-            alert("Erro ao processar a resposta. Verifique a consola (F12).");
+            showMessage("Erro ao processar a resposta. Verifique a consola (F12).");
         }
     });
 
@@ -623,7 +670,7 @@
         if (!item) return;
 
         if (item.is_owner != 1 && item.can_edit != 1) {
-            alert('Não tens permissão para editar este item.');
+            showMessage("Não tens permissão para alterar este item.");
             if (checkboxElement) checkboxElement.checked = !checkboxElement.checked;
             return;
         }
@@ -656,7 +703,7 @@
                     }
                 }
                 const erro = await resposta.json();
-                alert(`Erro do servidor: ${erro.erro || 'Permissão negada'}`);
+                showMessage("Erro: " + (erro.erro || "Permissão negada"));
             }
         } catch (erro) {
             console.error('Erro na chamada API:', erro);
@@ -670,7 +717,7 @@
                     else divItem.classList.remove('comprado');
                 }
             }
-            alert('Erro de rede. Tente novamente.');
+            showMessage("Erro de rede ao alternar estado. Tente novamente.");
         }
 
         if (!modal || modal.style.display !== 'block') {
@@ -681,26 +728,30 @@
     async function removerCompra(id) {
         const item = todasAsComprasGlobais.find(i => i.id === id);
         if (item && item.is_owner != 1 && item.can_edit != 1) {
-            alert('Não tens permissão para remover este item.');
+            showMessage("Não tens permissão para remover este item.");
             return;
         }
-        if (confirm("Remover do carrinho?")) {
-            await fetch(`/api/compras/${id}`, { method: 'DELETE' });
-            carregarCompras();
-        }
+        showConfirm("Remover do carrinho?", async (resposta) => {
+            if (resposta) {
+                await fetch(`/api/compras/${id}`, { method: 'DELETE' });
+                carregarCompras();
+            }
+        });
     }
 
     async function limparListaCompleta() {
-        if (confirm("Tens a certeza que queres apagar TODOS os teus itens da lista?")) {
-            try {
-                const resposta = await fetch('/api/compras/limpar', { method: 'DELETE' });
-                if (resposta.ok) carregarCompras();
-                else alert("Erro ao limpar a lista.");
-            } catch (erro) {
-                console.error(erro);
-                alert("Erro de rede ao limpar a lista.");
+        showConfirm("Tens a certeza que queres apagar TODOS os teus itens da lista?", async (resposta) => {
+            if (resposta) {
+                try {
+                    const respostaFetch = await fetch('/api/compras/limpar', { method: 'DELETE' });
+                    if (respostaFetch.ok) carregarCompras();
+                    else showMessage("Erro ao limpar a lista.");
+                } catch (erro) {
+                    console.error(erro);
+                    showMessage("Erro de rede ao limpar a lista.");
+                }
             }
-        }
+        });
     }
 
     // =========================================================================
@@ -749,14 +800,25 @@
     }
 
     function aplicarFiltroPrincipal() {
-        const select = document.getElementById('filtroSupermercadoPrincipal');
-        filtroAtivo = select ? select.value : '';
+        const selectSup = document.getElementById('filtroSupermercadoPrincipal');
+        const selectRec = document.getElementById('filtroReceita');
+        
+        const filtroSupAtivo = selectSup ? selectSup.value : '';
+        const filtroRecAtivo = selectRec ? selectRec.value : '';
+        
         const itens = document.querySelectorAll('.item-compra');
         let totalFiltrado = 0;
+        
         itens.forEach(item => {
             const supermercadoItem = item.getAttribute('data-supermercado') || '';
-            const deveMostrar = (filtroAtivo === '' || supermercadoItem === filtroAtivo);
+            const receitaItem = item.getAttribute('data-receita') || '';
+            
+            const passaFiltroSup = (filtroSupAtivo === '' || supermercadoItem === filtroSupAtivo);
+            const passaFiltroRec = (filtroRecAtivo === '' || receitaItem === filtroRecAtivo);
+            
+            const deveMostrar = passaFiltroSup && passaFiltroRec;
             item.style.display = deveMostrar ? 'flex' : 'none';
+            
             if (deveMostrar && !item.classList.contains('item-comprado')) {
                 const precoSpan = item.querySelector('.preco-individual');
                 if (precoSpan) {
@@ -766,20 +828,28 @@
                 }
             }
         });
+        
         const totalElement = document.getElementById('valor-total');
         if (totalElement) totalElement.innerText = totalFiltrado.toFixed(2);
     }
 
     const filtroSelectPrincipal = document.getElementById('filtroSupermercadoPrincipal');
+    const filtroSelectReceita = document.getElementById('filtroReceita');
     const limparBtn = document.getElementById('limparFiltro');
+
     if (filtroSelectPrincipal) filtroSelectPrincipal.addEventListener('change', aplicarFiltroPrincipal);
-    if (limparBtn) limparBtn.addEventListener('click', () => {
-        if (filtroSelectPrincipal) filtroSelectPrincipal.value = '';
-        aplicarFiltroPrincipal();
-    });
+    if (filtroSelectReceita) filtroSelectReceita.addEventListener('change', aplicarFiltroPrincipal);
+
+    if (limparBtn) {
+        limparBtn.addEventListener('click', () => {
+            if (filtroSelectPrincipal) filtroSelectPrincipal.value = '';
+            if (filtroSelectReceita) filtroSelectReceita.value = '';
+            aplicarFiltroPrincipal();
+        });
+    }
 
     // =========================================================================
-    // 8. MODO COMPRAS (pop‑up) – com checkboxes funcionais
+    // 8. MODO COMPRAS (pop‑up)
     // =========================================================================
     const modalModoCompras = document.getElementById('modalModoCompras');
     const btnModoCompras = document.getElementById('btnModoCompras');
@@ -801,6 +871,7 @@
             carregarCompras();
         });
     }
+
     window.addEventListener('click', (event) => {
         if (event.target == modalModoCompras) {
             modalModoCompras.style.display = 'none';
@@ -810,9 +881,17 @@
 
     function atualizarFiltrosModoCompras() {
         const supermercadosDisponiveis = new Set();
-        todasAsComprasGlobais.forEach(compra => supermercadosDisponiveis.add(compra.supermercado));
-        const valorAtual = filtroModoCompras.value || 'Todos';
-        filtroModoCompras.innerHTML = '<option value="Todos">Todos os Supermercados</option>';
+        const receitasDisponiveis = new Set();
+
+        todasAsComprasGlobais.forEach(compra => {
+            supermercadosDisponiveis.add(compra.supermercado);
+            if (compra.receita && compra.receita.trim() !== '') {
+                receitasDisponiveis.add(compra.receita);
+            }
+        });
+
+        const valorAtualSup = filtroModoCompras.value || 'Todos';
+        filtroModoCompras.innerHTML = '<option value="Todos">🏬 Todos os Supermercados</option>';
         supermercadosDisponiveis.forEach(sup => {
             if (sup) {
                 const option = document.createElement('option');
@@ -821,25 +900,62 @@
                 filtroModoCompras.appendChild(option);
             }
         });
-        if (Array.from(filtroModoCompras.options).some(opt => opt.value === valorAtual)) {
-            filtroModoCompras.value = valorAtual;
+        if (Array.from(filtroModoCompras.options).some(opt => opt.value === valorAtualSup)) {
+            filtroModoCompras.value = valorAtualSup;
         } else {
             filtroModoCompras.value = 'Todos';
         }
+
+        const filtroRecModoCompras = document.getElementById('filtroReceitaModoCompras');
+        const valorAtualRec = filtroRecModoCompras.value || 'Todas';
+        filtroRecModoCompras.innerHTML = '<option value="Todas">🍳 Todas as Receitas</option>';
+        
+        Array.from(receitasDisponiveis).sort().forEach(rec => {
+            const option = document.createElement('option');
+            option.value = rec;
+            option.textContent = rec;
+            filtroRecModoCompras.appendChild(option);
+        });
+        
+        if (Array.from(filtroRecModoCompras.options).some(opt => opt.value === valorAtualRec)) {
+            filtroRecModoCompras.value = valorAtualRec;
+        } else {
+            filtroRecModoCompras.value = 'Todas';
+        }
     }
 
+    const btnLimparFiltrosModo = document.getElementById('btnLimparFiltrosModo');
+    if (btnLimparFiltrosModo) {
+        btnLimparFiltrosModo.addEventListener('click', () => {
+            filtroModoCompras.value = 'Todos';
+            document.getElementById('filtroReceitaModoCompras').value = 'Todas';
+            renderizarModoCompras();
+        });
+    }
+
+    const filtroRecModoCompras = document.getElementById('filtroReceitaModoCompras');
     filtroModoCompras.addEventListener('change', renderizarModoCompras);
+    if (filtroRecModoCompras) {
+        filtroRecModoCompras.addEventListener('change', renderizarModoCompras);
+    }
 
     function renderizarModoCompras() {
         listaModoCompras.innerHTML = '';
-        const filtro = filtroModoCompras.value;
-        const comprasFiltradas = todasAsComprasGlobais.filter(c => filtro === 'Todos' || c.supermercado === filtro);
+        
+        const filtroSup = filtroModoCompras.value;
+        const filtroRec = filtroRecModoCompras ? filtroRecModoCompras.value : 'Todas';
+        
+        const comprasFiltradas = todasAsComprasGlobais.filter(c => {
+            const passaSup = (filtroSup === 'Todos' || c.supermercado === filtroSup);
+            const passaRec = (filtroRec === 'Todas' || c.receita === filtroRec);
+            return passaSup && passaRec;
+        });
         
         if (comprasFiltradas.length === 0) {
             listaModoCompras.innerHTML = `
                 <div style="text-align:center; color:#aaa; margin-top:40px;">
                     <span class="material-icons" style="font-size: 3rem; opacity: 0.5;">remove_shopping_cart</span>
-                    <p style="font-size: 1.1rem; margin-top: 10px;">Não tens produtos registados<br>para este supermercado.</p>
+                    <p style="font-size: 1.1rem; margin-top: 10px;">Não tens produtos registados<br>para estes filtros.</p>
                 </div>`;
             return;
         }
@@ -890,25 +1006,19 @@
     }
 
     function filtrarPorReceitas() {
-    // 1. Muda a cor dos botões (tira a seleção dos outros e mete neste)
-    document.querySelectorAll('.btn-supermercado').forEach(btn => btn.classList.remove('selecionado'));
-    document.getElementById('btnFiltroReceitas').classList.add('selecionado');
+        document.querySelectorAll('.btn-supermercado').forEach(btn => btn.classList.remove('selecionado'));
+        document.getElementById('btnFiltroReceitas').classList.add('selecionado');
 
-    // 2. Percorre todos os itens da lista de compras
-    const nomesProdutos = document.querySelectorAll('.item-nome');
-    
-    nomesProdutos.forEach(nomeElement => {
-        // Encontra a caixa inteira do item para a podermos esconder
-        const itemCompleto = nomeElement.closest('.item-info').parentElement;
-        
-        // Se o nome do produto incluir o nosso carimbo "🍳", mostra. Se não, esconde!
-        if (nomeElement.innerText.includes('🍳')) {
-            itemCompleto.style.display = 'flex';
-        } else {
-            itemCompleto.style.display = 'none';
-        }
-    });
-}
+        const nomesProdutos = document.querySelectorAll('.item-nome');
+        nomesProdutos.forEach(nomeElement => {
+            const itemCompleto = nomeElement.closest('.item-info').parentElement;
+            if (nomeElement.innerText.includes('🍳')) {
+                itemCompleto.style.display = 'flex';
+            } else {
+                itemCompleto.style.display = 'none';
+            }
+        });
+    }
 
     // =========================================================================
     // 9. GESTÃO DE AMIGOS (modal e funções)
@@ -968,7 +1078,7 @@
 
     async function enviarPedidoAmigo() {
         const identifier = document.getElementById('emailAmigo').value.trim();
-        if (!identifier) return alert('Insira um username ou e-mail');
+        if (!identifier) return showMessage("Por favor, insere um username ou e-mail.");
         try {
             const resp = await fetch('/api/friends/request', {
                 method: 'POST',
@@ -977,31 +1087,45 @@
             });
             const data = await resp.json();
             if (resp.ok) {
-                alert('Pedido enviado!');
+                showMessage(data.message || "Pedido de amizade enviado com sucesso!");
                 document.getElementById('emailAmigo').value = '';
                 abrirModalAmigos();
-            } else alert('Erro: ' + (data.erro || 'Desconhecido'));
+            } else showMessage(data.erro || "Erro ao enviar pedido de amizade.");
         } catch (e) { console.error(e); }
     }
 
     async function aceitarPedido(requestId) {
         const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao aceitar pedido');
+        if (resp.ok) {
+            abrirModalAmigos();
+        } else {
+            const erro = await resp.json();
+            showMessage(erro.erro || "Erro ao aceitar pedido.");
+        }
     }
 
     async function recusarPedido(requestId) {
         const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao recusar pedido');
+        if (resp.ok) {
+            abrirModalAmigos();
+        } else {
+            const erro = await resp.json();
+            showMessage(erro.erro || "Erro ao recusar pedido.");
+        }
     }
 
     async function removerAmigo(friendId) {
-        if (confirm('Remover este amigo?')) {
-            const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
-            if (resp.ok) abrirModalAmigos();
-            else alert('Erro ao remover amigo');
-        }
+        showConfirm('Remover este amigo?', async (resposta) => {
+            if (resposta) {
+                const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
+                if (resp.ok) {
+                    abrirModalAmigos();
+                } else {
+                    const erro = await resp.json();
+                    showMessage(erro.erro || "Erro ao remover amigo.");
+                }
+            }
+        });
     }
 
     document.getElementById('openFriendsModal').addEventListener('click', (e) => {
@@ -1013,7 +1137,7 @@
     });
 
     // =========================================================================
-    // 10. PARTILHA DA LISTA DE COMPRAS (com permissão de edição)
+    // 10. PARTILHA DA LISTA DE COMPRAS
     // =========================================================================
     const shareShoppingModal = document.getElementById('modalShareShopping');
     const btnShareShopping = document.getElementById('btnShareShoppingList');
@@ -1105,7 +1229,7 @@
             carregarCompras();
         } catch (e) {
             console.error(e);
-            alert('Erro ao atualizar partilhas.');
+            showMessage("Erro ao atualizar partilhas. Tente novamente.");
         }
     };
 
@@ -1136,10 +1260,39 @@
         }
     }
 
+    function atualizarFiltroReceitas(itens) {
+        const select = document.getElementById('filtroReceita');
+        if (!select) return;
+        
+        const receitas = new Set();
+        itens.forEach(item => {
+            if (item.receita && item.receita.trim() !== '') {
+                receitas.add(item.receita);
+            }
+        });
+
+        const valorAtual = select.value;
+        while (select.options.length > 1) select.remove(1);
+        
+        Array.from(receitas).sort().forEach(receita => {
+            const option = document.createElement('option');
+            option.value = receita;
+            option.textContent = receita;
+            select.appendChild(option);
+        });
+
+        if (valorAtual && receitas.has(valorAtual)) {
+            select.value = valorAtual;
+        } else {
+            select.value = '';
+        }
+    }
+
     // =========================================================================
     // 12. INICIALIZAÇÃO
     // =========================================================================
     document.addEventListener("DOMContentLoaded", carregarCompras);
 </script>
+
 </body>
 </html>

@@ -10,6 +10,26 @@
             flex-wrap: wrap;
         }
 
+        .title-text {
+        color: #000000;
+        align-items: center !important;
+        justify-content: center;
+        margin-right: 34px;
+        font-size: 1.2rem !important;
+        max-width: 100%;
+        margin-right: 500px !important;
+        white-space: nowrap;
+    }
+
+    .title-text2 {
+        color: #000000 !important;
+        align-items: center !important;
+        justify-content: center;
+        font-size: 1.2rem !important;
+        margin-right: 500px !important;
+        white-space: nowrap;
+    }
+
         .med-section {
             flex: 1;
             min-width: 320px;
@@ -38,7 +58,7 @@
 
         .med-section h3 .material-icons {
             font-size: 1.6rem;
-            color: var(--accent-primary);
+            color: #000000;
         }
 
         /* Lista de medicamentos */
@@ -51,7 +71,7 @@
 
         .med-group {
             margin-bottom: 24px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(226, 100, 26, 0.2);
             border-radius: 16px;
             padding: 12px;
         }
@@ -72,7 +92,7 @@
 
         .membro-nome {
             font-weight: 600;
-            color: #ddd;
+            color: #000000;
             font-size: 1rem;
             letter-spacing: 0.5px;
         }
@@ -170,7 +190,7 @@
         .med-nome {
             font-size: 1rem;
             font-weight: 500;
-            color: #eee;
+            color: #000000;
             transition: all 0.2s;
         }
 
@@ -217,7 +237,7 @@
         .vazio {
             text-align: center;
             padding: 40px 20px;
-            color: #ffffff;
+            color: #aa4b08;
             font-style: italic;
             display: flex;
             flex-direction: column;
@@ -227,7 +247,7 @@
 
         .vazio .material-icons {
             font-size: 3rem;
-            color: #ffffff;
+            color: #aa4b08;
         }
 
         /* Formulários de adição */
@@ -240,7 +260,7 @@
         .add-med-form h4 {
             margin: 0 0 12px 0;
             font-size: 0.9rem;
-            color: #ccc;
+            color: #000000;
             font-weight: 500;
         }
 
@@ -269,7 +289,7 @@
         }
 
         .btn-add-med {
-            background: linear-gradient(135deg, var(--accent-primary), #1f3a5f);
+            background: linear-gradient(135deg, #ffd02b, #df441e);
             color: white;
             border: none;
             border-radius: 40px;
@@ -306,6 +326,12 @@
             max-width: 450px;
         }
 
+        .med-section h3 .btn-share {
+            margin-left: -450px !important;       /* remove o auto que o empurrava à direita */
+            margin-right: auto !important;   /* centraliza */
+            transform: translateX(5px);     /* move para a direita, por exemplo */
+        }
+
 
  /* =====================================================================
    BLINDAGEM MOBILE PARA MEDICAMENTOS (Ultra-Compacto e Sem Cortes)
@@ -328,19 +354,20 @@
     }
 
     .title-text {
-        color: #d9d9d9;
+        color: #000000;
         align-items: center !important;
         justify-content: center;
         margin-right: 34px;
-        font-size: 1.0rem !important;
+        font-size: 1.2rem !important;
         max-width: 100%;
         white-space: nowrap;
     }
 
     .title-text2 {
-        color: #d9d9d9 !important;
+        color: #000000 !important;
         align-items: center !important;
         justify-content: center;
+        font-size: 1.2rem !important;
         margin-right: 53px !;
         white-space: nowrap;
     }

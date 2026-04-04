@@ -76,7 +76,7 @@
 </div>
 
 <script>
-    // ==================== FUNÇÕES AUXILIARES ====================
+    // ========== FUNÇÕES AUXILIARES E NOTIFICAÇÕES ==========
     function escapeHtml(text) {
         if (!text) return '';
         return text.replace(/[&<>]/g, function(m) {
@@ -85,6 +85,52 @@
             if (m === '>') return '&gt;';
             return m;
         });
+    }
+
+    function showMessage(mensagem) {
+        const notExistente = document.querySelector('.notificacao');
+        if (notExistente) notExistente.remove();
+
+        const div = document.createElement('div');
+        div.className = 'notificacao';
+        div.innerHTML = `
+            <p>${escapeHtml(mensagem)}</p>
+            <button onclick="this.parentElement.remove()">OK</button>
+        `;
+        document.body.appendChild(div);
+
+        setTimeout(() => {
+            if (div && div.parentElement) div.remove();
+        }, 3000);
+    }
+
+    function showConfirm(mensagem, callback) {
+        const existente = document.querySelector('.confirm-modal');
+        if (existente) existente.remove();
+
+        const div = document.createElement('div');
+        div.className = 'confirm-modal';
+        div.innerHTML = `
+            <p>${escapeHtml(mensagem)}</p>
+            <div class="confirm-buttons">
+                <button class="btn-confirm-yes">Sim</button>
+                <button class="btn-confirm-no">Não</button>
+            </div>
+        `;
+        document.body.appendChild(div);
+
+        const btnSim = div.querySelector('.btn-confirm-yes');
+        const btnNao = div.querySelector('.btn-confirm-no');
+        const remover = () => div.remove();
+
+        btnSim.onclick = () => {
+            remover();
+            if (callback) callback(true);
+        };
+        btnNao.onclick = () => {
+            remover();
+            if (callback) callback(false);
+        };
     }
 
     // Retorna o nome completo (nome + apelido) ou username
@@ -160,7 +206,7 @@
 
     async function enviarPedidoAmigo() {
         const identifier = document.getElementById('emailAmigo').value.trim();
-        if (!identifier) return alert('Insira um username ou e-mail');
+        if (!identifier) return showMessage("Por favor, insira um username ou e-mail.");
         try {
             const resp = await fetch('/api/friends/request', {
                 method: 'POST',
@@ -169,33 +215,47 @@
             });
             const data = await resp.json();
             if (resp.ok) {
-                alert('Pedido enviado!');
+                showMessage("Pedido enviado com sucesso!");
                 document.getElementById('emailAmigo').value = '';
-                abrirModalAmigos(); // recarregar
+                abrirModalAmigos();
             } else {
-                alert('Erro: ' + (data.erro || 'Desconhecido'));
+                showMessage(data.erro || "Erro ao enviar pedido.");
             }
         } catch (e) { console.error(e); }
     }
 
     async function aceitarPedido(requestId) {
         const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao aceitar pedido');
+        if (resp.ok) {
+            abrirModalAmigos();
+        } else {
+            const erro = await resp.json();
+            showMessage(erro.erro || "Erro ao aceitar pedido.");
+        }
     }
 
     async function recusarPedido(requestId) {
         const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao recusar pedido');
+        if (resp.ok) {
+            abrirModalAmigos();
+        } else {
+            const erro = await resp.json();
+            showMessage(erro.erro || "Erro ao recusar pedido.");
+        }
     }
 
     async function removerAmigo(friendId) {
-        if (confirm('Remover este amigo?')) {
-            const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
-            if (resp.ok) abrirModalAmigos();
-            else alert('Erro ao remover amigo');
-        }
+        showConfirm('Remover este amigo?', async (resposta) => {
+            if (resposta) {
+                const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
+                if (resp.ok) {
+                    abrirModalAmigos();
+                } else {
+                    const erro = await resp.json();
+                    showMessage(erro.erro || "Erro ao remover amigo.");
+                }
+            }
+        });
     }
 
     // ==================== MENU HAMBÚRGUER ====================
@@ -294,7 +354,7 @@
             });
         } catch (erro) {
             console.error(erro);
-            alert('Erro ao carregar estatísticas. Tente novamente mais tarde.');
+            showMessage('Erro ao carregar estatísticas. Tente novamente mais tarde.');
         }
     }
 

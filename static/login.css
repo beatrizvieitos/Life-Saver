@@ -8,7 +8,7 @@ body {
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #234247;
+    background-color: #742815;
     overflow-x: hidden; /* Impede deslizes laterais */
 }
 
@@ -41,11 +41,11 @@ body {
 .caixa-auth {
     width: 100%;
     max-width: 400px;
-    background: #27707b;
+    background: #bd3b1b;
     padding: 40px;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border: 1px solid #bea034;
+    border: 1px solid #bea03400;
     box-sizing: border-box; /* Crucial para não cortar a caixa */
 }
 
@@ -81,7 +81,7 @@ input {
     display: block;
     text-align: center;
     margin-top: 20px;
-    color: #95afd6;
+    color: #cdbc93;
     text-decoration: underline;
     cursor: pointer;
     font-size: 0.95rem;

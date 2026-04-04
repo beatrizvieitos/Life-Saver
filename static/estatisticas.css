@@ -19,6 +19,7 @@
     box-shadow: var(--shadow);
     border: 1px solid var(--border-light);
     transition: transform 0.2s;
+    background-color: #69220e;
 }
 
 .chart-card:hover {

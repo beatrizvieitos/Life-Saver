@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
 </head>
 <body>
 
@@ -65,7 +64,7 @@
                     <label>Palavra-passe</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="text" value="********" disabled style="flex: 1;">
-                    <button type="button" onclick="abrirModalPass()" class="btn-supermercado" style="padding: 6px 12px !important; width: max-content !important; min-width: 0 !important; flex: 0 0 auto !important; font-size: 0.8em; margin: 0;">Mudar Palavra-Passe</button>                    
+                        <button type="button" onclick="abrirModalPass()" class="btn-supermercado" style="padding: 6px 12px !important; width: max-content !important; min-width: 0 !important; flex: 0 0 auto !important; font-size: 0.8em; margin: 0;">Mudar Palavra-Passe</button>                    
                     </div>
                 </div>
 
@@ -97,36 +96,81 @@
             <div id="msg_pass" style="margin-top: 10px; font-size: 0.85em; text-align: center;"></div>
         </div> 
     </div> 
-    <div id="modalAmigos" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-            <h3>Amigos</h3>
-            <span class="close-modal" id="closeAmigosModal">&times;</span>
-        </div>
-        <div id="amigosContent"></div>
-    </div>
-</div>
 
+    <div id="modalAmigos" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Amigos</h3>
+                <span class="close-modal" id="closeAmigosModal">&times;</span>
+            </div>
+            <div id="amigosContent"></div>
+        </div>
     </div>
 
     <script>
-        // --- FUNÇÕES AUXILIARES (Adiciona isto logo no início do script) ---
-        function escapeHtml(unsafe) {
-            return (unsafe || "").toString()
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
+        // ========== FUNÇÕES AUXILIARES E NOTIFICAÇÕES ==========
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function showMessage(mensagem) {
+            const notExistente = document.querySelector('.notificacao');
+            if (notExistente) notExistente.remove();
+
+            const div = document.createElement('div');
+            div.className = 'notificacao';
+            div.innerHTML = `
+                <p>${escapeHtml(mensagem)}</p>
+                <button onclick="this.parentElement.remove()">OK</button>
+            `;
+            document.body.appendChild(div);
+
+            setTimeout(() => {
+                if (div && div.parentElement) div.remove();
+            }, 3000);
+        }
+
+        function showConfirm(mensagem, callback) {
+            const existente = document.querySelector('.confirm-modal');
+            if (existente) existente.remove();
+
+            const div = document.createElement('div');
+            div.className = 'confirm-modal';
+            div.innerHTML = `
+                <p>${escapeHtml(mensagem)}</p>
+                <div class="confirm-buttons">
+                    <button class="btn-confirm-yes">Sim</button>
+                    <button class="btn-confirm-no">Não</button>
+                </div>
+            `;
+            document.body.appendChild(div);
+
+            const btnSim = div.querySelector('.btn-confirm-yes');
+            const btnNao = div.querySelector('.btn-confirm-no');
+            const remover = () => div.remove();
+
+            btnSim.onclick = () => {
+                remover();
+                if (callback) callback(true);
+            };
+            btnNao.onclick = () => {
+                remover();
+                if (callback) callback(false);
+            };
         }
 
         function getDisplayName(user) {
-            if (user.nome && user.apelido) return `${escapeHtml(user.nome)} ${escapeHtml(user.apelido)}`;
+            if (user.nome && user.apelido) return escapeHtml(user.nome) + ' ' + escapeHtml(user.apelido);
             if (user.nome) return escapeHtml(user.nome);
             return escapeHtml(user.username);
         }
 
-    
         // --- Lógica do Menu Hambúrguer e Logout ---
         const hamburgerIcon = document.querySelector('.hamburger-icon');
         const dropdown = document.querySelector('.menu-dropdown');
@@ -172,7 +216,7 @@
                 nome: document.getElementById('p_nome').value,
                 apelido: document.getElementById('p_apelido').value,
                 email: document.getElementById('p_email').value,
-                localidade: "" // Mantém vazio ou adiciona o campo se precisares
+                localidade: ""
             };
 
             feedbackPerfil.innerText = "A guardar... ⏳";
@@ -222,7 +266,7 @@
                 });
                 const data = await res.json();
                 if(res.ok) {
-                    alert(data.mensagem);
+                    showMessage(data.mensagem);
                     fecharModalPass();
                 } else {
                     msg.innerText = data.erro;
@@ -232,107 +276,130 @@
         };
 
         // =========================================================================
-    // 9. GESTÃO DE AMIGOS (modal e funções)
-    // =========================================================================
-    async function abrirModalAmigos() {
-        const modalAmigos = document.getElementById('modalAmigos');
-        const content = document.getElementById('amigosContent');
-        modalAmigos.style.display = 'flex';
-        try {
-            const resp = await fetch('/api/friends');
-            const data = await resp.json();
+        // GESTÃO DE AMIGOS (modal e funções)
+        // =========================================================================
+        async function abrirModalAmigos() {
+            const modalAmigos = document.getElementById('modalAmigos');
+            const content = document.getElementById('amigosContent');
+            modalAmigos.style.display = 'flex';
+            try {
+                const resp = await fetch('/api/friends');
+                const data = await resp.json();
 
-            let html = `
-                <div style="margin-bottom: 20px;">
-                    <h4>Adicionar amigo por username ou e-mail</h4>
-                    <input type="text" id="emailAmigo" placeholder="Username ou e-mail" style="width: 100%; margin-bottom: 10px;">
-                    <button id="btnAddAmigo" class="btn-add">Enviar pedido</button>
-                </div>
-                <hr>
-                <h4>Pedidos pendentes recebidos</h4>
-                <div id="pedidosRecebidos">
-            `;
-            if (data.pending && data.pending.length) {
-                data.pending.forEach(p => {
-                    const displayName = getDisplayName(p);
-                    const info = `${displayName} (${escapeHtml(p.username)}${p.email ? ' - ' + escapeHtml(p.email) : ''})`;
-                    html += `<div class="amigo-item">
-                                <span>${info}</span>
-                                <div class="btn-group">
-                                    <button onclick="aceitarPedido(${p.request_id})">✔ Aceitar</button>
-                                    <button onclick="recusarPedido(${p.request_id})">✖ Recusar</button>
-                                </div>
-                            </div>`;
-                });
-            } else html += '<p>Nenhum pedido pendente</p>';
-            html += `</div><hr><h4>Os teus amigos</h4><div id="listaAmigos">`;
-            if (data.friends && data.friends.length) {
-                data.friends.forEach(f => {
-                    const displayName = getDisplayName(f);
-                    const info = `${displayName} (${escapeHtml(f.username)}${f.email ? ' - ' + escapeHtml(f.email) : ''})`;
-                    html += `<div class="amigo-item">
-                                <span>${info}</span>
-                                <div class="btn-group">
-                                    <button onclick="removerAmigo(${f.id})">🗑 Remover</button>
-                                </div>
-                            </div>`;
-                });
-            } else html += '<p>Nenhum amigo adicionado</p>';
-            html += `</div>`;
-            content.innerHTML = html;
-            document.getElementById('btnAddAmigo').addEventListener('click', enviarPedidoAmigo);
-        } catch (e) {
-            console.error(e);
-            content.innerHTML = '<p>Erro ao carregar dados de amigos.</p>';
+                let html = `
+                    <div style="margin-bottom: 20px;">
+                        <h4>Adicionar amigo por username ou e-mail</h4>
+                        <input type="text" id="emailAmigo" placeholder="Username ou e-mail" style="width: 100%; margin-bottom: 10px;">
+                        <button id="btnAddAmigo" class="btn-add">Enviar pedido</button>
+                    </div>
+                    <hr>
+                    <h4>Pedidos pendentes recebidos</h4>
+                    <div id="pedidosRecebidos">
+                `;
+                if (data.pending && data.pending.length) {
+                    data.pending.forEach(p => {
+                        const displayName = getDisplayName(p);
+                        const info = `${displayName} (${escapeHtml(p.username)}${p.email ? ' - ' + escapeHtml(p.email) : ''})`;
+                        html += `<div class="amigo-item">
+                                    <span>${info}</span>
+                                    <div class="btn-group">
+                                        <button onclick="aceitarPedido(${p.request_id})">✔ Aceitar</button>
+                                        <button onclick="recusarPedido(${p.request_id})">✖ Recusar</button>
+                                    </div>
+                                </div>`;
+                    });
+                } else html += '<p>Nenhum pedido pendente</p>';
+                html += `</div><hr><h4>Os teus amigos</h4><div id="listaAmigos">`;
+                if (data.friends && data.friends.length) {
+                    data.friends.forEach(f => {
+                        const displayName = getDisplayName(f);
+                        const info = `${displayName} (${escapeHtml(f.username)}${f.email ? ' - ' + escapeHtml(f.email) : ''})`;
+                        html += `<div class="amigo-item">
+                                    <span>${info}</span>
+                                    <div class="btn-group">
+                                        <button onclick="removerAmigo(${f.id})">🗑 Remover</button>
+                                    </div>
+                                </div>`;
+                    });
+                } else html += '<p>Nenhum amigo adicionado</p>';
+                html += `</div>`;
+                content.innerHTML = html;
+                document.getElementById('btnAddAmigo').addEventListener('click', enviarPedidoAmigo);
+            } catch (e) {
+                console.error(e);
+                content.innerHTML = '<p>Erro ao carregar dados de amigos.</p>';
+            }
         }
-    }
 
-    async function enviarPedidoAmigo() {
-        const identifier = document.getElementById('emailAmigo').value.trim();
-        if (!identifier) return alert('Insira um username ou e-mail');
-        try {
-            const resp = await fetch('/api/friends/request', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: identifier })
-            });
-            const data = await resp.json();
+        async function enviarPedidoAmigo() {
+            const identifier = document.getElementById('emailAmigo').value.trim();
+            if (!identifier) return showMessage("Por favor, insira um username ou e-mail.");
+            try {
+                const resp = await fetch('/api/friends/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: identifier })
+                });
+                const data = await resp.json();
+                if (resp.ok) {
+                    showMessage("Pedido enviado com sucesso!");
+                    document.getElementById('emailAmigo').value = '';
+                    abrirModalAmigos();
+                } else {
+                    showMessage(data.erro || "Erro ao enviar pedido.");
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function aceitarPedido(requestId) {
+            const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
             if (resp.ok) {
-                alert('Pedido enviado!');
-                document.getElementById('emailAmigo').value = '';
                 abrirModalAmigos();
-            } else alert('Erro: ' + (data.erro || 'Desconhecido'));
-        } catch (e) { console.error(e); }
-    }
-
-    async function aceitarPedido(requestId) {
-        const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao aceitar pedido');
-    }
-
-    async function recusarPedido(requestId) {
-        const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao recusar pedido');
-    }
-
-    async function removerAmigo(friendId) {
-        if (confirm('Remover este amigo?')) {
-            const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
-            if (resp.ok) abrirModalAmigos();
-            else alert('Erro ao remover amigo');
+            } else {
+                const erro = await resp.json();
+                showMessage(erro.erro || "Erro ao aceitar pedido.");
+            }
         }
-    }
 
-    document.getElementById('openFriendsModal').addEventListener('click', (e) => {
-        e.preventDefault();
-        abrirModalAmigos();
-    });
-    document.getElementById('closeAmigosModal').addEventListener('click', () => {
-        document.getElementById('modalAmigos').style.display = 'none';
-    });
+        async function recusarPedido(requestId) {
+            const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
+            if (resp.ok) {
+                abrirModalAmigos();
+            } else {
+                const erro = await resp.json();
+                showMessage(erro.erro || "Erro ao recusar pedido.");
+            }
+        }
 
+        async function removerAmigo(friendId) {
+            showConfirm("Remover este amigo?", async (resposta) => {
+                if (resposta) {
+                    const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
+                    if (resp.ok) {
+                        abrirModalAmigos();
+                    } else {
+                        const erro = await resp.json();
+                        showMessage(erro.erro || "Erro ao remover amigo.");
+                    }
+                }
+            });
+        }
+
+        document.getElementById('openFriendsModal').addEventListener('click', (e) => {
+            e.preventDefault();
+            abrirModalAmigos();
+        });
+        document.getElementById('closeAmigosModal').addEventListener('click', () => {
+            document.getElementById('modalAmigos').style.display = 'none';
+        });
+
+        // Fechar modais ao clicar fora
+        window.onclick = function(event) {
+            const modalPass = document.getElementById('modalPass');
+            const modalAmigos = document.getElementById('modalAmigos');
+            if (event.target == modalPass) modalPass.style.display = 'none';
+            if (event.target == modalAmigos) modalAmigos.style.display = 'none';
+        };
     </script>
 </body>
 </html>

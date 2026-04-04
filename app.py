@@ -1,6 +1,6 @@
 # app.py – Aplicação Flask com autenticação, gestão de tarefas, listas de compras/medicamentos e partilha de tarefas/listas com amigos (com permissão de edição).
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, url_for
 from flask_cors import CORS
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import mysql.connector
@@ -33,17 +33,24 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=timedelta(days=7)
 )
 
-# Configuração do envio de E-mails (Exemplo com Gmail)
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+
+
+# --------------------------------------------------------------
+# Configuração do E-mail (Flask-Mail)
+# --------------------------------------------------------------
+app.config['MAIL_SERVER'] = 'smtp.gmail.com' # Muda se não usares Gmail (ex: smtp.office365.com)
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME') # O teu email (ex: no .env)
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD') # Palavra-passe de aplicação (ex: no .env)
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+# Esta linha abaixo é a que resolve o teu erro diretamente:
+app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME') 
 
-mail = Mail(app)
+mail = Mail(app) # Inicializa o Mail
 
-# Serializer para gerar tokens seguros baseados na tua secret_key
+# Inicializa o Serializer para os tokens de segurança
 s = URLSafeTimedSerializer(app.secret_key)
+
 
 # Configuração da base de dados
 db_config = {
@@ -664,13 +671,18 @@ def api_gerir_compras():
 
     elif request.method == 'POST':
         dados = request.json
+        receita = dados.get('receita', None) # <-- Adicionamos isto para apanhar a receita
+        
         try:
             conn = mysql.connector.connect(**db_config)
             cursor = conn.cursor()
+            
+            # Adicionamos a coluna 'receita' e o respetivo valor '%s' ao INSERT
             cursor.execute(
-                "INSERT INTO compras (utilizador_id, produto, supermercado, quantidade, preco_unidade) VALUES (%s, %s, %s, %s, %s)",
-                (current_user.id, dados['produto'], dados.get('supermercado', ''), dados['quantidade'], dados['preco_unidade'])
+                "INSERT INTO compras (utilizador_id, produto, supermercado, quantidade, preco_unidade, receita) VALUES (%s, %s, %s, %s, %s, %s)",
+                (current_user.id, dados['produto'], dados.get('supermercado', ''), dados['quantidade'], dados['preco_unidade'], receita)
             )
+            
             if dados.get('supermercado'):
                 cursor.execute("""
                     INSERT INTO catalogo_precos (produto, supermercado, preco) 
@@ -1438,20 +1450,20 @@ def api_listar_receitas():
 @app.route('/api/receitas/comprar', methods=['POST'])
 @login_required
 def api_adicionar_compras_receita():
-    """Adiciona a lista de ingredientes à lista principal de Compras do utilizador."""
-    ingredientes = request.json.get('ingredientes', [])
+    data = request.json
+    receita = data.get('receita', None) # Recebe a receita (ou fica None se não existir)
+
     try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        for ing in ingredientes:
-            # Assume quantidade como 1 para simplificar, com a descrição do ingrediente a conter o peso
-            produto_descritivo = f"{ing['produto']} ({ing['quantidade']})"
-            cursor.execute(
-                "INSERT INTO compras (utilizador_id, produto, supermercado, quantidade, preco_unidade) VALUES (%s, %s, %s, %s, %s)",
-                (current_user.id, produto_descritivo, 'Todos', 1, 0.0)
-            )
+        
+        # Atualiza a query de INSERT para incluir a coluna 'receita'
+        sql = "INSERT INTO compras (produto, supermercado, quantidade, preco_unidade, user_id, receita) VALUES (%s, %s, %s, %s, %s, %s)"
+        valores = (data['produto'], data['supermercado'], data['quantidade'], data['preco_unidade'], current_user.id, receita)
+        
+        cursor.execute(sql, valores)
         conn.commit()
-        return jsonify({'mensagem': 'Ingredientes adicionados à tua Lista de Compras!'})
+        return jsonify({'mensagem': 'Ingrediente adicionado com sucesso!'}), 201
     except mysql.connector.Error as err:
         return jsonify({'erro': str(err)}), 500
     finally:
@@ -1488,80 +1500,27 @@ def api_apagar_receita(receita_id):
 # Recuperação de Conta
 # --------------------------------------------------------------
 
-@app.route('/api/esqueci_username', methods=['POST'])
-def esqueci_username():
-    data = request.json
-    email = data.get('email')
-    
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT username FROM utilizadores WHERE email = %s", (email,))
-        user = cursor.fetchone()
-        
-        if user:
-            msg = Message('Recuperação de Nome de Utilizador', 
-                          sender=app.config['MAIL_USERNAME'], 
-                          recipients=[email])
-            msg.body = f"Olá!\n\nO teu nome de utilizador é: {user['username']}\n\nCumprimentos,\nEquipa Life Saver"
-            mail.send(msg)
-            
-        # Retornamos sucesso mesmo que não exista para não revelar e-mails registados (boa prática de segurança)
-        return jsonify({'mensagem': 'Se o e-mail existir no nosso sistema, receberás o teu nome de utilizador em breve.'}), 200
-    except Exception as e:
-        return jsonify({'erro': str(e)}), 500
-    finally:
-        if 'cursor' in locals(): cursor.close()
-        if 'conn' in locals() and conn.is_connected(): conn.close()
-
-@app.route('/api/esqueci_password', methods=['POST'])
-def esqueci_password():
-    data = request.json
-    email = data.get('email')
-    
-    try:
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT id FROM utilizadores WHERE email = %s", (email,))
-        user = cursor.fetchone()
-        
-        if user:
-            # Gera um token válido por 1 hora (3600 segundos)
-            token = s.dumps(email, salt='recuperacao-password')
-            link = request.url_root + f'reset_password/{token}'
-            
-            msg = Message('Redefinição de Palavra-passe', 
-                          sender=app.config['MAIL_USERNAME'], 
-                          recipients=[email])
-            msg.body = f"Olá!\n\nClica no link abaixo para redefinir a tua palavra-passe. O link é válido por 1 hora.\n{link}\n\nSe não pediste isto, ignora este e-mail."
-            mail.send(msg)
-            
-        return jsonify({'mensagem': 'Se o e-mail existir, receberás um link de recuperação.'}), 200
-    except Exception as e:
-        return jsonify({'erro': str(e)}), 500
-    finally:
-        if 'cursor' in locals(): cursor.close()
-        if 'conn' in locals() and conn.is_connected(): conn.close()
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
+    # 1. Verificar sempre se o token é válido primeiro
     try:
-        # Verifica o token (expira em 3600 segundos = 1 hora)
-        email = s.loads(token, salt='recuperacao-password', max_age=3600)
+        # Importante: O salt tem de ser IGUAL ao do esqueci_password
+        email = s.loads(token, salt='recuperar-password', max_age=3600)
     except Exception:
-        return "O link de recuperação é inválido ou expirou.", 400
+        return "O link de recuperação é inválido ou expirou. Por favor, peça um novo.", 400
 
+    # 2. Se for GET, mostra a página bonita
     if request.method == 'GET':
-        # Retorna uma página HTML simples para definir a nova password
-        return '''
-        <form method="POST">
-            <h2>Redefinir Palavra-passe</h2>
-            <input type="password" name="password" placeholder="Nova Palavra-passe" required>
-            <button type="submit">Atualizar</button>
-        </form>
-        '''
-    elif request.method == 'POST':
+        return render_template('resetPassword.html', token=token)
+
+    # 3. Se for POST, processa a nova password
+    if request.method == 'POST':
         nova_password = request.form.get('password')
+        
+        if not nova_password or len(nova_password) < 6:
+            return "Password inválida", 400
+
         hashed_password = generate_password_hash(nova_password)
         
         try:
@@ -1569,12 +1528,87 @@ def reset_password(token):
             cursor = conn.cursor()
             cursor.execute("UPDATE utilizadores SET password = %s WHERE email = %s", (hashed_password, email))
             conn.commit()
-            return "Palavra-passe atualizada com sucesso! Já podes fazer <a href='/login'>login</a>."
+            return "OK", 200 # O JavaScript no frontend vai tratar do resto
         except Exception as e:
-            return "Erro ao atualizar a base de dados.", 500
+            print(f"Erro DB: {e}")
+            return "Erro ao atualizar base de dados", 500
         finally:
             if 'cursor' in locals(): cursor.close()
             if 'conn' in locals() and conn.is_connected(): conn.close()
+
+# --------------------------------------------------------------
+# Recuperação de Conta (Username e Password)
+# --------------------------------------------------------------
+
+@app.route('/api/esqueci_username', methods=['POST'])
+def esqueci_username():
+    data = request.json
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({'erro': 'Por favor, introduz um e-mail válido.'}), 400
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT username, nome FROM utilizadores WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if user:
+            # Preparar e enviar o e-mail
+            msg = Message('Recuperação de Nome de Utilizador - Life Saver',
+              recipients=[email])
+            msg.body = f"Olá, {user['nome']}!\n\nO nome de utilizador associado a este e-mail é: {user['username']}\n\nSe não pediste esta informação, podes ignorar este e-mail de forma segura.\n\nObrigado por usares o Life Saver! 🛟"
+            mail.send(msg)
+
+        # Retornamos sucesso mesmo que o email não exista para não revelar dados (Boas práticas de segurança)
+        return jsonify({'mensagem': 'Se o e-mail estiver registado, receberás o teu nome de utilizador no teu e-mail em breve.'}), 200
+
+    except Exception as e:
+        print(f"ERRO NO ESQUECI USERNAME: {e}")  # Adiciona esta linha!
+        return jsonify({'erro': str(e)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
+
+@app.route('/api/esqueci_password', methods=['POST'])
+def esqueci_password():
+    data = request.json
+    email = data.get('email')
+
+    if not email:
+        return jsonify({'erro': 'Por favor, introduz um e-mail válido.'}), 400
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id, nome FROM utilizadores WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if user:
+            # Gerar um token seguro com o e-mail embutido
+            token = s.dumps(email, salt='recuperar-password')
+            link = url_for('reset_password', token=token, _external=True)
+
+            msg = Message('Recuperação de Palavra-passe - Life Saver',
+                          sender=app.config['MAIL_USERNAME'],
+                          recipients=[email])
+            
+            # Usamos 3 aspas (""") para permitir múltiplas linhas sem dar erro!
+            msg.body = f"""Olá {user['nome']}!\n\nRecebemos um pedido para repor a tua palavra-passe.\n\nPara o fazeres, clica no seguinte link (válido por 1 hora):\n\n{link}\n\nSe não pediste a reposição, podes simplesmente ignorar este e-mail.\n\nObrigado por usares o Life Saver! 🛟"""
+            
+            mail.send(msg)
+
+        return jsonify({'mensagem': 'Se o e-mail existir na nossa base de dados, receberás um link de recuperação em breve.'}), 200
+
+    # Estas linhas são obrigatórias para fechar o bloco "try:"
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals() and conn.is_connected(): conn.close()
+
 
 # --- Rota para renderizar a página de Perfil ---
 @app.route('/perfil')

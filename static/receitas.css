@@ -44,7 +44,7 @@
     padding: 12px 14px;
     border-radius: 12px;
     border: 1px solid var(--border-light);
-    background: #27707b;
+    background: #ab6202;
     color: #fff;
     font-size: 0.95rem;
     box-sizing: border-box;
@@ -57,7 +57,7 @@
 
 /* O botão de gerar IA com gradiente */
 #btnGerar {
-    background: linear-gradient(135deg, var(--accent-primary), #1f3a5f);
+    background: linear-gradient(135deg, #ffd02b, #df441e);
     border: none;
     color: white;
     padding: 12px;
@@ -95,7 +95,7 @@
 
 .cartao-receita:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.762);
     border-color: #444;
 }
 
@@ -109,7 +109,7 @@
 
 /* Área de visualização de uma receita escolhida */
 #resultadoReceita {
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(79, 50, 27, 0.507);
     padding: 25px;
     border-radius: 20px;
     margin-top: 25px;
@@ -148,7 +148,7 @@
 }
 
 .btn-ver-cartao {
-     background-color: #2a2a2e;
+     background-color: #a45002;
      color: #fff;
 }
 

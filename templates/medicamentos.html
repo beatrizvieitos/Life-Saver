@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='listas.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='medicamentos.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
 </head>
 <body>
 <div class="logo-topo-container">
@@ -37,7 +36,6 @@
         <h2>Lista de Medicamentos</h2>
     </div>
     <div class="direita">
-        
         <button class="btn-sair" onclick="fazerLogout()" title="Sair">
             <span class="material-icons">logout</span>
         </button>
@@ -47,8 +45,8 @@
 <div class="medicamentos-container">
     <div class="med-section">
         <h3><span class="material-icons">family_restroom</span> 
-        <span class="title-text">Medicamentos Habituais</span>
-        <button id="btnShareMedicationList" class="btn-share" title="Partilhar lista de medicamentos">
+        <span class="title-text">Medicação Habitual</span>
+        <button class="btn-share" title="Partilhar lista de medicamentos">
             <span class="material-icons">share</span>
         </button>
     </h3>
@@ -148,6 +146,63 @@
 </div>
 
 <script>
+    // ========== FUNÇÕES AUXILIARES E NOTIFICAÇÕES ==========
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function showMessage(mensagem) {
+        const notExistente = document.querySelector('.notificacao');
+        if (notExistente) notExistente.remove();
+
+        const div = document.createElement('div');
+        div.className = 'notificacao';
+        div.innerHTML = `
+            <p>${escapeHtml(mensagem)}</p>
+            <button onclick="this.parentElement.remove()">OK</button>
+        `;
+        document.body.appendChild(div);
+
+        setTimeout(() => {
+            if (div && div.parentElement) div.remove();
+        }, 3000);
+    }
+
+    function showConfirm(mensagem, callback) {
+        const existente = document.querySelector('.confirm-modal');
+        if (existente) existente.remove();
+
+        const div = document.createElement('div');
+        div.className = 'confirm-modal';
+        div.innerHTML = `
+            <p>${escapeHtml(mensagem)}</p>
+            <div class="confirm-buttons">
+                <button class="btn-confirm-yes">Sim</button>
+                <button class="btn-confirm-no">Não</button>
+            </div>
+        `;
+        document.body.appendChild(div);
+
+        const btnSim = div.querySelector('.btn-confirm-yes');
+        const btnNao = div.querySelector('.btn-confirm-no');
+        const remover = () => div.remove();
+
+        btnSim.onclick = () => {
+            remover();
+            if (callback) callback(true);
+        };
+        btnNao.onclick = () => {
+            remover();
+            if (callback) callback(false);
+        };
+    }
+
     // ==================== LÓGICA DOS MEDICAMENTOS ====================
     let membros = [];
     let medicamentos = [];
@@ -205,17 +260,14 @@
                 // Adicionar membros da família recebidos por partilha à lista
                 medicamentos.forEach(med => {
                     if (med.is_owner === 0 && med.membro_id && med.membro_nome) {
-                        // Verifica se o membro já existe na lista global
                         if (!membros.some(m => m.id === med.membro_id)) {
                             membros.push({ id: med.membro_id, nome: med.membro_nome });
                         }
                     }
                 });
                 
-                // Atualizar os dropdowns após incorporar os membros partilhados
                 atualizarSelectMembros(selectMembro);
                 atualizarSelectMembros(editMembro);
-
                 renderizarListas();
             }
         } catch (err) {
@@ -224,96 +276,150 @@
     }
 
     function renderizarListas() {
-    const habit = medicamentos.filter(m => m.tipo === 'habitual');
-    const ocasionais = medicamentos.filter(m => m.tipo === 'ocasional');
+        const habit = medicamentos.filter(m => m.tipo === 'habitual');
+        const ocasionais = medicamentos.filter(m => m.tipo === 'ocasional');
 
-    // ========== SECÇÃO HABITUAL ==========
-    const sharedHabitual = habit.filter(m => m.is_owner === 0);
-    const isHabitualShared = sharedHabitual.length > 0;
-    const habitualWarningDiv = document.getElementById('habitual-warning');
-    const habitualAddForm = document.getElementById('habitual-add-form');
-    
-    if (isHabitualShared) {
-        const ownerName = sharedHabitual[0]?.owner_name || 'um amigo';
-        const canEdit = sharedHabitual.some(m => m.can_edit == 1);
-        habitualWarningDiv.style.display = 'block';
-        habitualWarningDiv.innerHTML = canEdit
-            ? `📌 Contém medicamentos partilhados por ${escapeHtml(ownerName)} (podes editar)`
-            : `📌 Contém medicamentos partilhados por ${escapeHtml(ownerName)} (apenas visualização)`;
-        habitualAddForm.style.display = 'block';
+        // ========== SECÇÃO HABITUAL ==========
+        const sharedHabitual = habit.filter(m => m.is_owner === 0);
+        const isHabitualShared = sharedHabitual.length > 0;
+        const habitualWarningDiv = document.getElementById('habitual-warning');
+        const habitualAddForm = document.getElementById('habitual-add-form');
         
-        // === NOVO: Mostrar os membros da família do dono ===
-        // Recolher nomes únicos dos membros do dono a partir dos medicamentos partilhados
-        const ownerMemberNames = new Set();
-        sharedHabitual.forEach(med => {
-            if (med.membro_nome && med.membro_nome.trim() !== '') {
-                ownerMemberNames.add(med.membro_nome);
+        if (isHabitualShared) {
+            const ownerName = sharedHabitual[0]?.owner_name || 'um amigo';
+            const canEdit = sharedHabitual.some(m => m.can_edit == 1);
+            habitualWarningDiv.style.display = 'block';
+            habitualWarningDiv.innerHTML = canEdit
+                ? `📌 Contém medicamentos partilhados por ${escapeHtml(ownerName)} (podes editar)`
+                : `📌 Contém medicamentos partilhados por ${escapeHtml(ownerName)} (apenas visualização)`;
+            habitualAddForm.style.display = 'block';
+            
+            const ownerMemberNames = new Set();
+            sharedHabitual.forEach(med => {
+                if (med.membro_nome && med.membro_nome.trim() !== '') {
+                    ownerMemberNames.add(med.membro_nome);
+                }
+            });
+            let ownerMembersDiv = document.getElementById('ownerMembersInfo');
+            if (!ownerMembersDiv) {
+                ownerMembersDiv = document.createElement('div');
+                ownerMembersDiv.id = 'ownerMembersInfo';
+                ownerMembersDiv.style.marginTop = '10px';
+                ownerMembersDiv.style.fontSize = '0.85rem';
+                ownerMembersDiv.style.color = '#ccc';
+                const firstFormRow = document.querySelector('#habitual-add-form .form-row');
+                if (firstFormRow) {
+                    firstFormRow.insertAdjacentElement('afterend', ownerMembersDiv);
+                } else {
+                    habitualAddForm.appendChild(ownerMembersDiv);
+                }
             }
-        });
-        // Criar ou atualizar a div que mostra os membros do dono
-        let ownerMembersDiv = document.getElementById('ownerMembersInfo');
-        if (!ownerMembersDiv) {
-            ownerMembersDiv = document.createElement('div');
-            ownerMembersDiv.id = 'ownerMembersInfo';
-            ownerMembersDiv.style.marginTop = '10px';
-            ownerMembersDiv.style.fontSize = '0.85rem';
-            ownerMembersDiv.style.color = '#ccc';
-            // Inserir após a primeira .form-row (que contém o select de membros)
-            const firstFormRow = document.querySelector('#habitual-add-form .form-row');
-            if (firstFormRow) {
-                firstFormRow.insertAdjacentElement('afterend', ownerMembersDiv);
+            if (ownerMemberNames.size > 0) {
+                ownerMembersDiv.innerHTML = `<span class="material-icons" style="font-size: 1rem; vertical-align: middle;">family_restroom</span> Membros da família do dono: ${Array.from(ownerMemberNames).join(', ')}`;
+                ownerMembersDiv.style.display = 'block';
             } else {
-                // fallback: adicionar ao final do formulário
-                habitualAddForm.appendChild(ownerMembersDiv);
+                ownerMembersDiv.innerHTML = `<span class="material-icons" style="font-size: 1rem; vertical-align: middle;">info</span> O dono não tem membros da família registados.`;
+                ownerMembersDiv.style.display = 'block';
+            }
+        } else {
+            habitualWarningDiv.style.display = 'none';
+            habitualAddForm.style.display = 'block';
+            const ownerMembersDiv = document.getElementById('ownerMembersInfo');
+            if (ownerMembersDiv) ownerMembersDiv.remove();
+        }
+
+        const grouped = {};
+        habit.forEach(med => {
+            const key = med.membro_id ? med.membro_id : 'sem_membro';
+            if (!grouped[key]) {
+                grouped[key] = {
+                    membro: med.membro_nome || 'Sem membro',
+                    membroId: med.membro_id,
+                    itens: []
+                };
+            }
+            grouped[key].itens.push(med);
+        });
+
+        habitualList.innerHTML = '';
+        if (Object.keys(grouped).length === 0) {
+            habitualList.innerHTML = '<div class="vazio"><span class="material-icons">medication</span><p>Nenhum medicamento habitual registado.</p></div>';
+        } else {
+            for (let key in grouped) {
+                const grupo = grouped[key];
+                const divGrupo = document.createElement('div');
+                divGrupo.className = 'med-group';
+                divGrupo.innerHTML = `
+                    <div class="membro-header">
+                        <span class="membro-icon">👤</span>
+                        <span class="membro-nome">${escapeHtml(grupo.membro)}</span>
+                    </div>
+                `;
+                const listaItens = document.createElement('div');
+                grupo.itens.forEach(med => {
+                    const isOwner = med.is_owner === 1;
+                    const canEdit = med.can_edit == 1;        
+                    const isEditable = isOwner || canEdit;
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = `med-item ${med.comprado ? 'med-comprado' : ''}`;
+                    if (!isOwner) itemDiv.classList.add('shared-item');
+                    const checkboxHtml = `
+                        <label class="med-check">
+                            <input type="checkbox" ${med.comprado ? 'checked' : ''} 
+                                   onchange="alternarMedicamento(${med.id})"
+                                   ${!isEditable ? 'disabled' : ''}>
+                        </label>
+                    `;
+                    const actionsHtml = (isOwner || canEdit) ? `
+                        <div class="med-actions">
+                            <button class="btn-edit-med" onclick="abrirModalEditar(${med.id})" title="Editar" ${!isEditable ? 'disabled' : ''}>
+                                <span class="material-icons">edit</span>
+                            </button>
+                            <button class="btn-remove-med" onclick="removerMedicamento(${med.id})" title="Remover" ${!isEditable ? 'disabled' : ''}>
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </div>
+                    ` : '';
+                    itemDiv.innerHTML = `
+                        <div class="med-info">
+                            <span class="med-nome">${escapeHtml(med.nome)}</span>
+                            ${!isOwner ? `<span class="med-detalhe" style="font-size: 0.7rem; margin-left: 8px;">(partilhado por ${escapeHtml(med.owner_name)})</span>` : ''}
+                        </div>
+                        ${checkboxHtml}
+                        ${actionsHtml}
+                    `;
+                    listaItens.appendChild(itemDiv);
+                });
+                divGrupo.appendChild(listaItens);
+                habitualList.appendChild(divGrupo);
             }
         }
-        if (ownerMemberNames.size > 0) {
-            ownerMembersDiv.innerHTML = `<span class="material-icons" style="font-size: 1rem; vertical-align: middle;">family_restroom</span> Membros da família do dono: ${Array.from(ownerMemberNames).join(', ')}`;
-            ownerMembersDiv.style.display = 'block';
+
+        // ========== SECÇÃO OCASIONAL ==========
+        const sharedOcasionais = ocasionais.filter(m => m.is_owner === 0);
+        const isOcasionalShared = sharedOcasionais.length > 0;
+        const ocasionalWarningDiv = document.getElementById('ocasional-warning');
+        const ocasionalAddForm = document.getElementById('ocasional-add-form');
+        if (isOcasionalShared) {
+            const ownerName = sharedOcasionais[0]?.owner_name || 'um amigo';
+            const canEdit = sharedOcasionais.some(m => m.can_edit == 1);
+            ocasionalWarningDiv.style.display = 'block';
+            ocasionalWarningDiv.innerHTML = canEdit
+                ? `📌 Lista partilhada por ${escapeHtml(ownerName)} (podes editar)`
+                : `📌 Lista partilhada por ${escapeHtml(ownerName)} (apenas visualização)`;
+            ocasionalAddForm.style.display = 'block';
         } else {
-            ownerMembersDiv.innerHTML = `<span class="material-icons" style="font-size: 1rem; vertical-align: middle;">info</span> O dono não tem membros da família registados.`;
-            ownerMembersDiv.style.display = 'block';
+            ocasionalWarningDiv.style.display = 'none';
+            ocasionalAddForm.style.display = 'block';
         }
-    } else {
-        habitualWarningDiv.style.display = 'none';
-        habitualAddForm.style.display = 'block';
-        // Remover a div de membros do dono, se existir
-        const ownerMembersDiv = document.getElementById('ownerMembersInfo');
-        if (ownerMembersDiv) ownerMembersDiv.remove();
-    }
 
-    // Agrupar medicamentos habituais por membro
-    const grouped = {};
-    habit.forEach(med => {
-        const key = med.membro_id ? med.membro_id : 'sem_membro';
-        if (!grouped[key]) {
-            grouped[key] = {
-                membro: med.membro_nome || 'Sem membro',
-                membroId: med.membro_id,
-                itens: []
-            };
-        }
-        grouped[key].itens.push(med);
-    });
-
-    habitualList.innerHTML = '';
-    if (Object.keys(grouped).length === 0) {
-        habitualList.innerHTML = '<div class="vazio"><span class="material-icons">medication</span><p>Nenhum medicamento habitual registado.</p></div>';
-    } else {
-        for (let key in grouped) {
-            const grupo = grouped[key];
-            const divGrupo = document.createElement('div');
-            divGrupo.className = 'med-group';
-            divGrupo.innerHTML = `
-                <div class="membro-header">
-                    <span class="membro-icon">👤</span>
-                    <span class="membro-nome">${escapeHtml(grupo.membro)}</span>
-                </div>
-            `;
-            const listaItens = document.createElement('div');
-            grupo.itens.forEach(med => {
+        ocasionalList.innerHTML = '';
+        if (ocasionais.length === 0) {
+            ocasionalList.innerHTML = '<div class="vazio"><span class="material-icons">medical_services</span><p>Nenhum medicamento ocasional registado.</p></div>';
+        } else {
+            ocasionais.forEach(med => {
                 const isOwner = med.is_owner === 1;
-                const canEdit = med.can_edit == 1;        
+                const canEdit = med.can_edit === true;
                 const isEditable = isOwner || canEdit;
                 const itemDiv = document.createElement('div');
                 itemDiv.className = `med-item ${med.comprado ? 'med-comprado' : ''}`;
@@ -343,86 +449,14 @@
                     ${checkboxHtml}
                     ${actionsHtml}
                 `;
-                listaItens.appendChild(itemDiv);
+                ocasionalList.appendChild(itemDiv);
             });
-            divGrupo.appendChild(listaItens);
-            habitualList.appendChild(divGrupo);
         }
-    }
-
-    // ========== SECÇÃO OCASIONAL ==========
-    const sharedOcasionais = ocasionais.filter(m => m.is_owner === 0);
-    const isOcasionalShared = sharedOcasionais.length > 0;
-    const ocasionalWarningDiv = document.getElementById('ocasional-warning');
-    const ocasionalAddForm = document.getElementById('ocasional-add-form');
-    if (isOcasionalShared) {
-        const ownerName = sharedOcasionais[0]?.owner_name || 'um amigo';
-        const canEdit = sharedOcasionais.some(m => m.can_edit == 1);
-        ocasionalWarningDiv.style.display = 'block';
-        ocasionalWarningDiv.innerHTML = canEdit
-            ? `📌 Lista partilhada por ${escapeHtml(ownerName)} (podes editar)`
-            : `📌 Lista partilhada por ${escapeHtml(ownerName)} (apenas visualização)`;
-        ocasionalAddForm.style.display = 'block';
-    } else {
-        ocasionalWarningDiv.style.display = 'none';
-        ocasionalAddForm.style.display = 'block';
-    }
-
-    ocasionalList.innerHTML = '';
-    if (ocasionais.length === 0) {
-        ocasionalList.innerHTML = '<div class="vazio"><span class="material-icons">medical_services</span><p>Nenhum medicamento ocasional registado.</p></div>';
-    } else {
-        ocasionais.forEach(med => {
-            const isOwner = med.is_owner === 1;
-            const canEdit = med.can_edit === true;
-            const isEditable = isOwner || canEdit;
-            const itemDiv = document.createElement('div');
-            itemDiv.className = `med-item ${med.comprado ? 'med-comprado' : ''}`;
-            if (!isOwner) itemDiv.classList.add('shared-item');
-            const checkboxHtml = `
-                <label class="med-check">
-                    <input type="checkbox" ${med.comprado ? 'checked' : ''} 
-                           onchange="alternarMedicamento(${med.id})"
-                           ${!isEditable ? 'disabled' : ''}>
-                </label>
-            `;
-            const actionsHtml = (isOwner || canEdit) ? `
-                <div class="med-actions">
-                    <button class="btn-edit-med" onclick="abrirModalEditar(${med.id})" title="Editar" ${!isEditable ? 'disabled' : ''}>
-                        <span class="material-icons">edit</span>
-                    </button>
-                    <button class="btn-remove-med" onclick="removerMedicamento(${med.id})" title="Remover" ${!isEditable ? 'disabled' : ''}>
-                        <span class="material-icons">delete</span>
-                    </button>
-                </div>
-            ` : '';
-            itemDiv.innerHTML = `
-                <div class="med-info">
-                    <span class="med-nome">${escapeHtml(med.nome)}</span>
-                    ${!isOwner ? `<span class="med-detalhe" style="font-size: 0.7rem; margin-left: 8px;">(partilhado por ${escapeHtml(med.owner_name)})</span>` : ''}
-                </div>
-                ${checkboxHtml}
-                ${actionsHtml}
-            `;
-            ocasionalList.appendChild(itemDiv);
-        });
-    }
-}
-
-
-    function escapeHtml(text) {
-        if (!text) return '';
-        return text.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
     }
 
     async function adicionarMedicamento(tipo, nome, membroId = null) {
         if (!nome.trim()) {
-            alert('Por favor, insira o nome do medicamento.');
+            showMessage("Por favor, insira o nome do medicamento.");
             return;
         }
         const dados = { nome: nome.trim(), tipo: tipo, membro_id: membroId };
@@ -438,17 +472,17 @@
                 else novoOcasionalNome.value = '';
             } else {
                 const erro = await res.json();
-                alert('Erro: ' + (erro.erro || 'Não foi possível adicionar.'));
+                showMessage(erro.erro || "Não foi possível adicionar o medicamento.");
             }
         } catch (err) {
-            alert('Erro de ligação ao servidor.');
+            showMessage("Erro de ligação ao servidor.");
         }
     }
 
     btnAddHabitual.addEventListener('click', () => {
         const membroId = selectMembro.value;
         if (!membroId) {
-            alert('Selecione um membro da família para o medicamento habitual.');
+            showMessage("Para medicamentos habituais, selecione um membro da família.");
             return;
         }
         adicionarMedicamento('habitual', novoMedNome.value, membroId);
@@ -461,7 +495,7 @@
     btnAddMembro.addEventListener('click', async () => {
         const nome = novoMembroInput.value.trim();
         if (!nome) {
-            alert('Insira o nome do membro.');
+            showMessage("Por favor, insira o nome do membro.");
             return;
         }
         try {
@@ -479,10 +513,10 @@
                 carregarMembros();
             } else {
                 const erro = await res.json();
-                alert('Erro: ' + (erro.erro || 'Não foi possível adicionar membro.'));
+                showMessage(erro.erro || "Não foi possível adicionar o membro.");
             }
         } catch (err) {
-            alert('Erro de ligação ao servidor.');
+            showMessage("Erro de ligação ao servidor.");
         }
     });
 
@@ -496,21 +530,27 @@
     }
 
     async function removerMedicamento(id) {
-        if (confirm('Tem certeza que deseja remover este medicamento?')) {
-            try {
-                const res = await fetch(`/api/medicamentos/${id}`, { method: 'DELETE' });
-                if (res.ok) carregarMedicamentos();
-            } catch (err) {
-                alert('Erro ao remover medicamento.');
+        showConfirm('Tem certeza que deseja remover este medicamento?', async (resposta) => {
+            if (resposta) {
+                try {
+                    const res = await fetch(`/api/medicamentos/${id}`, { method: 'DELETE' });
+                    if (res.ok) carregarMedicamentos();
+                    else {
+                        const erro = await res.json();
+                        showMessage(erro.erro || "Erro ao remover o medicamento.");
+                    }
+                } catch (err) {
+                    showMessage("Erro de ligação ao servidor.");
+                }
             }
-        }
+        });
     }
 
     function abrirModalEditar(id) {
         const med = medicamentos.find(m => m.id === id);
         if (!med) return;
         if (med.is_owner !== 1 && med.can_edit !== true) {
-            alert('Não pode editar este medicamento porque foi partilhado sem permissão de edição.');
+            showMessage("Não pode editar este medicamento porque foi partilhado sem permissão de edição.");
             return;
         }
         editId.value = med.id;
@@ -538,12 +578,12 @@
         if (tipo === 'habitual') {
             membroId = editMembro.value ? parseInt(editMembro.value) : null;
             if (!membroId) {
-                alert('Para medicamentos habituais, selecione um membro da família.');
+                showMessage("Para medicamentos habituais, selecione um membro da família.");
                 return;
             }
         }
         if (!nome) {
-            alert('Nome do medicamento é obrigatório.');
+            showMessage("Nome do medicamento é obrigatório.");
             return;
         }
         try {
@@ -557,10 +597,10 @@
                 carregarMedicamentos();
             } else {
                 const erro = await res.json();
-                alert('Erro: ' + (erro.erro || 'Não foi possível atualizar.'));
+                showMessage(erro.erro || "Não foi possível atualizar o medicamento.");
             }
         } catch (err) {
-            alert('Erro de ligação ao servidor.');
+            showMessage("Erro de ligação ao servidor.");
         }
     });
 
@@ -628,7 +668,7 @@
 
     async function enviarPedidoAmigo() {
         const identifier = document.getElementById('emailAmigo').value.trim();
-        if (!identifier) return alert('Insira um username ou e-mail');
+        if (!identifier) return showMessage("Por favor, insira o username ou e-mail do amigo.");
         try {
             const resp = await fetch('/api/friends/request', {
                 method: 'POST',
@@ -637,31 +677,45 @@
             });
             const data = await resp.json();
             if (resp.ok) {
-                alert('Pedido enviado!');
+                showMessage("Pedido de amizade enviado com sucesso!");
                 document.getElementById('emailAmigo').value = '';
                 abrirModalAmigos();
-            } else alert('Erro: ' + (data.erro || 'Desconhecido'));
+            } else showMessage(data.erro || "Não foi possível enviar o pedido de amizade.");
         } catch (e) { console.error(e); }
     }
 
     async function aceitarPedido(requestId) {
         const resp = await fetch(`/api/friends/accept/${requestId}`, { method: 'PUT' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao aceitar pedido');
+        if (resp.ok) {
+            abrirModalAmigos();
+        } else {
+            const erro = await resp.json();
+            showMessage(erro.erro || "Erro ao aceitar pedido de amizade.");
+        }
     }
 
     async function recusarPedido(requestId) {
         const resp = await fetch(`/api/friends/decline/${requestId}`, { method: 'DELETE' });
-        if (resp.ok) abrirModalAmigos();
-        else alert('Erro ao recusar pedido');
+        if (resp.ok) {
+            abrirModalAmigos();
+        } else {
+            const erro = await resp.json();
+            showMessage(erro.erro || "Erro ao recusar pedido de amizade.");
+        }
     }
 
     async function removerAmigo(friendId) {
-        if (confirm('Remover este amigo?')) {
-            const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
-            if (resp.ok) abrirModalAmigos();
-            else alert('Erro ao remover amigo');
-        }
+        showConfirm('Remover este amigo?', async (resposta) => {
+            if (resposta) {
+                const resp = await fetch(`/api/friends/remove/${friendId}`, { method: 'DELETE' });
+                if (resp.ok) {
+                    abrirModalAmigos();
+                } else {
+                    const erro = await resp.json();
+                    showMessage(erro.erro || "Erro ao remover amigo.");
+                }
+            }
+        });
     }
 
     document.getElementById('openFriendsModal').addEventListener('click', (e) => {
@@ -672,9 +726,9 @@
         document.getElementById('modalAmigos').style.display = 'none';
     });
 
-    // ==================== PARTILHA DA LISTA DE MEDICAMENTOS (COM PERMISSÃO) ====================
+    // ==================== PARTILHA DA LISTA DE MEDICAMENTOS ====================
     const shareMedModal = document.getElementById('modalShareMedication');
-    const btnShareMed = document.getElementById('btnShareMedicationList');
+    const btnShareMed = document.querySelector('.med-section h3 .btn-share');
     const closeShareMed = document.getElementById('closeShareMedicationModal');
     const btnConfirmShareMed = document.getElementById('btnConfirmShareMedication');
 
@@ -763,7 +817,7 @@
             carregarMedicamentos();
         } catch (e) {
             console.error(e);
-            alert('Erro ao atualizar partilhas.');
+            showMessage("Erro ao atualizar partilhas. Tente novamente.");
         }
     };
 

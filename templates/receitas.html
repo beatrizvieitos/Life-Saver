@@ -48,11 +48,11 @@
         <div class="caixa-receitas">
             
             <div class="painel-receita">
-                <h3><span class="material-icons">restaurant</span> Descobrir Receita</h3>
+                <h3><span class="material-icons" style="color: #f3f3f3;">restaurant</span> Descobrir Receita</h3>
                 
                 <div class="form-group">
-                    <label style="color: #ddd; margin-bottom: 8px; display: block; font-weight: 500; font-size: 0.9rem;">
-                        <span class="material-icons" style="font-size: 1.2rem; vertical-align: middle; color: var(--accent-primary);">search</span> O que te apetece cozinhar?
+                    <label style="color: #f3f3f3; margin-bottom: 8px; display: block; font-weight: 500; font-size: 0.9rem;">
+                        <span class="material-icons" style="font-size: 1.2rem; vertical-align: middle; color: #f3f3f3;">search</span> O que te apetece cozinhar?
                     </label>
                     <input type="text" id="pratoInput" placeholder="Ex: Bacalhau com Natas...">
                     
@@ -90,8 +90,8 @@
             </div>
 
             <div class="painel-receita">
-                <h3><span class="material-icons">library_books</span> O Meu Livro de Receitas</h3>
-                <p style="font-size: 0.9em; margin-bottom: 20px; color: #ddd;">Guarda as tuas receitas favoritas e envia os ingredientes para a tua lista de compras (preços serão estimados automaticamente).</p>
+                <h3><span class="material-icons" style="color: #f3f3f3;">library_books</span> O Meu Livro de Receitas </h3>
+                <p style="font-size: 0.9em; margin-top: -10px; margin-bottom: 20px; color: #ddd;">Guarda as tuas receitas favoritas e envia os ingredientes para a tua lista de compras (preços serão estimados automaticamente).</p>
                 
                 <div id="listaReceitasGuardadas" style="display: flex; flex-direction: column; gap: 15px;">
                     </div>
@@ -101,6 +101,63 @@
     </div>
 
     <script>
+        // ========== FUNÇÕES AUXILIARES E NOTIFICAÇÕES ==========
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function showMessage(mensagem) {
+            const notExistente = document.querySelector('.notificacao');
+            if (notExistente) notExistente.remove();
+
+            const div = document.createElement('div');
+            div.className = 'notificacao';
+            div.innerHTML = `
+                <p>${escapeHtml(mensagem)}</p>
+                <button onclick="this.parentElement.remove()">OK</button>
+            `;
+            document.body.appendChild(div);
+
+            setTimeout(() => {
+                if (div && div.parentElement) div.remove();
+            }, 3000);
+        }
+
+        function showConfirm(mensagem, callback) {
+            const existente = document.querySelector('.confirm-modal');
+            if (existente) existente.remove();
+
+            const div = document.createElement('div');
+            div.className = 'confirm-modal';
+            div.innerHTML = `
+                <p>${escapeHtml(mensagem)}</p>
+                <div class="confirm-buttons">
+                    <button class="btn-confirm-yes">Sim</button>
+                    <button class="btn-confirm-no">Não</button>
+                </div>
+            `;
+            document.body.appendChild(div);
+
+            const btnSim = div.querySelector('.btn-confirm-yes');
+            const btnNao = div.querySelector('.btn-confirm-no');
+            const remover = () => div.remove();
+
+            btnSim.onclick = () => {
+                remover();
+                if (callback) callback(true);
+            };
+            btnNao.onclick = () => {
+                remover();
+                if (callback) callback(false);
+            };
+        }
+
         let receitaEmMemoria = null;
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -146,7 +203,7 @@
                     btnBox.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                             <div class="tarefa-info">
-                                <strong>${r.nome}</strong>
+                                <strong>${escapeHtml(r.nome)}</strong>
                                 <div class="shared-indicator" style="color:#222;">${r.ingredientes.length} ingredientes necessários</div>
                             </div>
                             <button class="btn-apagar" onclick="apagarReceita(${r.id})" title="Apagar Receita">
@@ -157,7 +214,7 @@
                             <button class="btn-ver-cartao" onclick='reabrirReceita(${JSON.stringify(r).replace(/'/g, "&#39;")})'>
                                 <span class="material-icons" style="font-size: 18px;">visibility</span> Ver
                             </button>
-                            <button class="btn-comprar-cartao" onclick='adicionarAComprasComPrecos(${JSON.stringify(r.ingredientes).replace(/'/g, "&#39;")})'>
+                            <button class="btn-comprar-cartao" onclick='adicionarAComprasComPrecos(${JSON.stringify(r.ingredientes).replace(/'/g, "&#39;")}, "${escapeHtml(r.nome)}")'>
                                 <span class="material-icons" style="font-size: 18px;">add_shopping_cart</span> Comprar
                             </button>
                         </div>
@@ -170,32 +227,35 @@
         }
 
         async function apagarReceita(receita_id) {
-            if (!confirm("Tens a certeza que queres apagar esta receita?")) return;
+            showConfirm("Tens a certeza que queres apagar esta receita?", async (resposta) => {
+                if (!resposta) return;
 
-            try {
-                const res = await fetch(`/api/receitas/${receita_id}`, {
-                    method: 'DELETE'
-                });
-                const data = await res.json();
-                
-                if (res.ok) {
-                    if (receitaEmMemoria && receitaEmMemoria.id === receita_id) {
-                        document.getElementById('resultadoReceita').style.display = 'none';
-                        receitaEmMemoria = null;
+                try {
+                    const res = await fetch(`/api/receitas/${receita_id}`, {
+                        method: 'DELETE'
+                    });
+                    const data = await res.json();
+                    
+                    if (res.ok) {
+                        if (receitaEmMemoria && receitaEmMemoria.id === receita_id) {
+                            document.getElementById('resultadoReceita').style.display = 'none';
+                            receitaEmMemoria = null;
+                        }
+                        carregarReceitasGuardadas();
+                        showMessage("Receita apagada com sucesso!");
+                    } else {
+                        showMessage(data.erro || "Erro ao apagar a receita.");
                     }
-                    carregarReceitasGuardadas();
-                } else {
-                    alert("Erro: " + data.erro);
+                } catch (e) {
+                    console.error("Erro ao apagar", e);
+                    showMessage("Ocorreu um erro ao tentar apagar a receita. Tenta novamente.");
                 }
-            } catch (e) {
-                console.error("Erro ao apagar", e);
-                alert("Ocorreu um erro ao tentar apagar a receita.");
-            }
+            });
         }
         
         async function gerarReceita() {
             const prato = document.getElementById('pratoInput').value.trim();
-            if(!prato) return alert("Escreve o nome de um prato!");
+            if(!prato) return showMessage("Escreve o que queres cozinhar!");
 
             document.getElementById('loading').style.display = 'block';
             document.getElementById('resultadoReceita').style.display = 'none';
@@ -212,10 +272,10 @@
                 if(data.sucesso) {
                     mostrarReceitaNoEcra(data.receita);
                 } else {
-                    alert(data.erro);
+                    showMessage(data.erro || "Erro ao gerar receita. Tenta novamente.");
                 }
             } catch(e) {
-                alert("Erro ao contactar a IA. Tenta novamente.");
+                showMessage("Erro de procura. Tenta novamente.");
             } finally {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('btnGerar').disabled = false;
@@ -231,7 +291,7 @@
             ul.innerHTML = '';
             receita.ingredientes.forEach(ing => {
                 let li = document.createElement('li');
-                li.innerHTML = `<strong>${ing.quantidade}</strong> de ${ing.produto}`;
+                li.innerHTML = `<strong>${escapeHtml(ing.quantidade)}</strong> de ${escapeHtml(ing.produto)}`;
                 ul.appendChild(li);
             });
 
@@ -248,13 +308,13 @@
                 });
                 const data = await res.json();
                 if(res.ok) {
-                    alert(data.mensagem);
+                    showMessage("Receita guardada com sucesso!");
                     carregarReceitasGuardadas();
                 } else {
-                    alert("Erro: " + data.erro);
+                    showMessage(data.erro || "Erro ao guardar receita.");
                 }
             } catch (e) {
-                alert("Erro ao guardar a receita.");
+                showMessage("Erro de ligação ao servidor.");
             }
         }
 
@@ -269,10 +329,10 @@
 
         async function adicionarAComprasAtual() {
             if(!receitaEmMemoria) return;
-            adicionarAComprasComPrecos(receitaEmMemoria.ingredientes);
+            adicionarAComprasComPrecos(receitaEmMemoria.ingredientes, receitaEmMemoria.nome);
         }
 
-        async function adicionarAComprasComPrecos(listaIngredientes) {
+        async function adicionarAComprasComPrecos(listaIngredientes, nomeDaReceita) { 
             const loadingIndicator = document.getElementById('loadingCompras');
             loadingIndicator.style.display = 'block';
 
@@ -318,7 +378,8 @@
                             produto: nomeFinalNaLista,
                             supermercado: supermercadoDefeito,
                             quantidade: 1, 
-                            preco_unidade: precoEstimado
+                            preco_unidade: precoEstimado,
+                            receita: nomeDaReceita
                         })
                     });
 
@@ -334,9 +395,9 @@
             loadingIndicator.style.display = 'none';
 
             if (sucessos > 0) {
-                alert(`${sucessos} ingredientes adicionados à tua Lista de Compras com os preços estimados!`);
+                showMessage("Ingredientes adicionados à tua Lista de Compras com os preços estimados!");
             } else {
-                alert("Ocorreu um erro ao adicionar os ingredientes.");
+                showMessage("Ocorreu um erro ao adicionar os ingredientes. Tenta novamente.");
             }
         }
     </script>
