@@ -14,7 +14,7 @@
         color: #000000;
         align-items: center !important;
         justify-content: center;
-        margin-right: 34px;
+        margin-left: 12px;
         font-size: 1.2rem !important;
         max-width: 100%;
         margin-right: 500px !important;
@@ -28,6 +28,7 @@
         font-size: 1.2rem !important;
         margin-right: 500px !important;
         white-space: nowrap;
+        margin-left: 12px;
     }
 
         .med-section {

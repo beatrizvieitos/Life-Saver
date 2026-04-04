@@ -380,7 +380,7 @@ button.btn-share:hover .material-icons {
     width: 100%;
 }
 .med-section h3 .material-icons:first-child {
-    margin-right: 8px;
+    margin-right: -20px;
 }
 
 .med-section h3 .title-text {
